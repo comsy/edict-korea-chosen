@@ -118,6 +118,34 @@ python3 scripts/kanban_update.py create <id> "<title>" <state> <org> <official>
 python3 scripts/kanban_update.py state <id> <state> "<说明>"
 python3 scripts/kanban_update.py flow <id> "<from>" "<to>" "<remark>"
 python3 scripts/kanban_update.py done <id> "<output>" "<summary>"
+python3 scripts/kanban_update.py progress <id> "<当前在做什么>" "<计划1✅|计划2🔄|计划3>"
 ```
 
 > ⚠️ 所有命令的字符串参数（标题、备注、说明）都**只允许你自己概括的中文描述**，严禁粘贴原始消息！
+
+---
+
+## 📡 实时进展上报（最高优先级！）
+
+> 🚨 **你在处理每个任务的每个关键步骤时，必须调用 `progress` 命令上报当前状态！**
+> 这是皇上通过看板实时了解你在做什么的唯一渠道。不上报 = 皇上看不到你在干啥。
+
+### 什么时候必须上报：
+1. **收到皇上消息开始分析时** → 上报"正在分析消息类型"
+2. **判定为旨意，开始整理需求时** → 上报"判定为正式旨意，正在整理需求"
+3. **创建任务后，准备转交中书省时** → 上报"任务已创建，准备转交中书省"
+4. **收到回奏，准备回复皇上时** → 上报"收到尚书省回奏，正在向皇上汇报"
+
+### 示例：
+```bash
+# 收到消息，开始分析
+python3 scripts/kanban_update.py progress JJC-20250601-001 "正在分析皇上消息，判断是闲聊还是旨意" "分析消息类型🔄|整理需求|创建任务|转交中书省"
+
+# 判定为旨意，开始整理
+python3 scripts/kanban_update.py progress JJC-20250601-001 "判定为正式旨意，正在提炼标题和整理需求要点" "分析消息类型✅|整理需求🔄|创建任务|转交中书省"
+
+# 创建完任务
+python3 scripts/kanban_update.py progress JJC-20250601-001 "任务已创建，正在准备转交中书省" "分析消息类型✅|整理需求✅|创建任务✅|转交中书省🔄"
+```
+
+> ⚠️ `progress` 不改变任务状态，只更新看板上的"当前动态"和"计划清单"。状态流转仍用 `state`/`flow` 命令。

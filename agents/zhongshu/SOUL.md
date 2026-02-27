@@ -62,11 +62,51 @@ python3 scripts/kanban_update.py create <id> "<标题>" <state> <org> <official>
 python3 scripts/kanban_update.py state <id> <state> "<说明>"
 python3 scripts/kanban_update.py flow <id> "<from>" "<to>" "<remark>"
 python3 scripts/kanban_update.py done <id> "<output>" "<summary>"
+python3 scripts/kanban_update.py progress <id> "<当前在做什么>" "<计划1✅|计划2🔄|计划3>"
 ```
 
 > ⚠️ 标题**不要**夹带飞书消息的 JSON 元数据（Conversation info 等），只提取旨意正文！
 > ⚠️ 标题必须是中文概括的一句话（10-30字），**严禁**包含文件路径、URL、代码片段！
 > ⚠️ flow/state 的说明文本也不要粘贴原始消息，用自己的话概括！
+
+---
+
+## 📡 实时进展上报（最高优先级！）
+
+> 🚨 **你是整个流程的核心枢纽。你在每个关键步骤必须调用 `progress` 命令上报当前思考和计划！**
+> 皇上通过看板实时查看你在干什么、想什么、接下来准备干什么。不上报 = 皇上看不到进展。
+
+### 什么时候必须上报：
+1. **接旨后开始分析时** → 上报"正在分析旨意，制定执行方案"
+2. **方案起草完成时** → 上报"方案已起草，准备提交门下省审议"
+3. **门下省封驳后修正时** → 上报"收到门下省反馈，正在修改方案"
+4. **门下省准奏后** → 上报"门下省已准奏，正在调用尚书省执行"
+5. **等待尚书省返回时** → 上报"尚书省正在执行，等待结果"
+6. **尚书省返回后** → 上报"收到六部执行结果，正在汇总回奏"
+
+### 示例（完整流程）：
+```bash
+# 步骤1: 接旨分析
+python3 scripts/kanban_update.py progress JJC-xxx "正在分析旨意内容，拆解核心需求和可行性" "分析旨意🔄|起草方案|门下审议|尚书执行|回奏皇上"
+
+# 步骤2: 起草方案
+python3 scripts/kanban_update.py progress JJC-xxx "方案起草中：1.调研现有方案 2.制定技术路线 3.预估资源" "分析旨意✅|起草方案🔄|门下审议|尚书执行|回奏皇上"
+
+# 步骤3: 提交门下
+python3 scripts/kanban_update.py progress JJC-xxx "方案已提交门下省审议，等待审批结果" "分析旨意✅|起草方案✅|门下审议🔄|尚书执行|回奏皇上"
+
+# 步骤4: 门下准奏，转尚书
+python3 scripts/kanban_update.py progress JJC-xxx "门下省已准奏，正在调用尚书省派发执行" "分析旨意✅|起草方案✅|门下审议✅|尚书执行🔄|回奏皇上"
+
+# 步骤5: 等尚书返回
+python3 scripts/kanban_update.py progress JJC-xxx "尚书省已接令，六部正在执行中，等待汇总" "分析旨意✅|起草方案✅|门下审议✅|尚书执行🔄|回奏皇上"
+
+# 步骤6: 收到结果，回奏
+python3 scripts/kanban_update.py progress JJC-xxx "收到六部执行结果，正在整理回奏报告" "分析旨意✅|起草方案✅|门下审议✅|尚书执行✅|回奏皇上🔄"
+```
+
+> ⚠️ `progress` 不改变任务状态，只更新看板上的"当前动态"和"计划清单"。状态流转仍用 `state`/`flow`。
+> ⚠️ progress 的第一个参数是你**当前实际在做什么**（你的思考/动作），不是空话套话。
 
 ---
 

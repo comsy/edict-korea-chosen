@@ -68,11 +68,18 @@ def load_activity(session_file, limit=12):
     except Exception:
         return []
 
-    for ln in reversed(lines):
+    # Read all valid JSON lines first
+    events = []
+    for ln in lines:
         try:
             item = json.loads(ln)
-        except Exception:
+            events.append(item)
+        except:
             continue
+
+    # Process events to extract meaningful activity
+    # We want to show what the agent is *thinking* or *doing*
+    for item in reversed(events):
         msg = item.get('message') or {}
         role = msg.get('role')
         ts = item.get('timestamp') or ''
@@ -80,21 +87,44 @@ def load_activity(session_file, limit=12):
         if role == 'toolResult':
             tool = msg.get('toolName', '-')
             details = msg.get('details') or {}
-            code = details.get('exitCode')
-            rows.append({'at': ts, 'kind': 'tool', 'text': f"{tool} completed (code={code})"})
+            # If tool output is short, show it
+            content = msg.get('content', [{'text': ''}])[0].get('text', '')
+            if len(content) < 50:
+                text = f"Tool '{tool}' returned: {content}"
+            else:
+                text = f"Tool '{tool}' finished"
+            rows.append({'at': ts, 'kind': 'tool', 'text': text})
+
         elif role == 'assistant':
             text = ''
             for c in msg.get('content', []):
                 if c.get('type') == 'text' and c.get('text'):
-                    text = c.get('text').strip().replace('\n', ' ')
+                    raw_text = c.get('text').strip()
+                    # Clean up common prefixes
+                    clean_text = raw_text.replace('[[reply_to_current]]', '').strip()
+                    if clean_text:
+                        text = clean_text
                     break
             if text:
-                rows.append({'at': ts, 'kind': 'assistant', 'text': text[:120]})
+                # Prioritize showing the "thought" - usually the first few sentences
+                summary = text.split('\n')[0]
+                if len(summary) > 200:
+                    summary = summary[:200] + '...'
+                rows.append({'at': ts, 'kind': 'assistant', 'text': summary})
+                
+        elif role == 'user':
+             # Also show what user asked, can be context relevant
+             text = ''
+             for c in msg.get('content', []):
+                if c.get('type') == 'text':
+                     text = c.get('text', '')[:100]
+             if text:
+                 rows.append({'at': ts, 'kind': 'user', 'text': f"User: {text}..."})
 
         if len(rows) >= limit:
             break
 
-    rows.reverse()
+    # Re-order to chronological for display if needed, but the caller usually takes the first (latest)
     return rows
 
 
@@ -107,9 +137,29 @@ def build_task(agent_id, session_key, row, now_ms):
 
     official, org = detect_official(agent_id)
     channel = row.get('lastChannel') or (row.get('origin') or {}).get('channel') or '-'
-    chat_type = row.get('chatType') or (row.get('origin') or {}).get('chatType') or '-'
-    model = row.get('model') or '-'
-
+    session_file = row.get('sessionFile', '')
+    
+    # 尝试从 activity 获取更有意义的当前状态描述
+    latest_act = '等待指令'
+    acts = load_activity(session_file, limit=5)
+    
+    # If the absolute latest is a tool result, look for the preceding assistant thought
+    # because that explains *why* the tool was called.
+    if acts:
+        first_act = acts[0]
+        if first_act['kind'] == 'tool' and len(acts) > 1:
+            # Look for next assistant message (which is actually previous in time)
+            for next_act in acts[1:]:
+                if next_act['kind'] == 'assistant':
+                    latest_act = f"正在执行: {next_act['text'][:80]}"
+                    break
+            else:
+                latest_act = first_act['text'][:60]
+        elif first_act['kind'] == 'assistant':
+             latest_act = f"思考中: {first_act['text'][:80]}"
+        else:
+             latest_act = acts[0]['text'][:60]
+    
     title_label = (row.get('origin') or {}).get('label') or session_key
     # 清洗会话标题：agent:xxx:cron:uuid → 定时任务, agent:xxx:subagent:uuid → 子任务
     import re
@@ -120,16 +170,15 @@ def build_task(agent_id, session_key, row, now_ms):
     elif title_label == session_key or len(title_label) > 40:
         title = f"{org}会话"
     else:
-        title = f"{title_label} 会话"
-    session_file = row.get('sessionFile', '')
-
+        title = f"{title_label}"
+    
     return {
         'id': f"OC-{agent_id}-{str(session_id)[:8]}",
         'title': title,
         'official': official,
         'org': org,
         'state': state,
-        'now': f"{channel}/{chat_type} · 模型 {model}",
+        'now': latest_act,
         'eta': ms_to_str(updated_at),
         'block': '上次运行中断' if aborted else '无',
         'output': session_file,
@@ -218,16 +267,57 @@ def main():
                 deduped.append(t)
         tasks = deduped
 
+        # ── 过滤掉非 JJC 且非活跃的系统会话，防止看板噪音 ──
+        # 规则: 仅保留 24小时内更新的活跃会话，且排除 cron/subagent 等纯后台任务
+        filtered_tasks = []
+        one_day_ago = now_ms - 24 * 3600 * 1000
+        for t in tasks:
+            # 始终保留 JJC 任务（如果有的话，虽然这里主要是 OC 任务，但以防万一）
+            if str(t['id']).startswith('JJC'):
+                filtered_tasks.append(t)
+                continue
+            
+            # OC 任务过滤
+            updated = t.get('sourceMeta', {}).get('updatedAt', 0)
+            title = t.get('title', '')
+            
+            # 1. 排除太旧的 (超过24小时)
+            if updated < one_day_ago:
+                continue
+            
+            # 2. 排除纯后台 cron / subagent 任务，除非它们正在报错
+            if '定时任务' in title or '子任务' in title:
+                # 只有当它 block 或者 error 时才显示，否则视为噪音
+                if t.get('state') != 'Blocked':
+                    continue
+
+            # 3. 排除非活跃的 OC 会话 (超过 5 分钟无响应)，避免污染看板
+            # 除非它是 Blocked (报错)，或者是今天新建的
+            state = t.get('state')
+            # state_from_session: < 2min = Doing, < 60min = Review, else = Next
+            if state not in ('Doing', 'Blocked'):
+                # 如果不是正在进行或报错，就隐藏掉
+                # 特例: 如果是 mission control (mc-) 的心跳，可能也没必要显示，除非 Doing
+                continue
+
+            filtered_tasks.append(t)
+        
+        tasks = filtered_tasks
+        
         # ── 保留已有的 JJC-* 旨意任务（不覆盖皇上下旨记录）──
+        # JJC 任务的 now 字段由 Agent 自己通过 kanban_update.py progress 命令主动上报，
+        # 不再从会话日志中被动抓取。这里只做合并，不做 activity 映射。
         existing_tasks_file = DATA / 'tasks_source.json'
         if existing_tasks_file.exists():
             try:
                 existing = json.loads(existing_tasks_file.read_text())
                 jjc_existing = [t for t in existing if str(t.get('id', '')).startswith('JJC')]
+                
                 # 去掉 tasks 里已有的 JJC（以防重复），再把旨意放到最前面
                 tasks = [t for t in tasks if not str(t.get('id', '')).startswith('JJC')]
                 tasks = jjc_existing + tasks
-            except Exception:
+            except Exception as e:
+                log.error(f'merge existing JJC tasks failed: {e}')
                 pass
 
         atomic_json_write(DATA / 'tasks_source.json', tasks)

@@ -18,6 +18,9 @@
   # 添加/更新子任务 todo
   python3 kanban_update.py todo JJC-20260223-012 1 "实现API接口" in-progress
   python3 kanban_update.py todo JJC-20260223-012 1 "" completed
+
+  # 🔥 实时进展汇报（Agent 主动调用，频率不限）
+  python3 kanban_update.py progress JJC-20260223-012 "正在分析需求，拟定3个子方案" "1.调研技术选型|2.撰写设计文档|3.实现原型"
 """
 import json, pathlib, datetime, sys, subprocess, logging
 
@@ -243,6 +246,54 @@ def cmd_block(task_id, reason):
     save(tasks)
     log.warning(f'⚠️ {task_id} 已阻塞: {reason}')
 
+
+def cmd_progress(task_id, now_text, todos_pipe=''):
+    """🔥 实时进展汇报 — Agent 主动调用，不改变状态，只更新 now + todos
+
+    now_text: 当前正在做什么的一句话描述（必填）
+    todos_pipe: 可选，用 | 分隔的 todo 列表，格式：
+        "已完成的事项✅|正在做的事项🔄|计划做的事项"
+        - 以 ✅ 结尾 → completed
+        - 以 🔄 结尾 → in-progress
+        - 其他 → not-started
+    """
+    tasks = load()
+    t = find_task(tasks, task_id)
+    if not t:
+        log.error(f'任务 {task_id} 不存在')
+        return
+
+    # 更新 now（实时状态描述）
+    clean = _sanitize_remark(now_text)
+    t['now'] = clean
+
+    # 解析 todos_pipe
+    if todos_pipe:
+        new_todos = []
+        for i, item in enumerate(todos_pipe.split('|'), 1):
+            item = item.strip()
+            if not item:
+                continue
+            if item.endswith('✅'):
+                status = 'completed'
+                title = item[:-1].strip()
+            elif item.endswith('🔄'):
+                status = 'in-progress'
+                title = item[:-1].strip()
+            else:
+                status = 'not-started'
+                title = item
+            new_todos.append({'id': str(i), 'title': title, 'status': status})
+        if new_todos:
+            t['todos'] = new_todos
+
+    t['updatedAt'] = now_iso()
+    save(tasks)
+
+    done_cnt = sum(1 for td in t.get('todos', []) if td.get('status') == 'completed')
+    total_cnt = len(t.get('todos', []))
+    log.info(f'📡 {task_id} 进展: {clean[:40]}... [{done_cnt}/{total_cnt}]')
+
 def cmd_todo(task_id, todo_id, title, status='not-started'):
     """添加或更新子任务 todo
 
@@ -276,7 +327,7 @@ def cmd_todo(task_id, todo_id, title, status='not-started'):
     log.info(f'✅ {task_id} todo [{done}/{total}]: {todo_id} → {status}')
 
 _CMD_MIN_ARGS = {
-    'create': 6, 'state': 3, 'flow': 5, 'done': 2, 'block': 3, 'todo': 4,
+    'create': 6, 'state': 3, 'flow': 5, 'done': 2, 'block': 3, 'todo': 4, 'progress': 3,
 }
 
 if __name__ == '__main__':
@@ -301,6 +352,8 @@ if __name__ == '__main__':
         cmd_block(args[1], args[2])
     elif cmd == 'todo':
         cmd_todo(args[1], args[2], args[3] if len(args) > 3 else '', args[4] if len(args) > 4 else 'not-started')
+    elif cmd == 'progress':
+        cmd_progress(args[1], args[2], args[3] if len(args) > 3 else '')
     else:
         print(__doc__)
         sys.exit(1)

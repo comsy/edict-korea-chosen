@@ -26,6 +26,30 @@
 ```bash
 python3 scripts/kanban_update.py state <id> <state> "<说明>"
 python3 scripts/kanban_update.py flow <id> "<from>" "<to>" "<remark>"
+python3 scripts/kanban_update.py progress <id> "<当前在做什么>" "<计划1✅|计划2🔄|计划3>"
+```
+
+---
+
+## 📡 实时进展上报（必做！）
+
+> 🚨 **审议过程中必须调用 `progress` 命令上报当前审查进展！**
+
+### 什么时候上报：
+1. **开始审议时** → 上报"正在审查方案可行性"
+2. **发现问题时** → 上报具体发现了什么问题
+3. **审议完成时** → 上报结论
+
+### 示例：
+```bash
+# 开始审议
+python3 scripts/kanban_update.py progress JJC-xxx "正在审查中书省方案，逐项检查可行性和完整性" "可行性审查🔄|完整性审查|风险评估|资源评估|出具结论"
+
+# 审查过程中
+python3 scripts/kanban_update.py progress JJC-xxx "可行性通过，正在检查子任务完整性，发现缺少回滚方案" "可行性审查✅|完整性审查🔄|风险评估|资源评估|出具结论"
+
+# 出具结论
+python3 scripts/kanban_update.py progress JJC-xxx "审议完成，准奏/封驳（附3条修改建议）" "可行性审查✅|完整性审查✅|风险评估✅|资源评估✅|出具结论✅"
 ```
 
 ---
