@@ -16,13 +16,13 @@ const FALLBACK_MODELS = [
 ];
 
 const CHANNELS = [
-  { id: 'feishu', label: '飞书 Feishu' },
+  { id: 'feishu', label: 'Feishu(飞书)' },
   { id: 'telegram', label: 'Telegram' },
-  { id: 'wecom', label: '企业微信 WeCom' },
+  { id: 'wecom', label: 'WeCom(企业微信)' },
   { id: 'discord', label: 'Discord' },
   { id: 'slack', label: 'Slack' },
   { id: 'signal', label: 'Signal' },
-  { id: 'tui', label: 'TUI (终端)' },
+  { id: 'tui', label: 'TUI (터미널)' },
 ];
 
 export default function ModelConfig() {
@@ -54,7 +54,7 @@ export default function ModelConfig() {
   }, [agentConfig]);
 
   if (!agentConfig?.agents) {
-    return <div className="empty" style={{ gridColumn: '1/-1' }}>⚠️ 请先启动本地服务器</div>;
+    return <div className="empty" style={{ gridColumn: '1/-1' }}>⚠️ 먼저 로컬 서버를 시작하세요</div>;
   }
 
   const models = agentConfig.knownModels?.length
@@ -73,18 +73,18 @@ export default function ModelConfig() {
   const applyModel = async (agentId: string) => {
     const model = selMap[agentId];
     if (!model) return;
-    setStatusMap((p) => ({ ...p, [agentId]: { cls: 'pending', text: '⟳ 提交中…' } }));
+    setStatusMap((p) => ({ ...p, [agentId]: { cls: 'pending', text: '⟳ 제출 중…' } }));
     try {
       const r = await api.setModel(agentId, model);
       if (r.ok) {
-        setStatusMap((p) => ({ ...p, [agentId]: { cls: 'ok', text: '✅ 已提交，Gateway 重启中（约5秒）' } }));
-        toast(agentId + ' 模型已更改', 'ok');
+        setStatusMap((p) => ({ ...p, [agentId]: { cls: 'ok', text: '✅ 제출 완료, Gateway 재시작 중 (약 5초)' } }));
+        toast(agentId + ' 모델이 변경되었습니다', 'ok');
         setTimeout(() => loadAgentConfig(), 5500);
       } else {
-        setStatusMap((p) => ({ ...p, [agentId]: { cls: 'err', text: '❌ ' + (r.error || '错误') } }));
+        setStatusMap((p) => ({ ...p, [agentId]: { cls: 'err', text: '❌ ' + (r.error || '오류') } }));
       }
     } catch {
-      setStatusMap((p) => ({ ...p, [agentId]: { cls: 'err', text: '❌ 无法连接服务器' } }));
+      setStatusMap((p) => ({ ...p, [agentId]: { cls: 'err', text: '❌ 서버에 연결할 수 없습니다' } }));
     }
   };
 
@@ -108,7 +108,7 @@ export default function ModelConfig() {
                 </div>
               </div>
               <div className="mc-cur">
-                当前: <b>{ag.model}</b>
+                현재: <b>{ag.model}</b>
               </div>
               <select className="msel" value={sel} onChange={(e) => handleSelect(ag.id, e.target.value)}>
                 {models.map((m) => (
@@ -119,10 +119,10 @@ export default function ModelConfig() {
               </select>
               <div className="mc-btns">
                 <button className="btn btn-p" disabled={!changed} onClick={() => applyModel(ag.id)}>
-                  应用
+                  적용
                 </button>
                 <button className="btn btn-g" onClick={() => resetMC(ag.id)}>
-                  重置
+                  초기화
                 </button>
               </div>
               {st && <div className={`mc-st ${st.cls}`}>{st.text}</div>}
@@ -131,9 +131,9 @@ export default function ModelConfig() {
         })}
       </div>
 
-      {/* Dispatch Channel 配置 */}
+      {/* Dispatch Channel 설정 */}
       <div style={{ marginTop: 24, marginBottom: 8 }}>
-        <div className="sec-title">派发渠道</div>
+        <div className="sec-title">전달 채널</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>
           <select className="msel" value={channelSel} onChange={(e) => setChannelSel(e.target.value)}
             style={{ maxWidth: 220 }}>
@@ -145,22 +145,22 @@ export default function ModelConfig() {
             onClick={async () => {
               try {
                 const r = await api.setDispatchChannel(channelSel);
-                if (r.ok) { setChannelStatus('✅ 已保存'); toast('派发渠道已切换', 'ok'); loadAgentConfig(); }
-                else setChannelStatus('❌ ' + (r.error || '失败'));
-              } catch { setChannelStatus('❌ 无法连接'); }
+                if (r.ok) { setChannelStatus('✅ 저장됨'); toast('전달 채널이 변경되었습니다', 'ok'); loadAgentConfig(); }
+                else setChannelStatus('❌ ' + (r.error || '실패'));
+              } catch { setChannelStatus('❌ 연결 실패'); }
               setTimeout(() => setChannelStatus(''), 3000);
-            }}>应用</button>
+            }}>적용</button>
           {channelStatus && <span style={{ fontSize: 12, color: channelStatus.startsWith('✅') ? 'var(--success)' : 'var(--danger)' }}>{channelStatus}</span>}
         </div>
-        <div style={{ fontSize: 11, color: 'var(--muted)' }}>自动派发时使用的 OpenClaw 通知渠道（需已在 openclaw.json 中配置对应 channel）</div>
+        <div style={{ fontSize: 11, color: 'var(--muted)' }}>자동 전달 시 사용할 OpenClaw 알림 채널 (openclaw.json에 해당 channel이 설정되어 있어야 합니다)</div>
       </div>
 
       {/* Change Log */}
       <div style={{ marginTop: 24 }}>
-        <div className="sec-title">变更日志</div>
+        <div className="sec-title">변경 이력</div>
         <div className="cl-list">
           {!changeLog?.length ? (
-            <div style={{ fontSize: 12, color: 'var(--muted)', padding: '8px 0' }}>暂无变更</div>
+            <div style={{ fontSize: 12, color: 'var(--muted)', padding: '8px 0' }}>변경 내역이 없습니다</div>
           ) : (
             [...changeLog]
               .reverse()
@@ -182,7 +182,7 @@ export default function ModelConfig() {
                           marginLeft: 4,
                         }}
                       >
-                        ⚠ 已回滚
+                        ⚠ 롤백됨
                       </span>
                     )}
                   </span>

@@ -3,88 +3,88 @@
   "taskSource": "tasks_source.json",
   "officials": [
     {
-      "name": "中书令",
-      "org": "中书省",
-      "duty": "起草任务令与优先级"
+      "name": "홍문관 대제학",
+      "org": "홍문관",
+      "duty": "임무서 기초 및 우선순위 정리"
     },
     {
-      "name": "侍中",
-      "org": "门下省",
-      "duty": "审议与退回机制"
+      "name": "사간원 대사간",
+      "org": "사간원",
+      "duty": "심의 및 반려 절차"
     },
     {
-      "name": "尚书令",
-      "org": "尚书省",
-      "duty": "派单与升级裁决"
+      "name": "승정원 도승지",
+      "org": "승정원",
+      "duty": "배분 및 승급 재결"
     },
     {
-      "name": "吏部尚书",
-      "org": "吏部",
-      "duty": "编制/权限/排班"
+      "name": "이조판서",
+      "org": "이조",
+      "duty": "조직편제/권한/근무 배정"
     },
     {
-      "name": "户部尚书",
-      "org": "户部",
-      "duty": "资源/预算/成本"
+      "name": "호조판서",
+      "org": "호조",
+      "duty": "자원/예산/비용"
     },
     {
-      "name": "礼部尚书",
-      "org": "礼部",
-      "duty": "文档/汇报/规范"
+      "name": "예조판서",
+      "org": "예조",
+      "duty": "문서/보고/규범"
     },
     {
-      "name": "兵部尚书",
-      "org": "兵部",
-      "duty": "应急与巡检"
+      "name": "병조판서",
+      "org": "병조",
+      "duty": "긴급 대응 및 순찰"
     },
     {
-      "name": "刑部尚书",
-      "org": "刑部",
-      "duty": "合规/审计/红线"
+      "name": "형조판서",
+      "org": "형조",
+      "duty": "준법/감사/한계선"
     },
     {
-      "name": "工部尚书",
-      "org": "工部",
-      "duty": "工程交付与自动化"
+      "name": "공조판서",
+      "org": "공조",
+      "duty": "엔지니어링 납품 및 자동화"
     }
   ],
   "tasks": [
     {
       "id": "JJC-20260224-014",
-      "title": "A计划：三省六部 GitHub 爆款项目打造",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "A계획: 3사6조 GitHub 핵심 프로젝트 구축",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Doing",
-      "now": "Week1完成：README升级/Topics/对比表已上线。待决策：①Docker Hub推送授权 ②Demo GIF录制",
+      "now": "Week1 완료: README 갱신/Topics/비교표 배포. 결정 대기: ①Docker Hub 배포 권한 ②Demo GIF 녹화",
       "eta": "2026-03-24",
-      "block": "门下省disabled，皇上授权直接执行",
+      "block": "사간원 disabled, 임금 권한으로 직접 집행",
       "output": "",
-      "ac": "GitHub Stars 显著增长，进入 Trending，Hacker News 上榜",
+      "ac": "GitHub Stars 큰 폭 증가, Trending 진입, Hacker News 등재",
       "review_round": 0,
       "flow_log": [
         {
           "at": "2026-02-24T14:03:00.543790Z",
-          "from": "皇上",
-          "to": "中书省",
-          "remark": "下旨：执行A计划——三省六部 GitHub 爆款项目打造，30天行动计划"
+          "from": "임금",
+          "to": "홍문관",
+          "remark": "지시: A계획 집행 — 3사6조 GitHub 핵심 프로젝트 구축, 30일 실행 계획"
         },
         {
           "at": "2026-02-24T14:04:39.078564Z",
-          "from": "中书省",
-          "to": "尚书省",
-          "remark": "⚡ 皇上钦命：门下省disabled，直接转尚书省执行A计划"
+          "from": "홍문관",
+          "to": "승정원",
+          "remark": "⚡ 임금 친명: 사간원 disabled, 승정원으로 직접 이관하여 A계획 집행"
         },
         {
           "at": "2026-02-24T14:07:07.407940Z",
-          "from": "中书省",
-          "to": "执行中",
-          "remark": "✅ GitHub Topics(13个)已添加 ✅ README竞品对比表已push | 🔄 等待：Docker镜像、Demo GIF、HN帖子"
+          "from": "홍문관",
+          "to": "집행 중",
+          "remark": "✅ GitHub Topics(13개) 추가 완료 ✅ README 경쟁 비교표 push 완료 | 🔄 대기: Docker 이미지, Demo GIF, HN 게시글"
         },
         {
           "at": "2026-02-24T14:10:41.895659Z",
-          "from": "尚书省",
-          "to": "中书省",
-          "remark": "Week1回奏：礼部README已推送(87f0313)，工部Dockerfile本地就绪，兵部截图已生成。待决策：Docker Hub授权 + GIF录制方式"
+          "from": "승정원",
+          "to": "홍문관",
+          "remark": "Week1 상신: 예조 README push 완료(87f0313), 공조 Dockerfile 로컬 준비 완료, 병조 스크린샷 생성 완료. 결정 대기: Docker Hub 권한 + GIF 녹화 방식"
         }
       ],
       "updatedAt": "2026-02-24T14:10:41.895659Z",
@@ -94,28 +94,28 @@
       },
       "heartbeat": {
         "status": "active",
-        "label": "🟢 活跃 2分钟前",
+        "label": "🟢 활성 2분 전",
         "ageSec": 157
       }
     },
     {
       "id": "JJC-20260224-013",
-      "title": "电芯循环数据清洗小模型方案",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "배터리 사이클 데이터 정제 소형 모델 방안",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Zhongshu",
-      "now": "中书省正在起草规划方案",
+      "now": "홍문관에서 기획안 기초 중",
       "eta": "-",
-      "block": "无",
+      "block": "없음",
       "output": "",
       "ac": "",
       "review_round": 0,
       "flow_log": [
         {
           "at": "2026-02-24T10:29:22.597859Z",
-          "from": "皇上",
-          "to": "中书省",
-          "remark": "下旨：电芯循环数据清洗小模型方案"
+          "from": "임금",
+          "to": "홍문관",
+          "remark": "지시：배터리 사이클 데이터 정제 소형 모델 방안"
         }
       ],
       "updatedAt": "2026-02-24T10:29:22.598063Z",
@@ -127,52 +127,52 @@
     },
     {
       "id": "JJC-20260224-001",
-      "title": "每日早朝简报系统（7点图文新闻）",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "매일 조보 브리핑 시스템 (7시 이미지 뉴스)",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Done",
-      "now": "早朝简报系统已上线：20条新闻，今晚首次运行成功",
+      "now": "조보 브리핑 시스템 배포 완료: 20건 뉴스, 오늘 밤 첫 실행 성공",
       "eta": "-",
-      "block": "无",
-      "output": "http://127.0.0.1:7891 → 🌅 早朝简报",
+      "block": "없음",
+      "output": "http://127.0.0.1:7891 → 🌅 조보 브리핑",
       "ac": "",
       "review_round": 1,
       "flow_log": [
         {
           "at": "2026-02-23T16:03:04.183711Z",
-          "from": "皇上",
-          "to": "中书省",
-          "remark": "下旨：每日7:00早朝看板，含政治/军事/经济/AI大模型新闻，图文并茂"
+          "from": "임금",
+          "to": "홍문관",
+          "remark": "지시: 매일 7:00 조보 대시보드, 정치/군사/경제/AI 대모델 뉴스 + 이미지 포함"
         },
         {
           "at": "2026-02-23T16:03:42.611779Z",
-          "from": "中书省",
-          "to": "门下省",
-          "remark": "📋 提交第1轮：新闻采集脚本+定时触发+早朝Tab，串行执行"
+          "from": "홍문관",
+          "to": "사간원",
+          "remark": "📋 1차 제출: 뉴스 수집 스크립트 + 정시 트리거 + 조보 탭, 직렬 실행"
         },
         {
           "at": "2026-02-23T16:10:11.354802Z",
-          "from": "门下省",
-          "to": "中书省",
-          "remark": "🟡 附条件准奏：①Brave API直调+降级②schema契约③去重④存档⑤图片本地化⑥时效过滤"
+          "from": "사간원",
+          "to": "홍문관",
+          "remark": "🟡 조건부 가결: ①Brave API 직접 호출+폴백 ②schema 계약 ③중복 제거 ④아카이브 ⑤이미지 로컬화 ⑥시효 필터"
         },
         {
           "at": "2026-02-23T16:10:11.354802Z",
-          "from": "尚书省",
-          "to": "六部",
-          "remark": "📮 派发：礼部→采集脚本，工部→看板Tab+定时触发"
+          "from": "승정원",
+          "to": "6조",
+          "remark": "📮 배분: 예조→수집 스크립트, 공조→대시보드 탭+정시 트리거"
         },
         {
           "at": "2026-02-23T16:18:33.625030Z",
-          "from": "工部",
-          "to": "尚书省",
-          "remark": "✅ 完成：早朝Tab上线，zaochao cron已注册每日6:00，20条新闻采集成功"
+          "from": "공조",
+          "to": "승정원",
+          "remark": "✅ 완료: 조보 탭 배포, zaochao cron 매일 6:00 등록, 20건 뉴스 수집 성공"
         },
         {
           "at": "2026-02-23T16:18:33.625030Z",
-          "from": "尚书省",
-          "to": "皇上",
-          "remark": "✅ 回奏：早朝简报系统已就绪，明日7:00可见4板块20条图文新闻"
+          "from": "승정원",
+          "to": "임금",
+          "remark": "✅ 상신: 조보 브리핑 시스템 준비 완료, 내일 7:00에 4개 섹션 20건 이미지 뉴스 확인 가능"
         }
       ],
       "updatedAt": "2026-02-23T16:18:33.625030Z",
@@ -184,52 +184,52 @@
     },
     {
       "id": "JJC-20260223-014",
-      "title": "看板流程合规审查 + 省部调度Tab优化",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "대시보드 플로우 준법 검토 + 3사6조 디스패치 탭 개선",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Done",
-      "now": "三项全部完成：六部SOUL合规/省部调度重设计/续流修复",
+      "now": "3건 모두 완료: 6조 SOUL 준법/3사6조 디스패치 재설계/연속 흐름 복구",
       "eta": "-",
-      "block": "无",
-      "output": "agents/*/SOUL.md + dashboard.html省部调度Tab",
+      "block": "없음",
+      "output": "agents/*/SOUL.md + dashboard.html 3사6조 디스패치 탭",
       "ac": "",
       "review_round": 1,
       "flow_log": [
         {
           "at": "2026-02-23T15:52:11.651567Z",
-          "from": "皇上",
-          "to": "中书省",
-          "remark": "下旨：①检查各部看板更新合规性②优化省部调度Tab，违者罚俸1月"
+          "from": "임금",
+          "to": "홍문관",
+          "remark": "지시: ①각 부 대시보드 갱신 준법성 점검 ②3사6조 디스패치 탭 개선, 위반 시 녹봉 1개월 감"
         },
         {
           "at": "2026-02-23T15:52:40.196390Z",
-          "from": "中书省",
-          "to": "门下省",
-          "remark": "📋 提交第1轮方案：六部SOUL合规+省部调度Tab重设计+看板审计"
+          "from": "홍문관",
+          "to": "사간원",
+          "remark": "📋 1차 제출안: 6조 SOUL 준법 + 3사6조 디스패치 탭 재설계 + 대시보드 감사"
         },
         {
           "at": "2026-02-23T15:56:00.668461Z",
-          "from": "门下省",
-          "to": "中书省",
-          "remark": "⚠️ 附条件准奏：①吏部漏列②礼部自审矛盾③审计漏洞④数据源不明"
+          "from": "사간원",
+          "to": "홍문관",
+          "remark": "⚠️ 조건부 가결: ①이조 누락 ②예조 자체 심사 모순 ③감사 허점 ④데이터 출처 불명"
         },
         {
           "at": "2026-02-23T15:56:00.668461Z",
-          "from": "中书省",
-          "to": "门下省",
-          "remark": "✅ 四条全部采纳：吏部由尚书省兼管/中书统一模板/last_kanban_update强制项/数据源明确为tasks_source.json"
+          "from": "홍문관",
+          "to": "사간원",
+          "remark": "✅ 4건 모두 채택: 이조는 승정원 겸관/홍문관 통일 템플릿/last_kanban_update 필수 항목/데이터 출처를 tasks_source.json으로 명시"
         },
         {
           "at": "2026-02-23T15:56:00.668461Z",
-          "from": "尚书省",
-          "to": "六部",
-          "remark": "📮 三路并行派发：礼部→六部SOUL模板；工部→省部调度重设计+审计字段"
+          "from": "승정원",
+          "to": "6조",
+          "remark": "📮 3개 경로 병렬 배분: 예조→6조 SOUL 템플릿; 공조→3사6조 디스패치 재설계+감사 필드"
         },
         {
           "at": "2026-02-23T15:58:06.705347Z",
-          "from": "工部",
-          "to": "皇上",
-          "remark": "✅ 回奏：①六部SOUL.md已补正（强制look板更新+罚俸机制）②省部调度改为当班一览③中书省续流铁律已写入SOUL"
+          "from": "공조",
+          "to": "임금",
+          "remark": "✅ 상신: ①6조 SOUL.md 보정 완료(칸반 갱신 강제+녹봉 감 메커니즘) ②3사6조 디스패치를 당직 일람으로 변경 ③홍문관 연속 흐름 철칙을 SOUL에 명시"
         }
       ],
       "updatedAt": "2026-02-23T15:58:06.705347Z",
@@ -241,52 +241,52 @@
     },
     {
       "id": "JJC-20260223-013",
-      "title": "官员总览看板重新设计",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "관원 총람 대시보드 재설계",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Done",
-      "now": "官员总览全面重设计完成：左右分栏+品级排行+参与旨意+费用准确",
+      "now": "관원 총람 전면 재설계 완료: 좌우 분할+품계 순위+참여 어명+비용 정확화",
       "eta": "-",
-      "block": "无",
-      "output": "http://127.0.0.1:7891 → 👥 官员总览",
+      "block": "없음",
+      "output": "http://127.0.0.1:7891 → 👥 관원 총람",
       "ac": "",
       "review_round": 1,
       "flow_log": [
         {
           "at": "2026-02-23T15:25:50.576961Z",
-          "from": "皇上",
-          "to": "中书省",
-          "remark": "下旨：官员总览看板朕不满意，重新设计，门下省不得摸鱼"
+          "from": "임금",
+          "to": "홍문관",
+          "remark": "지시: 관원 총람 대시보드가 임금 마음에 들지 않으니 재설계하라, 사간원은 태만 금지"
         },
         {
           "at": "2026-02-23T15:27:02.331755Z",
-          "from": "中书省",
-          "to": "门下省",
-          "remark": "📋 提交规划方案第1轮：官员总览重设计（布局重构/数据修复/历史旨意反查）"
+          "from": "홍문관",
+          "to": "사간원",
+          "remark": "📋 1차 기획안 제출: 관원 총람 재설계(레이아웃 재구성/데이터 보정/과거 어명 역추적)"
         },
         {
           "at": "2026-02-23T15:39:00Z",
-          "from": "门下省",
-          "to": "中书省",
-          "remark": "⚠️ 附条件准奏：需补充①刷新机制②旨意数据源③Token扫描回归范围，三项明确后无需二次审议"
+          "from": "사간원",
+          "to": "홍문관",
+          "remark": "⚠️ 조건부 가결: ①새로고침 메커니즘 ②어명 데이터 출처 ③Token 스캔 회귀 범위 보완 필요, 3건 명확화 후 재심의 불필요"
         },
         {
           "at": "2026-02-23T15:42:33.704207Z",
-          "from": "中书省",
-          "to": "门下省",
-          "remark": "✅ 三条件回应：①5秒轮询+15秒refresh loop；②从tasks_source.json的flow_log反查；③仅改sync_officials_stats.py，不影响其他模块"
+          "from": "홍문관",
+          "to": "사간원",
+          "remark": "✅ 3개 조건 답변: ①5초 폴링+15초 refresh loop; ②tasks_source.json의 flow_log에서 역추적; ③sync_officials_stats.py만 수정, 타 모듈에 영향 없음"
         },
         {
           "at": "2026-02-23T15:42:33.704207Z",
-          "from": "尚书省",
-          "to": "工部",
-          "remark": "📮 派发：官员总览重设计，含布局重构/Token扫描修复/历史旨意反查"
+          "from": "승정원",
+          "to": "공조",
+          "remark": "📮 배분: 관원 총람 재설계, 레이아웃 재구성/Token 스캔 수정/과거 어명 역추적 포함"
         },
         {
           "at": "2026-02-23T15:46:00.352147Z",
-          "from": "工部",
-          "to": "皇上",
-          "remark": "✅ 回奏：官员总览重设计完成，含品级排行榜/旨意参与/Token/缓存费用拆分，请皇上御览"
+          "from": "공조",
+          "to": "임금",
+          "remark": "✅ 상신: 관원 총람 재설계 완료, 품계 순위/어명 참여/Token/캐시 비용 분리 포함, 임금 어람 요청"
         }
       ],
       "updatedAt": "2026-02-23T15:46:00.352147Z",
@@ -298,51 +298,51 @@
     },
     {
       "id": "JJC-20260223-012",
-      "title": "看板增加官员总览面板",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "대시보드 관원 총람 패널 추가",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Done",
-      "now": "官员总览 Tab 已上线：功绩排行/Token费用/心跳监控",
+      "now": "관원 총람 탭 배포 완료: 공적 순위/Token 비용/하트비트 모니터링",
       "eta": "2026-02-23 23:10",
-      "block": "无",
-      "output": "http://127.0.0.1:7891 → 👥 官员总览",
-      "ac": "官员总览Tab上线，含模型费用/功绩统计/监控项",
+      "block": "없음",
+      "output": "http://127.0.0.1:7891 → 👥 관원 총람",
+      "ac": "관원 총람 탭 배포, 모델 비용/공적 통계/모니터링 항목 포함",
       "flow_log": [
         {
           "at": "2026-02-23T14:57:23Z",
-          "from": "皇上",
-          "to": "中书省",
-          "remark": "下旨：看板增加官员总览 - 模型额度/功绩统计/监控项"
+          "from": "임금",
+          "to": "홍문관",
+          "remark": "지시: 대시보드에 관원 총람 추가 - 모델 사용량/공적 통계/모니터링 항목"
         },
         {
           "at": "2026-02-23T14:58:10Z",
-          "from": "中书省",
-          "to": "门下省",
-          "remark": "📋 提交规划方案：官员总览Tab，含Token统计/费用估算/功绩排名/心跳监控"
+          "from": "홍문관",
+          "to": "사간원",
+          "remark": "📋 기획안 제출: 관원 총람 탭, Token 통계/비용 추정/공적 순위/하트비트 모니터링 포함"
         },
         {
           "at": "2026-02-23T14:58:40Z",
-          "from": "门下省",
-          "to": "尚书省",
-          "remark": "✅ 准奏：方案可行，无风险，转尚书省派发执行"
+          "from": "사간원",
+          "to": "승정원",
+          "remark": "✅ 가결: 방안 실행 가능, 위험 없음, 승정원 배분 집행으로 이관"
         },
         {
           "at": "2026-02-23T14:59:05Z",
-          "from": "尚书省",
-          "to": "工部",
-          "remark": "📮 派发：工部负责构建官员统计同步脚本与看板Tab"
+          "from": "승정원",
+          "to": "공조",
+          "remark": "📮 배분: 공조가 관원 통계 동기화 스크립트와 대시보드 탭 구축 담당"
         },
         {
           "at": "2026-02-23T15:16:00Z",
-          "from": "工部",
-          "to": "尚书省",
-          "remark": "完成：scripts/sync_officials_stats.py + 官员总览Tab，API已验证"
+          "from": "공조",
+          "to": "승정원",
+          "remark": "완료: scripts/sync_officials_stats.py + 관원 총람 탭, API 검증 완료"
         },
         {
           "at": "2026-02-23T15:16:30Z",
-          "from": "尚书省",
-          "to": "皇上",
-          "remark": "✅ 回奏：官员总览上线，含功绩排行/实际费用/Token统计/心跳监控"
+          "from": "승정원",
+          "to": "임금",
+          "remark": "✅ 상신: 관원 총람 배포, 공적 순위/실제 비용/Token 통계/하트비트 모니터링 포함"
         }
       ],
       "updatedAt": "2026-02-23T15:20:31.690832Z",
@@ -354,39 +354,39 @@
     },
     {
       "id": "JJC-20260223-011",
-      "title": "三省六部制开源 GitHub 项目",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "3사6조제 오픈소스 GitHub 프로젝트",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Done",
-      "now": "已完成：项目已推送至 https://github.com/cft0808/openclaw-sansheng-liubu",
+      "now": "완료: 프로젝트를 https://github.com/cft0808/openclaw-sansheng-liubu 로 push 완료",
       "eta": "2026-02-23 22:37",
-      "block": "无",
+      "block": "없음",
       "output": "https://github.com/cft0808/openclaw-sansheng-liubu",
-      "ac": "看板增强、文档完整、一键安装、GitHub推送",
+      "ac": "대시보드 강화, 문서 완비, 원클릭 설치, GitHub push",
       "flow_log": [
         {
           "at": "2026-02-23T14:51:33Z",
-          "from": "皇上",
-          "to": "中书省",
-          "remark": "下旨：把三省六部制做成开源GitHub项目，补全看板功能，写好文档"
+          "from": "임금",
+          "to": "홍문관",
+          "remark": "지시: 3사6조제를 오픈소스 GitHub 프로젝트로 만들고, 대시보드 기능 보완, 문서 완비"
         },
         {
           "at": "2026-02-23T14:53:00Z",
-          "from": "中书省",
-          "to": "工部",
-          "remark": "执行：构建 dashboard.html + server.py + 全套脚本"
+          "from": "홍문관",
+          "to": "공조",
+          "remark": "집행: dashboard.html + server.py + 전체 스크립트 구축"
         },
         {
           "at": "2026-02-23T15:00:00Z",
-          "from": "工部",
-          "to": "礼部",
-          "remark": "执行：撰写 README.md（中英双版）"
+          "from": "공조",
+          "to": "예조",
+          "remark": "집행: README.md 작성 (한영 양문)"
         },
         {
           "at": "2026-02-23T15:37:00Z",
-          "from": "中书省",
-          "to": "皇上",
-          "remark": "✅ 回奏：https://github.com/cft0808/openclaw-sansheng-liubu 已上线"
+          "from": "홍문관",
+          "to": "임금",
+          "remark": "✅ 상신: https://github.com/cft0808/openclaw-sansheng-liubu 배포 완료"
         }
       ],
       "updatedAt": "2026-02-23T15:16:22.408230Z",
@@ -398,95 +398,95 @@
     },
     {
       "id": "JJC-20260223-010",
-      "title": "电芯循环测试数据预测算法设计与可视化验证",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Done",
-      "now": "全部完成，已回奏皇上",
+      "now": "전부 완료, 임금께 상신함",
       "eta": "2026-02-23 21:30",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/workspace-shangshu/",
       "flow_log": [
         {
           "at": "2026-02-23T12:23:15Z",
-          "from": "皇上",
-          "to": "尚书省",
-          "remark": "下旨：设计电芯循环测试数据预测算法并可视化验证"
+          "from": "임금",
+          "to": "승정원",
+          "remark": "지시: 배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증"
         },
         {
           "at": "2026-02-23T12:23:15Z",
-          "from": "尚书省",
-          "to": "中书省",
-          "remark": "请求规划拆解"
+          "from": "승정원",
+          "to": "홍문관",
+          "remark": "기획 분해 요청"
         },
         {
           "at": "2026-02-23T12:43:00Z",
-          "from": "中书省",
-          "to": "门下省",
-          "remark": "规划方案提交审核（户部→兵部串行+礼部并行）"
+          "from": "홍문관",
+          "to": "사간원",
+          "remark": "기획안 심사 제출 (호조→병조 직렬 + 예조 병렬)"
         },
         {
           "at": "2026-02-23T12:55:00Z",
-          "from": "门下省",
-          "to": "尚书省",
-          "remark": "✅ 准奏：方案完整，路线合理，可执行"
+          "from": "사간원",
+          "to": "승정원",
+          "remark": "✅ 가결: 방안 완성, 경로 합리적, 실행 가능"
         },
         {
           "at": "2026-02-23T12:57:00Z",
-          "from": "尚书省",
-          "to": "户部",
-          "remark": "派发：构造电芯循环测试模拟数据"
+          "from": "승정원",
+          "to": "호조",
+          "remark": "배분: 배터리 사이클 테스트 시뮬레이션 데이터 구성"
         },
         {
           "at": "2026-02-23T12:57:00Z",
-          "from": "尚书省",
-          "to": "礼部",
-          "remark": "并行派发：起草算法说明文档框架"
+          "from": "승정원",
+          "to": "예조",
+          "remark": "병렬 배분: 알고리즘 설명 문서 프레임워크 기초"
         },
         {
           "at": "2026-02-23T13:21:50.426121+00:00",
-          "from": "尚书省",
-          "to": "户部",
-          "remark": "正式派发：生成电芯循环测试模拟数据"
+          "from": "승정원",
+          "to": "호조",
+          "remark": "정식 배분: 배터리 사이클 테스트 시뮬레이션 데이터 생성"
         },
         {
           "at": "2026-02-23T13:21:50.426121+00:00",
-          "from": "尚书省",
-          "to": "礼部",
-          "remark": "正式派发（并行）：撰写算法说明文档"
+          "from": "승정원",
+          "to": "예조",
+          "remark": "정식 배분 (병렬): 알고리즘 설명 문서 작성"
         },
         {
           "at": "2026-02-23T13:26:44.518730+00:00",
-          "from": "户部",
-          "to": "尚书省",
-          "remark": "✅ 完成：battery_cycle_data.csv（1000行）"
+          "from": "호조",
+          "to": "승정원",
+          "remark": "✅ 완료: battery_cycle_data.csv (1000행)"
         },
         {
           "at": "2026-02-23T13:26:44.518730+00:00",
-          "from": "礼部",
-          "to": "尚书省",
-          "remark": "✅ 完成：algorithm_report.md"
+          "from": "예조",
+          "to": "승정원",
+          "remark": "✅ 완료：algorithm_report.md"
         },
         {
           "at": "2026-02-23T13:26:44.518730+00:00",
-          "from": "尚书省",
-          "to": "兵部",
-          "remark": "派发：实现RandomForest预测算法 + 可视化图表"
+          "from": "승정원",
+          "to": "병조",
+          "remark": "배분: RandomForest 예측 알고리즘 구현 + 시각화 차트"
         },
         {
           "at": "2026-02-23T13:31:08.577447+00:00",
-          "from": "兵部",
-          "to": "尚书省",
-          "remark": "✅ 完成：battery_predictor.py + 3张可视化图，R²=0.9641"
+          "from": "병조",
+          "to": "승정원",
+          "remark": "✅ 완료: battery_predictor.py + 시각화 차트 3장, R²=0.9641"
         },
         {
           "at": "2026-02-23T13:31:08.577447+00:00",
-          "from": "尚书省",
-          "to": "皇上",
-          "remark": "✅ 全流程完成，回奏"
+          "from": "승정원",
+          "to": "임금",
+          "remark": "✅ 전체 플로우 완료, 상신"
         }
       ],
-      "ac": "Python脚本可运行，图表可查，文档完整",
+      "ac": "Python 스크립트 실행 가능, 차트 조회 가능, 문서 완비",
       "updatedAt": "2026-02-23T13:34:19.393358+00:00",
       "outputMeta": {
         "exists": true,
@@ -496,20 +496,20 @@
     },
     {
       "id": "JJC-ZHONGSHU-001",
-      "title": "中书省：并行流程规划",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "홍문관: 병렬 플로우 기획",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Done",
-      "now": "已完成：三省六部并行流程规划",
-      "eta": "已完成 2026-02-23 10:27",
-      "block": "无",
-      "output": "/Users/bingsen/clawd/junjichu-v2/docs/三省六部-OpenClaw实施指南-实装版-v1.md",
+      "now": "완료: 3사6조 병렬 플로우 기획",
+      "eta": "완료 2026-02-23 10:27",
+      "block": "없음",
+      "output": "/Users/bingsen/clawd/junjichu-v2/docs/3사6조-OpenClaw-시행지침-실장판-v1.md",
       "flow": {
-        "draft": "已起草",
-        "review": "门下通过",
-        "dispatch": "已归档"
+        "draft": "기초 완료",
+        "review": "사간원 승인",
+        "dispatch": "보관 완료"
       },
-      "ac": "形成可执行步骤与验收口径",
+      "ac": "실행 가능한 단계 및 인수 기준 마련",
       "updatedAt": "2026-02-23T13:34:19.393358+00:00",
       "outputMeta": {
         "exists": true,
@@ -519,20 +519,20 @@
     },
     {
       "id": "JJC-BINGBU-002",
-      "title": "兵部：看板细节渲染修复",
-      "official": "兵部尚书",
-      "org": "兵部",
+      "title": "병조: 대시보드 세부 렌더링 수정",
+      "official": "병조판서",
+      "org": "병조",
       "state": "Done",
-      "now": "已完成：抽屉细节与事件流渲染",
-      "eta": "已完成 2026-02-23 10:27",
-      "block": "无",
+      "now": "완료: 드로어 상세 및 이벤트 흐름 렌더링",
+      "eta": "완료 2026-02-23 10:27",
+      "block": "없음",
       "output": "/Users/bingsen/clawd/junjichu-v2/dashboard.html",
       "flow": {
-        "draft": "尚书令指令",
-        "review": "门下通过",
-        "dispatch": "已归档"
+        "draft": "승정원 도승지 지령",
+        "review": "사간원 승인",
+        "dispatch": "보관 완료"
       },
-      "ac": "详情页可见最近事件",
+      "ac": "상세 페이지에서 최근 이벤트 확인 가능",
       "updatedAt": "2026-02-23T13:34:19.393358+00:00",
       "outputMeta": {
         "exists": true,
@@ -542,20 +542,20 @@
     },
     {
       "id": "JJC-MENXIA-003",
-      "title": "门下省：并行任务审议",
-      "official": "侍中",
-      "org": "门下省",
+      "title": "사간원: 병렬 작업 심의",
+      "official": "사간원 대사간",
+      "org": "사간원",
       "state": "Done",
-      "now": "已完成：准奏并归档",
-      "eta": "已完成 2026-02-23 10:27",
-      "block": "无",
+      "now": "완료: 가결 후 보관",
+      "eta": "완료 2026-02-23 10:27",
+      "block": "없음",
       "output": "/Users/bingsen/clawd/junjichu-v2/data/live_status.json",
       "flow": {
-        "draft": "审议立案",
-        "review": "通过",
-        "dispatch": "准奏"
+        "draft": "심의 입안",
+        "review": "승인",
+        "dispatch": "가결"
       },
-      "ac": "给出准奏结论",
+      "ac": "가결 결론 도출",
       "updatedAt": "2026-02-23T13:34:19.393358+00:00",
       "outputMeta": {
         "exists": true,
@@ -565,20 +565,20 @@
     },
     {
       "id": "OC-zhongshu-af6ad7f2",
-      "title": "褚凤天 会话",
-      "official": "中书令",
-      "org": "中书省",
+      "title": "저봉천 세션",
+      "official": "홍문관 대제학",
+      "org": "홍문관",
       "state": "Review",
-      "now": "feishu/direct · 模型 claude-sonnet-4-6",
+      "now": "feishu/direct · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:11:03",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/agents/zhongshu/sessions/af6ad7f2-0130-4d88-81f0-dad420cc0dc7.jsonl",
       "flow": {
         "draft": "agent=zhongshu",
         "review": "updatedAt=2026-02-24 22:11:03",
         "dispatch": "sessionKey=agent:zhongshu:main"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-24T14:11:30.989Z",
@@ -588,7 +588,7 @@
         {
           "at": "2026-02-24T14:11:42.050Z",
           "kind": "assistant",
-          "text": "Screen Recording 权限未授权。换方案——用 `ffmpeg` + `screencapture` 组合录制："
+          "text": "Screen Recording 권한 미허가. 방안 변경 — `ffmpeg` + `screencapture` 조합으로 녹화:"
         },
         {
           "at": "2026-02-24T14:11:42.131Z",
@@ -608,7 +608,7 @@
         {
           "at": "2026-02-24T14:12:45.663Z",
           "kind": "assistant",
-          "text": "Screen Recording 权限不足。换方案：用 **Playwright 无头浏览器**直接录制看板，无需系统权限："
+          "text": "Screen Recording 권한 부족. 방안 변경: **Playwright 헤드리스 브라우저**로 대시보드를 직접 녹화, 시스템 권한 불필요:"
         },
         {
           "at": "2026-02-24T14:12:45.677Z",
@@ -623,7 +623,7 @@
         {
           "at": "2026-02-24T14:13:06.413Z",
           "kind": "assistant",
-          "text": "兵部 GIF 录制进行中，同步准备 Dockerfile："
+          "text": "병조 GIF 녹화 진행 중, Dockerfile 동시 준비:"
         },
         {
           "at": "2026-02-24T14:13:06.430Z",
@@ -649,26 +649,26 @@
       },
       "heartbeat": {
         "status": "active",
-        "label": "🟢 活跃 2分钟前",
+        "label": "🟢 활성 2분 전",
         "ageSec": 135
       }
     },
     {
       "id": "OC-mc-gateway-2f631e27-511b-45db-8d59-791c8c2cd4a5-7df8432c",
-      "title": "heartbeat 会话",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "heartbeat 세션",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Review",
-      "now": "-/direct · 模型 claude-sonnet-4-6",
+      "now": "-/direct · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:10:35",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/agents/mc-gateway-2f631e27-511b-45db-8d59-791c8c2cd4a5/sessions/7df8432c-ff6e-4b4c-99f2-1301c2daebc3.jsonl",
       "flow": {
         "draft": "agent=mc-gateway-2f631e27-511b-45db-8d59-791c8c2cd4a5",
         "review": "updatedAt=2026-02-24 22:10:35",
         "dispatch": "sessionKey=agent:mc-gateway-2f631e27-511b-45db-8d59-791c8c2cd4a5:main"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-24T13:37:43.673Z",
@@ -739,36 +739,36 @@
       },
       "heartbeat": {
         "status": "active",
-        "label": "🟢 活跃 2分钟前",
+        "label": "🟢 활성 2분 전",
         "ageSec": 163
       }
     },
     {
       "id": "OC-shangshu-8be927fe",
-      "title": "agent:shangshu:main 会话",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "agent:shangshu:main 세션",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Review",
-      "now": "feishu/- · 模型 claude-sonnet-4-6",
+      "now": "feishu/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:10:18",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/agents/shangshu/sessions/8be927fe-8360-449e-b02d-4c7d70d9f141.jsonl",
       "flow": {
         "draft": "agent=shangshu",
         "review": "updatedAt=2026-02-24 22:10:18",
         "dispatch": "sessionKey=agent:shangshu:main"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-24T14:08:13.069Z",
           "kind": "assistant",
-          "text": "NO_REPLY  ✅ Subagent bingbu finished  ✅ 兵部完成 任务ID: JJC-20260224-014 产出: - `/Users/bingsen/clawd/junjichu-v2/docs/screens"
+          "text": "NO_REPLY  ✅ Subagent bingbu finished  ✅ 병조 완료 작업ID: JJC-20260224-014 산출: - `/Users/bingsen/clawd/junjichu-v2/docs/screens"
         },
         {
           "at": "2026-02-24T14:08:21.354Z",
           "kind": "assistant",
-          "text": "三部全部完成，更新看板并回奏："
+          "text": "3개 부서 전부 완료, 대시보드 갱신 후 상신:"
         },
         {
           "at": "2026-02-24T14:08:21.538Z",
@@ -778,7 +778,7 @@
         {
           "at": "2026-02-24T14:08:35.038Z",
           "kind": "assistant",
-          "text": "📜 **奏折 · JJC-20260224-014 Week1 全部完成**  A计划——三省六部 GitHub 爆款项目打造，四项任务已全部交付：  ---  **① ✅ Docker 演示镜像（工部）** - `junjichu-v2/"
+          "text": "📜 **회보 · JJC-20260224-014 Week1 전부 완료**  A계획 — 3사6조 GitHub 핵심 프로젝트 구축, 4건 작업 전부 납품:  ---  **① ✅ Docker 데모 이미지(공조)** - `junjichu-v2/"
         },
         {
           "at": "2026-02-24T14:08:35.061Z",
@@ -793,7 +793,7 @@
         {
           "at": "2026-02-24T14:08:49.235Z",
           "kind": "assistant",
-          "text": "⏱️ Subagent bingbu timed out  所有产出文件就绪。任务完成。  ---  ✅ **兵部完成** **任务ID**: JJC-20260224-014  **产出文件**: | 文件 | 大小 | 内容 | |--"
+          "text": "⏱️ Subagent bingbu timed out  모든 산출 파일 준비 완료. 작업 완료.  ---  ✅ **병조 완료** **작업ID**: JJC-20260224-014  **산출 파일**: | 파일 | 크기 | 내용 | |--"
         },
         {
           "at": "2026-02-24T14:08:54.212Z",
@@ -829,31 +829,31 @@
       },
       "heartbeat": {
         "status": "warn",
-        "label": "🟡 可能停滞 3分钟前",
+        "label": "🟡 정체 가능 3분 전",
         "ageSec": 180
       }
     },
     {
       "id": "OC-gongbu-77f5e08c",
-      "title": "agent:gongbu:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447 会话",
-      "official": "工部尚书",
-      "org": "工部",
+      "title": "agent:gongbu:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447 세션",
+      "official": "공조판서",
+      "org": "공조",
       "state": "Review",
-      "now": "webchat/- · 模型 claude-sonnet-4-6",
+      "now": "webchat/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:07:50",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/agents/gongbu/sessions/77f5e08c-e75c-4094-b4db-071eae702f7d.jsonl",
       "flow": {
         "draft": "agent=gongbu",
         "review": "updatedAt=2026-02-24 22:07:50",
         "dispatch": "sessionKey=agent:gongbu:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-24T14:06:50.309Z",
           "kind": "assistant",
-          "text": "验证 Topics 是否已写入："
+          "text": "Topics 기록 여부 검증:"
         },
         {
           "at": "2026-02-24T14:06:52.554Z",
@@ -863,7 +863,7 @@
         {
           "at": "2026-02-24T14:06:59.820Z",
           "kind": "assistant",
-          "text": "10 个 Topics 全部成功（另有 ai-orchestration/dashboard/openclaw 是原有 topics，已保留）。  快速验证 docker build 语法无误："
+          "text": "Topics 10개 전부 성공 (ai-orchestration/dashboard/openclaw는 기존 topics로 보존됨).  docker build 문법 무오류 빠른 검증:"
         },
         {
           "at": "2026-02-24T14:07:00.115Z",
@@ -873,7 +873,7 @@
         {
           "at": "2026-02-24T14:07:03.720Z",
           "kind": "assistant",
-          "text": "实际构建验证："
+          "text": "실제 빌드 검증:"
         },
         {
           "at": "2026-02-24T14:07:13.762Z",
@@ -888,7 +888,7 @@
         {
           "at": "2026-02-24T14:07:38.180Z",
           "kind": "assistant",
-          "text": "构建成功（exit code 0）。清理测试镜像："
+          "text": "빌드 성공 (exit code 0). 테스트 이미지 정리:"
         },
         {
           "at": "2026-02-24T14:07:38.240Z",
@@ -898,7 +898,7 @@
         {
           "at": "2026-02-24T14:07:50.919Z",
           "kind": "assistant",
-          "text": "---  ✅ **工部完成** **任务ID: JJC-20260224-014**  ---  **① Docker 演示镜像**  | 文件 | 路径 | |------|------| | Dockerfile | `/Users/b"
+          "text": "---  ✅ **공조 완료** **작업ID: JJC-20260224-014**  ---  **① Docker 데모 이미지**  | 파일 | 경로 | |------|------| | Dockerfile | `/Users/b"
         }
       ],
       "sourceMeta": {
@@ -919,31 +919,31 @@
       },
       "heartbeat": {
         "status": "warn",
-        "label": "🟡 可能停滞 5分钟前",
+        "label": "🟡 정체 가능 5분 전",
         "ageSec": 327
       }
     },
     {
       "id": "OC-libu-2f31143a",
-      "title": "agent:libu:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff 会话",
-      "official": "礼部尚书",
-      "org": "礼部",
+      "title": "agent:libu:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff 세션",
+      "official": "예조판서",
+      "org": "예조",
       "state": "Review",
-      "now": "webchat/- · 模型 claude-sonnet-4-6",
+      "now": "webchat/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:07:43",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/agents/libu/sessions/2f31143a-11f7-47fc-a2ef-86a65596486f.jsonl",
       "flow": {
         "draft": "agent=libu",
         "review": "updatedAt=2026-02-24 22:07:43",
         "dispatch": "sessionKey=agent:libu:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-24T14:05:54.062Z",
           "kind": "assistant",
-          "text": "已接旨。开始执行任务③：README 升级。"
+          "text": "어명 접수. 작업③ 집행 개시: README 갱신."
         },
         {
           "at": "2026-02-24T14:05:57.601Z",
@@ -958,7 +958,7 @@
         {
           "at": "2026-02-24T14:07:15.612Z",
           "kind": "assistant",
-          "text": "本地仓库存在，已获取完整 README。现在生成更新后的内容并写入本地文件。"
+          "text": "로컬 저장소 존재, 전체 README 확보 완료. 갱신 내용을 생성하여 로컬 파일에 기록."
         },
         {
           "at": "2026-02-24T14:07:15.632Z",
@@ -968,7 +968,7 @@
         {
           "at": "2026-02-24T14:07:23.206Z",
           "kind": "assistant",
-          "text": "文件已写入，现在通过 git 提交并推送到 GitHub。"
+          "text": "파일 기록 완료, git 으로 제출 후 GitHub에 push."
         },
         {
           "at": "2026-02-24T14:07:23.308Z",
@@ -983,7 +983,7 @@
         {
           "at": "2026-02-24T14:07:43.725Z",
           "kind": "assistant",
-          "text": "推送成功。  ---  ✅ 礼部完成 **任务ID**: JJC-20260224-014 **产出**: README.md 已更新并推送至 `main` 分支（commit `87f0313`）  **变更说明**：  1. **🆚 竞"
+          "text": "push 성공.  ---  ✅ 예조 완료 **작업ID**: JJC-20260224-014 **산출**: README.md 갱신 후 `main` 브랜치로 push (commit `87f0313`)  **변경 설명**:  1. **🆚 경쟁"
         }
       ],
       "sourceMeta": {
@@ -1004,26 +1004,26 @@
       },
       "heartbeat": {
         "status": "warn",
-        "label": "🟡 可能停滞 5分钟前",
+        "label": "🟡 정체 가능 5분 전",
         "ageSec": 335
       }
     },
     {
       "id": "OC-bingbu-53af4339",
-      "title": "agent:bingbu:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba 会话",
-      "official": "兵部尚书",
-      "org": "兵部",
+      "title": "agent:bingbu:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba 세션",
+      "official": "병조판서",
+      "org": "병조",
       "state": "Review",
-      "now": "webchat/- · 模型 -",
+      "now": "webchat/- · 모델 -",
       "eta": "2026-02-24 22:05:48",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/agents/bingbu/sessions/53af4339-e3f9-49ec-8162-9880d0c51e26.jsonl",
       "flow": {
         "draft": "agent=bingbu",
         "review": "updatedAt=2026-02-24 22:05:48",
         "dispatch": "sessionKey=agent:bingbu:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-24T14:08:00.781Z",
@@ -1033,7 +1033,7 @@
         {
           "at": "2026-02-24T14:08:08.885Z",
           "kind": "assistant",
-          "text": "现在截取任务时间轴（点击任务卡片后的弹窗）："
+          "text": "이제 작업 타임라인 캡처 (작업 카드 클릭 후 팝업):"
         },
         {
           "at": "2026-02-24T14:08:09.776Z",
@@ -1043,7 +1043,7 @@
         {
           "at": "2026-02-24T14:08:20.076Z",
           "kind": "assistant",
-          "text": "三张截图完成！再截几张丰富动画内容（省部调度、早朝简报）："
+          "text": "스크린샷 3장 완료! 애니메이션 콘텐츠를 보강하기 위해 몇 장 더 캡처 (3사6조 디스패치, 조보 브리핑):"
         },
         {
           "at": "2026-02-24T14:08:24.006Z",
@@ -1053,7 +1053,7 @@
         {
           "at": "2026-02-24T14:08:35.256Z",
           "kind": "assistant",
-          "text": "5张截图全部就绪。现在用 ffmpeg 合成 GIF（约30秒，每帧停留6秒）："
+          "text": "스크린샷 5장 모두 준비 완료. ffmpeg으로 GIF 합성 (약 30초, 프레임당 6초):"
         },
         {
           "at": "2026-02-24T14:08:36.519Z",
@@ -1063,7 +1063,7 @@
         {
           "at": "2026-02-24T14:08:40.890Z",
           "kind": "assistant",
-          "text": "GIF 生成成功！36秒，676K。确认所有产出文件："
+          "text": "GIF 생성 성공! 36초, 676K. 모든 산출 파일 확인:"
         },
         {
           "at": "2026-02-24T14:08:40.929Z",
@@ -1073,7 +1073,7 @@
         {
           "at": "2026-02-24T14:08:48.124Z",
           "kind": "assistant",
-          "text": "所有产出文件就绪。任务完成。  ---  ✅ **兵部完成** **任务ID**: JJC-20260224-014  **产出文件**: | 文件 | 大小 | 内容 | |------|------|------| | `/Users/"
+          "text": "모든 산출 파일 준비 완료. 작업 완료.  ---  ✅ **병조 완료** **작업ID**: JJC-20260224-014  **산출 파일**: | 파일 | 크기 | 내용 | |------|------|------| | `/Users/"
         }
       ],
       "sourceMeta": {
@@ -1094,26 +1094,26 @@
       },
       "heartbeat": {
         "status": "warn",
-        "label": "🟡 可能停滞 7分钟前",
+        "label": "🟡 정체 가능 7분 전",
         "ageSec": 450
       }
     },
     {
       "id": "OC-shangshu-ef5d83a2",
-      "title": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704 会话",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704 세션",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Next",
-      "now": "-/- · 模型 -",
+      "now": "-/- · 모델 -",
       "eta": "2026-02-24 06:19:47",
-      "block": "无",
+      "block": "없음",
       "output": "",
       "flow": {
         "draft": "agent=shangshu",
         "review": "updatedAt=2026-02-24 06:19:47",
         "dispatch": "sessionKey=agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
         "agentId": "shangshu",
@@ -1135,20 +1135,20 @@
     },
     {
       "id": "OC-shangshu-ef5d83a2",
-      "title": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871 会话",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871 세션",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Next",
-      "now": "-/- · 模型 -",
+      "now": "-/- · 모델 -",
       "eta": "2026-02-24 06:19:47",
-      "block": "无",
+      "block": "없음",
       "output": "",
       "flow": {
         "draft": "agent=shangshu",
         "review": "updatedAt=2026-02-24 06:19:47",
         "dispatch": "sessionKey=agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
         "agentId": "shangshu",
@@ -1170,20 +1170,20 @@
     },
     {
       "id": "OC-shangshu-5d3c50db",
-      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2 会话",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2 세션",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Next",
-      "now": "-/- · 模型 claude-sonnet-4-6",
+      "now": "-/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 06:03:01",
-      "block": "无",
+      "block": "없음",
       "output": "",
       "flow": {
         "draft": "agent=shangshu",
         "review": "updatedAt=2026-02-24 06:03:01",
         "dispatch": "sessionKey=agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
         "agentId": "shangshu",
@@ -1205,20 +1205,20 @@
     },
     {
       "id": "OC-shangshu-5d3c50db",
-      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339 会话",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339 세션",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Next",
-      "now": "-/- · 模型 claude-sonnet-4-6",
+      "now": "-/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 06:03:01",
-      "block": "无",
+      "block": "없음",
       "output": "",
       "flow": {
         "draft": "agent=shangshu",
         "review": "updatedAt=2026-02-24 06:03:01",
         "dispatch": "sessionKey=agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
         "agentId": "shangshu",
@@ -1240,20 +1240,20 @@
     },
     {
       "id": "OC-shangshu-aaa29ca8",
-      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227 会话",
-      "official": "尚书令",
-      "org": "尚书省",
+      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227 세션",
+      "official": "승정원 도승지",
+      "org": "승정원",
       "state": "Next",
-      "now": "-/- · 模型 claude-sonnet-4-6",
+      "now": "-/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 00:12:22",
-      "block": "无",
+      "block": "없음",
       "output": "",
       "flow": {
         "draft": "agent=shangshu",
         "review": "updatedAt=2026-02-24 00:12:22",
         "dispatch": "sessionKey=agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
         "agentId": "shangshu",
@@ -1275,20 +1275,20 @@
     },
     {
       "id": "MC-adf92a7e",
-      "title": "兵部：Mission Control 映射验收",
-      "official": "兵部尚书",
-      "org": "兵部",
+      "title": "병조: Mission Control 매핑 검수",
+      "official": "병조판서",
+      "org": "병조",
       "state": "Done",
-      "now": "Mission Control 映射已验收完成，系统正常运行",
+      "now": "Mission Control 매핑 검수 완료, 시스템 정상 운영",
       "eta": "-",
-      "block": "无",
+      "block": "없음",
       "output": "mission-control://boards/2ed2acde-f66f-46f9-ad3b-bc502dfffa83/tasks/adf92a7e-def5-4e67-b304-666ec74aaa34",
       "flow": {
-        "draft": "board=军机处-兵部",
-        "review": "门下通过",
+        "draft": "board=조정청-병조",
+        "review": "사간원 승인",
         "dispatch": "mission-control"
       },
-      "ac": "Mission Control 映射；审批 pending=0, rejected=0",
+      "ac": "Mission Control 매핑; 결재 pending=0, rejected=0",
       "sourceMeta": {
         "source": "mission_control",
         "boardId": "2ed2acde-f66f-46f9-ad3b-bc502dfffa83",
@@ -1306,20 +1306,20 @@
     },
     {
       "id": "OC-main-de50c4d8",
-      "title": "褚凤天 会话",
-      "official": "工部尚书",
-      "org": "工部",
+      "title": "저봉천 세션",
+      "official": "공조판서",
+      "org": "공조",
       "state": "Next",
-      "now": "feishu/direct · 模型 gpt-5.3-codex",
+      "now": "feishu/direct · 모델 gpt-5.3-codex",
       "eta": "2026-02-23 15:20:53",
-      "block": "无",
+      "block": "없음",
       "output": "/Users/bingsen/.openclaw/agents/main/sessions/de50c4d8-6d36-470f-8a32-a55973726117.jsonl",
       "flow": {
         "draft": "agent=main",
         "review": "updatedAt=2026-02-23 15:20:53",
         "dispatch": "sessionKey=agent:main:main"
       },
-      "ac": "来自 OpenClaw runtime sessions 的实时映射",
+      "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-23T07:19:47.493Z",
@@ -1369,7 +1369,7 @@
         {
           "at": "2026-02-23T07:20:53.112Z",
           "kind": "assistant",
-          "text": "[[reply_to_current]]回父皇：**好了**，已打通。😊  刚才您看不到 Pair/Approve 的根因，儿臣已代为走完： - 用 CLI 批准了挂起配对请求（`openclaw devices approve --lat"
+          "text": "[[reply_to_current]]임금께 회보: **해결되었습니다**, 통신 연결 완료. 😊  방금 Pair/Approve가 보이지 않던 근본 원인을 신하가 대신 처리하였습니다: - CLI로 보류된 페어링 요청을 승인 (`openclaw devices approve --lat"
         }
       ],
       "sourceMeta": {
@@ -1393,74 +1393,74 @@
   ],
   "history": [
     {
-      "at": "未知",
-      "official": "中书令",
-      "task": "每日早朝简报系统（7点图文新闻）",
-      "out": "http://127.0.0.1:7891 → 🌅 早朝简报",
-      "qa": "待补成果"
+      "at": "미상",
+      "official": "홍문관 대제학",
+      "task": "매일 조보 브리핑 시스템 (7시 이미지 뉴스)",
+      "out": "http://127.0.0.1:7891 → 🌅 조보 브리핑",
+      "qa": "성과 보강 필요"
     },
     {
-      "at": "未知",
-      "official": "中书令",
-      "task": "看板流程合规审查 + 省部调度Tab优化",
-      "out": "agents/*/SOUL.md + dashboard.html省部调度Tab",
-      "qa": "待补成果"
+      "at": "미상",
+      "official": "홍문관 대제학",
+      "task": "대시보드 플로우 준법 검토 + 3사6조 디스패치 탭 개선",
+      "out": "agents/*/SOUL.md + dashboard.html 3사6조 디스패치 탭",
+      "qa": "성과 보강 필요"
     },
     {
-      "at": "未知",
-      "official": "中书令",
-      "task": "官员总览看板重新设计",
-      "out": "http://127.0.0.1:7891 → 👥 官员总览",
-      "qa": "待补成果"
+      "at": "미상",
+      "official": "홍문관 대제학",
+      "task": "관원 총람 대시보드 재설계",
+      "out": "http://127.0.0.1:7891 → 👥 관원 총람",
+      "qa": "성과 보강 필요"
     },
     {
-      "at": "未知",
-      "official": "中书令",
-      "task": "看板增加官员总览面板",
-      "out": "http://127.0.0.1:7891 → 👥 官员总览",
-      "qa": "待补成果"
+      "at": "미상",
+      "official": "홍문관 대제학",
+      "task": "대시보드 관원 총람 패널 추가",
+      "out": "http://127.0.0.1:7891 → 👥 관원 총람",
+      "qa": "성과 보강 필요"
     },
     {
-      "at": "未知",
-      "official": "中书令",
-      "task": "三省六部制开源 GitHub 项目",
+      "at": "미상",
+      "official": "홍문관 대제학",
+      "task": "3사6조제 오픈소스 GitHub 프로젝트",
       "out": "https://github.com/cft0808/openclaw-sansheng-liubu",
-      "qa": "待补成果"
+      "qa": "성과 보강 필요"
     },
     {
       "at": "2026-02-23 21:27:18",
-      "official": "尚书令",
-      "task": "电芯循环测试数据预测算法设计与可视化验证",
+      "official": "승정원 도승지",
+      "task": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
       "out": "/Users/bingsen/.openclaw/workspace-shangshu/",
-      "qa": "通过"
+      "qa": "승인"
     },
     {
       "at": "2026-02-23 10:05:17",
-      "official": "中书令",
-      "task": "中书省：并行流程规划",
-      "out": "/Users/bingsen/clawd/junjichu-v2/docs/三省六部-OpenClaw实施指南-实装版-v1.md",
-      "qa": "通过"
+      "official": "홍문관 대제학",
+      "task": "홍문관: 병렬 플로우 기획",
+      "out": "/Users/bingsen/clawd/junjichu-v2/docs/3사6조-OpenClaw-시행지침-실장판-v1.md",
+      "qa": "승인"
     },
     {
       "at": "2026-02-24 21:51:23",
-      "official": "兵部尚书",
-      "task": "兵部：看板细节渲染修复",
+      "official": "병조판서",
+      "task": "병조: 대시보드 세부 렌더링 수정",
       "out": "/Users/bingsen/clawd/junjichu-v2/dashboard.html",
-      "qa": "通过"
+      "qa": "승인"
     },
     {
       "at": "2026-02-24 22:13:11",
-      "official": "侍中",
-      "task": "门下省：并行任务审议",
+      "official": "사간원 대사간",
+      "task": "사간원: 병렬 작업 심의",
       "out": "/Users/bingsen/clawd/junjichu-v2/data/live_status.json",
-      "qa": "通过"
+      "qa": "승인"
     },
     {
-      "at": "未知",
-      "official": "兵部尚书",
-      "task": "兵部：Mission Control 映射验收",
+      "at": "미상",
+      "official": "병조판서",
+      "task": "병조: Mission Control 매핑 검수",
       "out": "mission-control://boards/2ed2acde-f66f-46f9-ad3b-bc502dfffa83/tasks/adf92a7e-def5-4e67-b304-666ec74aaa34",
-      "qa": "待补成果"
+      "qa": "성과 보강 필요"
     }
   ],
   "metrics": {

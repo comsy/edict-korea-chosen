@@ -1,11 +1,11 @@
 /**
- * API 层 — 对接 dashboard/server.py
- * 生产环境从同源 (port 7891) 请求，开发环境可通过 VITE_API_URL 指定
+ * API 계층 — dashboard/server.py 와 연동
+ * 운영 환경에서는 동일 출처 (port 7891) 로 요청, 개발 환경에서는 VITE_API_URL 로 지정 가능
  */
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
-// ── 通用请求 ──
+// ── 공통 요청 ──
 
 async function fetchJ<T>(url: string): Promise<T> {
   const res = await fetch(url, { cache: 'no-store' });
@@ -22,10 +22,10 @@ async function postJ<T>(url: string, data: unknown): Promise<T> {
   return res.json();
 }
 
-// ── API 接口 ──
+// ── API 인터페이스 ──
 
 export const api = {
-  // 核心数据
+  // 핵심 데이터
   liveStatus: () => fetchJ<LiveStatus>(`${API_BASE}/api/live-status`),
   agentConfig: () => fetchJ<AgentConfig>(`${API_BASE}/api/agent-config`),
   modelChangeLog: () => fetchJ<ChangeLogEntry[]>(`${API_BASE}/api/model-change-log`).catch(() => []),
@@ -34,19 +34,19 @@ export const api = {
   morningConfig: () => fetchJ<SubConfig>(`${API_BASE}/api/morning-config`),
   agentsStatus: () => fetchJ<AgentsStatusData>(`${API_BASE}/api/agents-status`),
 
-  // 任务实时动态
+  // 작업 실시간 동향
   taskActivity: (id: string) =>
     fetchJ<TaskActivityData>(`${API_BASE}/api/task-activity/${encodeURIComponent(id)}`),
   schedulerState: (id: string) =>
     fetchJ<SchedulerStateData>(`${API_BASE}/api/scheduler-state/${encodeURIComponent(id)}`),
 
-  // 技能内容
+  // 스킬 내용
   skillContent: (agentId: string, skillName: string) =>
     fetchJ<SkillContentResult>(
       `${API_BASE}/api/skill-content/${encodeURIComponent(agentId)}/${encodeURIComponent(skillName)}`
     ),
 
-  // 操作类
+  // 조작
   setModel: (agentId: string, model: string) =>
     postJ<ActionResult>(`${API_BASE}/api/set-model`, { agentId, model }),
   setDispatchChannel: (channel: string) =>
@@ -81,7 +81,7 @@ export const api = {
   addSkill: (agentId: string, skillName: string, description: string, trigger: string) =>
     postJ<ActionResult>(`${API_BASE}/api/add-skill`, { agentId, skillName, description, trigger }),
 
-  // 远程 Skills 管理
+  // 원격 Skills 관리
   addRemoteSkill: (agentId: string, skillName: string, sourceUrl: string, description?: string) =>
     postJ<ActionResult & { skillName?: string; agentId?: string; source?: string; localPath?: string; size?: number; addedAt?: string }>(
       `${API_BASE}/api/add-remote-skill`, { agentId, skillName, sourceUrl, description: description || '' }
@@ -96,7 +96,7 @@ export const api = {
   createTask: (data: CreateTaskPayload) =>
     postJ<ActionResult & { taskId?: string }>(`${API_BASE}/api/create-task`, data),
 
-  // ── 朝堂议政 ──
+  // ── 조정 의정 ──
   courtDiscussStart: (topic: string, officials: string[], taskId?: string) =>
     postJ<CourtDiscussResult>(`${API_BASE}/api/court-discuss/start`, { topic, officials, taskId }),
   courtDiscussAdvance: (sessionId: string, userMessage?: string, decree?: string) =>
@@ -412,7 +412,7 @@ export interface RemoteSkillsListResult {
   error?: string;
 }
 
-// ── 朝堂议政 ──
+// ── 조정 의정 ──
 
 export interface CourtDiscussResult {
   ok: boolean;

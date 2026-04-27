@@ -1,24 +1,24 @@
 {
   "meta": {
-    "title": "军机处",
-    "ownerTitle": "皇上",
+    "title": "조정청",
+    "ownerTitle": "임금",
     "version": "v3"
   },
   "states": ["Pending", "Taizi", "Zhongshu", "Menxia", "Assigned", "Next", "Doing", "Review", "Done", "Blocked", "Cancelled"],
   "stateFlow": "Pending → Taizi → Zhongshu → Menxia → Assigned → Doing → Review → Done",
   "terminalStates": ["Done", "Cancelled"],
   "roles": {
-    "taizi": "太子",
-    "zhongshu": "中书省",
-    "menxia": "门下省",
-    "shangshu": "尚书省",
-    "hubu": "户部",
-    "libu": "礼部",
-    "bingbu": "兵部",
-    "xingbu": "刑部",
-    "gongbu": "工部",
-    "libu_hr": "吏部",
-    "zaochao": "钦天监"
+    "taizi": "세자",
+    "zhongshu": "홍문관",
+    "menxia": "사간원",
+    "shangshu": "승정원",
+    "hubu": "호조",
+    "libu": "예조",
+    "bingbu": "병조",
+    "xingbu": "형조",
+    "gongbu": "공조",
+    "libu_hr": "이조",
+    "zaochao": "조보청"
   },
   "taskFields": [
     "id",

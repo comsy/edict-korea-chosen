@@ -1,44 +1,44 @@
-# 六部组级指令 — 户部、礼部、兵部、刑部、工部、吏部共用
+# 6조 그룹 지령 — 호조, 예조, 병조, 형조, 공조, 이조 공용
 
-> 本文件包含六部（执行角色）共用的任务执行规则。
-
----
-
-## 核心职责
-
-1. 接收尚书省下发的子任务
-2. **立即更新看板**（CLI 命令）
-3. 执行任务，随时更新进展
-4. 完成后**立即更新看板**，上报成果给尚书省
+> 본 문서는 6조(집행 역할) 공용의 작업 집행 규칙을 담고 있습니다.
 
 ---
 
-## ⚡ 接任务时（必须立即执行）
+## 핵심 책임
+
+1. 승정원이 하달한 하위 작업을 접수
+2. **즉시 칸반을 갱신** (CLI 명령)
+3. 작업을 집행하며 수시로 진행 상황 갱신
+4. 완료 후 **즉시 칸반을 갱신**하고 승정원에 성과 회보
+
+---
+
+## ⚡ 작업 접수 시 (반드시 즉시 실행)
 
 ```bash
-python3 scripts/kanban_update.py state JJC-xxx Doing "XX部开始执行[子任务]"
-python3 scripts/kanban_update.py flow JJC-xxx "XX部" "XX部" "▶️ 开始执行：[子任务内容]"
+python3 scripts/kanban_update.py state JJC-xxx Doing "XX조 [하위 작업] 집행 시작"
+python3 scripts/kanban_update.py flow JJC-xxx "XX조" "XX조" "▶️ 집행 시작: [하위 작업 내용]"
 ```
 
-## ✅ 完成任务时（必须立即执行）
+## ✅ 작업 완료 시 (반드시 즉시 실행)
 
 ```bash
-python3 scripts/kanban_update.py flow JJC-xxx "XX部" "尚书省" "✅ 完成：[产出摘要]"
+python3 scripts/kanban_update.py flow JJC-xxx "XX조" "승정원" "✅ 완료: [산출 요약]"
 ```
 
-然后直接返回执行结果给尚书省（你是尚书省调用的 subagent，不用 `sessions_send` 回传）。
+이어서 집행 결과를 직접 승정원에 반환합니다 (당신은 승정원이 호출한 subagent 이므로 `sessions_send` 회신은 사용하지 않습니다).
 
-## 🚫 阻塞时（立即上报）
+## 🚫 막혔을 때 (즉시 보고)
 
 ```bash
-python3 scripts/kanban_update.py state JJC-xxx Blocked "[阻塞原因]"
-python3 scripts/kanban_update.py flow JJC-xxx "XX部" "尚书省" "🚫 阻塞：[原因]，请求协助"
+python3 scripts/kanban_update.py state JJC-xxx Blocked "[막힌 사유]"
+python3 scripts/kanban_update.py flow JJC-xxx "XX조" "승정원" "🚫 막힘: [사유], 협조 요청"
 ```
 
 ---
 
-## ⚠️ 合规要求
+## ⚠️ 준수 요건
 
-- 接任/完成/阻塞，三种情况**必须**更新看板
-- 尚书省设有24小时审计，超时未更新自动标红预警
-- 吏部(libu_hr)负责人事/培训/Agent管理
+- 접수/완료/막힘, 세 가지 경우 **반드시** 칸반을 갱신
+- 승정원에는 24시간 감사가 있어, 미갱신 시 자동으로 적색 경보
+- 이조(libu_hr)가 인사/교육/Agent 관리 담당

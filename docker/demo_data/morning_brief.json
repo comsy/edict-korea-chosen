@@ -2,35 +2,35 @@
   "date": "20260226",
   "generated_at": "2026-02-26 06:30:00",
   "categories": {
-    "AI大模型": [
+    "AI 대모델": [
       {
-        "title": "Anthropic 发布 Claude Opus 4.6，推理能力再创新高",
-        "summary": "Anthropic 宣布推出 Claude Opus 4.6 模型，在复杂推理和代码生成任务上取得重大突破，同时保持安全对齐。",
+        "title": "Anthropic, Claude Opus 4.6 공개 — 추론 능력 새 기록",
+        "summary": "Anthropic이 Claude Opus 4.6 모델을 공개했다. 복잡한 추론과 코드 생성 작업에서 큰 진전을 이루면서도 안전 정합성을 유지했다.",
         "source": "TechCrunch",
         "url": "https://example.com/opus46",
         "time": "2026-02-25"
       },
       {
-        "title": "OpenAI Codex GPT-5.3 支持百万行代码库上下文",
-        "summary": "OpenAI 发布 Codex GPT-5.3，上下文窗口扩展至2M tokens，可一次性理解整个大型代码库。",
+        "title": "OpenAI Codex GPT-5.3, 백만 줄 코드베이스 컨텍스트 지원",
+        "summary": "OpenAI가 Codex GPT-5.3을 발표했다. 컨텍스트 창이 2M 토큰으로 확장되어 대형 코드베이스 전체를 한 번에 이해할 수 있다.",
         "source": "The Verge",
         "url": "https://example.com/codex53",
         "time": "2026-02-25"
       }
     ],
-    "经济": [
+    "경제": [
       {
-        "title": "全球半导体产业链加速向东南亚布局",
-        "summary": "台积电、三星等芯片巨头宣布新一轮东南亚投资计划，越南和马来西亚成主要受益者。",
-        "source": "日经新闻",
+        "title": "글로벌 반도체 공급망, 동남아 투자 가속",
+        "summary": "TSMC, 삼성 등 반도체 거대 기업이 새로운 동남아 투자 계획을 발표했다. 베트남과 말레이시아가 주요 수혜국으로 부상하고 있다.",
+        "source": "닛케이 뉴스",
         "url": "https://example.com/semi",
         "time": "2026-02-25"
       }
     ],
-    "政治": [
+    "정치": [
       {
-        "title": "欧盟 AI 法案实施细则正式公布",
-        "summary": "欧盟委员会发布 AI 法案最终实施细则，明确高风险 AI 系统的审计和透明度要求。",
+        "title": "EU AI 법안 시행 세칙 공식 발표",
+        "summary": "EU 집행위원회가 AI 법안 최종 시행 세칙을 발표하여 고위험 AI 시스템의 감사와 투명성 요건을 명확히 했다.",
         "source": "Reuters",
         "url": "https://example.com/euai",
         "time": "2026-02-25"

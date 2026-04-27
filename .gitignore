@@ -37,6 +37,7 @@ edict/frontend/node_modules/
 
 # IDE
 .vscode/
+.idea/
 
 # Backups
 *.bak*
@@ -48,3 +49,6 @@ _*.py
 # Generated docs
 *.docx
 *.pdf
+
+# AI
+.claude/

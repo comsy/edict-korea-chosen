@@ -1,15 +1,12 @@
 """
-朝堂议政引擎 — 多官员实时讨论系统
+조정 토의 엔진 - 다관원 실시간 토론 시스템
 
-灵感来源于 nvwa 项目的 group_chat + crew_engine
-将官员可视化 + 实时讨论 + 用户（皇帝）参与融合到三省六部
-
-功能:
-  - 选择官员参与议政
-  - 围绕旨意/议题进行多轮群聊讨论
-  - 皇帝可随时发言、下旨干预（天命降临）
-  - 命运骰子：随机事件
-  - 每个官员保持自己的角色性格和说话风格
+핵심 기능:
+  - 관원 선택 후 다자 토론 진행
+  - 지시/의제를 기준으로 다회차 토론
+  - 사용자(임금) 개입 메시지 반영
+  - 무작위 사건 주입
+  - 관원별 역할/화법 유지
 """
 from __future__ import annotations
 
@@ -21,99 +18,98 @@ import uuid
 
 logger = logging.getLogger('court_discuss')
 
-# ── 官员角色设定 ──
+# ── 관원 역할 설정 ──
 
 OFFICIAL_PROFILES = {
     'taizi': {
-        'name': '太子', 'emoji': '🤴', 'role': '储君',
-        'duty': '消息分拣与需求提炼。判断事务轻重缓急，简单事直接处置，重大事务提炼需求转交中书省。代皇帝巡视各部进展。',
-        'personality': '年轻有为、锐意进取，偶尔冲动但善于学习。说话干脆利落，喜欢用现代化的比喻。',
-        'speaking_style': '简洁有力，经常用"本宫以为"开头，偶尔蹦出网络用语。'
+        'name': '세자', 'emoji': '🤴', 'role': '중앙 허브',
+        'duty': '입력 지시를 분류하고 우선순위를 잡는다. 단순 사안은 즉시 응답하고, 핵심 사안은 홍문관으로 전달한다.',
+        'personality': '빠른 판단과 추진력을 중시하며 변화에 민감하다.',
+        'speaking_style': '짧고 명확한 문장으로 핵심을 빠르게 정리한다.'
     },
     'zhongshu': {
-        'name': '中书令', 'emoji': '📜', 'role': '正一品·中书省',
-        'duty': '方案规划与流程驱动。接收旨意后起草执行方案，提交门下省审议，通过后转尚书省执行。只规划不执行，方案需简明扼要。',
-        'personality': '老成持重，擅长规划，总能提出系统性方案。话多但有条理。',
-        'speaking_style': '喜欢列点论述，常说"臣以为需从三方面考量"。引经据典。'
+        'name': '홍문관', 'emoji': '📜', 'role': '기획',
+        'duty': '지시를 실행 가능한 계획으로 분해하고, 사간원 심의에 맞는 기안안을 작성한다.',
+        'personality': '체계적이고 구조화된 사고를 선호한다.',
+        'speaking_style': '항목형으로 정리하며 근거와 가정을 분리해 설명한다.'
     },
     'menxia': {
-        'name': '侍中', 'emoji': '🔍', 'role': '正一品·门下省',
-        'duty': '方案审议与把关。从可行性、完整性、风险、资源四维度审核方案，有权封驳退回。发现漏洞必须指出，建议必须具体。',
-        'personality': '严谨挑剔，眼光犀利，善于找漏洞。是天生的审查官，但也很公正。',
-        'speaking_style': '喜欢反问，"陛下容禀，此处有三点疑虑"。对不完善的方案会直言不讳。'
+        'name': '사간원', 'emoji': '🔍', 'role': '심의',
+        'duty': '기안안을 타당성/위험/자원 관점에서 검토하고 승인 또는 반려를 결정한다.',
+        'personality': '엄격하지만 공정하며 리스크를 먼저 확인한다.',
+        'speaking_style': '문제점과 수정안을 함께 제시한다.'
     },
     'shangshu': {
-        'name': '尚书令', 'emoji': '📮', 'role': '正一品·尚书省',
-        'duty': '任务派发与执行协调。接收准奏方案后判断归属哪个部门，分发给六部执行，汇总结果回报。相当于任务分发中心。',
-        'personality': '执行力强，务实干练，关注可行性和资源分配。',
-        'speaking_style': '直来直去，"臣来安排"、"交由某部办理"。重效率轻虚文。'
+        'name': '승정원', 'emoji': '📮', 'role': '배분',
+        'duty': '승인된 계획을 육조에 배분하고 집행 상황을 취합해 보고한다.',
+        'personality': '실행 우선이며 조율 능력이 높다.',
+        'speaking_style': '담당 부서와 마감 중심으로 간결하게 전달한다.'
     },
     'libu': {
-        'name': '礼部尚书', 'emoji': '📝', 'role': '正二品·礼部',
-        'duty': '文档规范与对外沟通。负责撰写文档、用户指南、变更日志；制定输出规范和模板；审查UI/UX文案；草拟公告、Release Notes。',
-        'personality': '文采飞扬，注重规范和形式，擅长文档和汇报。有点强迫症。',
-        'speaking_style': '措辞优美，"臣斗胆建议"，喜欢用排比和对仗。'
+        'name': '예조', 'emoji': '📝', 'role': '문서',
+        'duty': '문서화, 보고서, 공지 문안, 출력 형식 표준을 담당한다.',
+        'personality': '표현 정확성과 문서 완성도를 중시한다.',
+        'speaking_style': '가독성과 전달력을 우선해 정리한다.'
     },
     'hubu': {
-        'name': '户部尚书', 'emoji': '💰', 'role': '正二品·户部',
-        'duty': '数据统计与资源管理。负责数据收集/清洗/聚合/可视化；Token用量统计、性能指标计算、成本分析；CSV/JSON报表生成；文件组织与配置管理。',
-        'personality': '精打细算，对预算和资源极其敏感。总想省钱但也识大局。',
-        'speaking_style': '言必及成本，"这个预算嘛……"，经常算账。'
+        'name': '호조', 'emoji': '💰', 'role': '데이터',
+        'duty': '지표 수집, 비용/리소스 분석, 수치 기반 판단 자료를 제공한다.',
+        'personality': '수치와 근거 중심으로 판단한다.',
+        'speaking_style': '비용, 추세, 수치 리스크를 명확히 말한다.'
     },
     'bingbu': {
-        'name': '兵部尚书', 'emoji': '⚔️', 'role': '正二品·兵部',
-        'duty': '基础设施与运维保障。负责服务器管理、进程守护、日志排查；CI/CD、容器编排、灰度发布、回滚策略；性能监控；防火墙、权限管控、漏洞扫描。',
-        'personality': '雷厉风行，危机意识强，重视安全和应急。说话带军人气质。',
-        'speaking_style': '干脆果断，"末将建议立即执行"、"兵贵神速"。'
+        'name': '병조', 'emoji': '⚔️', 'role': '구현',
+        'duty': '핵심 기능 구현과 운영 대응, 배포 실행을 맡는다.',
+        'personality': '신속하고 실행 지향적이다.',
+        'speaking_style': '실행 계획과 대응안을 우선 제시한다.'
     },
     'xingbu': {
-        'name': '刑部尚书', 'emoji': '⚖️', 'role': '正二品·刑部',
-        'duty': '质量保障与合规审计。负责代码审查（逻辑正确性、边界条件、异常处理）；编写测试、覆盖率分析；Bug定位与根因分析；权限检查、敏感信息排查。',
-        'personality': '严明公正，重视规则和底线。善于质量把控和风险评估。',
-        'speaking_style': '逻辑严密，"依律当如此"、"需审慎考量风险"。'
+        'name': '형조', 'emoji': '⚖️', 'role': '검토',
+        'duty': '품질, 규정, 보안 관점의 검토와 테스트 기준 점검을 담당한다.',
+        'personality': '원칙 중심이며 리스크 관리에 민감하다.',
+        'speaking_style': '검증 기준과 위험 항목을 분명히 제시한다.'
     },
     'gongbu': {
-        'name': '工部尚书', 'emoji': '🔧', 'role': '正二品·工部',
-        'duty': '工程实现与架构设计。负责需求分析、方案设计、代码实现、接口对接；模块划分、数据结构/API设计；代码重构、性能优化、技术债清偿；脚本与自动化工具。',
-        'personality': '技术宅，动手能力强，喜欢谈实现细节。偶尔社恐但一说到技术就滔滔不绝。',
-        'speaking_style': '喜欢说技术术语，"从技术角度来看"、"这个架构建议用……"。'
+        'name': '공조', 'emoji': '🔧', 'role': '인프라',
+        'duty': '아키텍처, 자동화, 배포 환경, 운영 기반을 설계/관리한다.',
+        'personality': '기술 디테일과 안정성을 동시에 본다.',
+        'speaking_style': '구현 제약과 기술 선택 이유를 함께 설명한다.'
     },
     'libu_hr': {
-        'name': '吏部尚书', 'emoji': '👔', 'role': '正二品·吏部',
-        'duty': '人事管理与团队建设。负责新成员（Agent）评估接入、能力测试；Skill编写与Prompt调优、知识库维护；输出质量评分、效率分析；协作规范制定。',
-        'personality': '知人善任，擅长人员安排和组织协调。八面玲珑但有原则。',
-        'speaking_style': '关注人的因素，"此事需考虑各部人手"、"建议由某某负责"。'
+        'name': '이조', 'emoji': '👔', 'role': '운영',
+        'duty': '인력/권한 배치, 협업 규칙, 스킬/프롬프트 운영 정책을 관리한다.',
+        'personality': '조율형 리더십으로 협업 효율을 높인다.',
+        'speaking_style': '역할 분담과 운영 규칙을 명확히 제안한다.'
     },
 }
 
-# ── 命运骰子事件（古风版）──
+# ── 무작위 사건 이벤트 ──
 
 FATE_EVENTS = [
-    '八百里加急：边疆战报传来，所有人必须讨论应急方案',
-    '钦天监急报：天象异常，太史公占卜后建议暂缓此事',
-    '新科状元觐见，带来了意想不到的新视角',
-    '匿名奏折揭露了计划中一个被忽视的重大漏洞',
-    '户部清点发现国库余银比预期多一倍，可以加大投入',
-    '一位告老还乡的前朝元老突然上书，分享前车之鉴',
-    '民间舆论突变，百姓对此事态度出现180度转折',
-    '邻国使节来访，带来了合作机遇也带来了竞争压力',
-    '太后懿旨：要求优先考虑民生影响',
-    '暴雨连日，多地受灾，资源需重新调配',
-    '发现前朝古籍中竟有类似问题的解决方案',
-    '翰林院提出了一个大胆的替代方案，令人耳目一新',
-    '各部积压的旧案突然需要一起处理，人手紧张',
-    '皇帝做了一个意味深长的梦，暗示了一个全新的方向',
-    '突然有人拿出了竞争对手的情报，局面瞬间改变',
-    '一场意外让所有人不得不在半天内拿出结论',
+    '긴급 보고: 예상치 못한 외부 변수로 비상 대응안이 필요합니다.',
+    '조보청 속보: 핵심 가정이 흔들리는 새 정보가 유입되었습니다.',
+    '외부 전문가 의견: 기존 접근과 다른 대안이 제시되었습니다.',
+    '익명 상신: 현재 계획의 큰 누락 위험이 제기되었습니다.',
+    '호조 집계: 예상보다 여유 자원이 확보되어 확장 집행이 가능합니다.',
+    '선행 사례 발견: 유사 문제 해결 기록이 확인되었습니다.',
+    '여론 급변: 이해관계자 우선순위를 다시 조정해야 합니다.',
+    '대외 변수 발생: 협력 기회와 경쟁 압력이 동시에 생겼습니다.',
+    '정책 우선순위 변경: 민생 영향 항목을 우선 검토해야 합니다.',
+    '운영 장애 발생: 리소스를 재배분해 일정 조정이 필요합니다.',
+    '대안 아키텍처 제안: 기존 계획을 대체할 설계안이 제출되었습니다.',
+    '업무 적체 증가: 병행 처리로 인한 인력/시간 압박이 커졌습니다.',
+    '방향 전환 신호: 기존 전략의 일부 수정이 필요해 보입니다.',
+    '경쟁 정보 유입: 판단 기준이 급격히 바뀔 수 있는 정보가 들어왔습니다.',
+    '시간 제약 강화: 단기간 내 결론과 실행안을 동시에 내야 합니다.',
 ]
 
-# ── Session 管理 ──
+# ── 세션 관리 ──
 
 _sessions: dict[str, dict] = {}
 
 
 def create_session(topic: str, official_ids: list[str], task_id: str = '') -> dict:
-    """创建新的朝堂议政会话。"""
+    """새 조정 토의 세션을 생성한다."""
     session_id = str(uuid.uuid4())[:8]
 
     officials = []
@@ -123,7 +119,7 @@ def create_session(topic: str, official_ids: list[str], task_id: str = '') -> di
             officials.append({**profile, 'id': oid})
 
     if not officials:
-        return {'ok': False, 'error': '至少选择一位官员'}
+        return {'ok': False, 'error': '최소 한 명 이상의 관원을 선택해야 합니다.'}
 
     session = {
         'session_id': session_id,
@@ -132,7 +128,7 @@ def create_session(topic: str, official_ids: list[str], task_id: str = '') -> di
         'officials': officials,
         'messages': [{
             'type': 'system',
-            'content': f'🏛 朝堂议政开始 —— 议题：{topic}',
+            'content': f'🏛 조정 토의 시작 - 의제: {topic}',
             'timestamp': time.time(),
         }],
         'round': 0,
@@ -146,15 +142,15 @@ def create_session(topic: str, official_ids: list[str], task_id: str = '') -> di
 
 def advance_discussion(session_id: str, user_message: str = None,
                        decree: str = None) -> dict:
-    """推进一轮讨论，使用内置模拟或 LLM。"""
+    """한 차례 토의를 진행한다. (기본 시뮬레이션 또는 LLM 사용)"""
     session = _sessions.get(session_id)
     if not session:
-        return {'ok': False, 'error': f'会话 {session_id} 不存在'}
+        return {'ok': False, 'error': f'세션 {session_id} 이(가) 존재하지 않습니다'}
 
     session['round'] += 1
     round_num = session['round']
 
-    # 记录皇帝发言
+    # 임금 발화 기록
     if user_message:
         session['messages'].append({
             'type': 'emperor',
@@ -162,7 +158,7 @@ def advance_discussion(session_id: str, user_message: str = None,
             'timestamp': time.time(),
         })
 
-    # 记录天命降临
+    # 천명 개입 기록
     if decree:
         session['messages'].append({
             'type': 'decree',
@@ -170,18 +166,18 @@ def advance_discussion(session_id: str, user_message: str = None,
             'timestamp': time.time(),
         })
 
-    # 尝试用 LLM 生成讨论
+    # LLM 기반 토의 생성 시도
     llm_result = _llm_discuss(session, user_message, decree)
 
     if llm_result:
         new_messages = llm_result.get('messages', [])
         scene_note = llm_result.get('scene_note')
     else:
-        # 降级到规则模拟
+        # 실패 시 규칙 기반 시뮬레이션으로 대체
         new_messages = _simulated_discuss(session, user_message, decree)
         scene_note = None
 
-    # 添加到历史
+    # 대화 이력 반영
     for msg in new_messages:
         session['messages'].append({
             'type': 'official',
@@ -218,28 +214,28 @@ def get_session(session_id: str) -> dict | None:
 
 
 def conclude_session(session_id: str) -> dict:
-    """结束议政，生成总结。"""
+    """토의를 종료하고 요약을 생성한다."""
     session = _sessions.get(session_id)
     if not session:
-        return {'ok': False, 'error': f'会话 {session_id} 不存在'}
+        return {'ok': False, 'error': f'세션 {session_id} 이(가) 존재하지 않습니다'}
 
     session['phase'] = 'concluded'
 
-    # 尝试用 LLM 生成总结
+    # LLM 기반 요약 시도
     summary = _llm_summarize(session)
     if not summary:
-        # 降级到简单统计
+        # 실패 시 단순 통계 요약
         official_msgs = [m for m in session['messages'] if m['type'] == 'official']
         by_name = {}
         for m in official_msgs:
             name = m.get('official_name', '?')
             by_name[name] = by_name.get(name, 0) + 1
-        parts = [f"{n}发言{c}次" for n, c in by_name.items()]
-        summary = f"历经{session['round']}轮讨论，{'、'.join(parts)}。议题待后续落实。"
+        parts = [f"{n} 발언 {c}회" for n, c in by_name.items()]
+        summary = f"총 {session['round']}차 토의가 진행되었고, {' · '.join(parts)}. 후속 실행이 필요합니다."
 
     session['messages'].append({
         'type': 'system',
-        'content': f'📋 朝堂议政结束 —— {summary}',
+        'content': f'📋 조정 토의 종료 - {summary}',
         'timestamp': time.time(),
     })
     session['summary'] = summary
@@ -252,7 +248,7 @@ def conclude_session(session_id: str) -> dict:
 
 
 def list_sessions() -> list[dict]:
-    """列出所有活跃会话。"""
+    """모든 활성 세션 나열."""
     return [
         {
             'session_id': s['session_id'],
@@ -271,16 +267,16 @@ def destroy_session(session_id: str):
 
 
 def get_fate_event() -> str:
-    """获取随机命运骰子事件。"""
+    """무작위 운명 주사위 이벤트 가져오기."""
     import random
     return random.choice(FATE_EVENTS)
 
 
-# ── LLM 集成 ──
+# ── LLM 통합 ──
 
 _PREFERRED_MODELS = ['gpt-4o-mini', 'claude-haiku', 'gpt-5-mini', 'gemini-3-flash', 'gemini-flash']
 
-# GitHub Copilot 模型列表 (通过 Copilot Chat API 可用)
+# GitHub Copilot 모델 목록 (Copilot Chat API 로 사용 가능)
 _COPILOT_MODELS = [
     'gpt-4o', 'gpt-4o-mini', 'claude-sonnet-4', 'claude-haiku-3.5',
     'gemini-2.0-flash', 'o3-mini',
@@ -289,7 +285,7 @@ _COPILOT_PREFERRED = ['gpt-4o-mini', 'claude-haiku', 'gemini-flash', 'gpt-4o']
 
 
 def _pick_chat_model(models: list[dict]) -> str | None:
-    """从 provider 的模型列表中选一个适合聊天的轻量模型。"""
+    """provider 의 모델 목록에서 채팅에 적합한 경량 모델 선택."""
     ids = [m['id'] for m in models if isinstance(m, dict) and 'id' in m]
     for pref in _PREFERRED_MODELS:
         for mid in ids:
@@ -299,7 +295,7 @@ def _pick_chat_model(models: list[dict]) -> str | None:
 
 
 def _read_copilot_token() -> str | None:
-    """读取 openclaw 管理的 GitHub Copilot token。"""
+    """openclaw 가 관리하는 GitHub Copilot token 읽기."""
     token_path = os.path.expanduser('~/.openclaw/credentials/github-copilot.token.json')
     if not os.path.exists(token_path):
         return None
@@ -308,7 +304,7 @@ def _read_copilot_token() -> str | None:
             cred = json.load(f)
         token = cred.get('token', '')
         expires = cred.get('expiresAt', 0)
-        # 检查 token 是否过期（毫秒时间戳）
+        # token 만료 여부 확인 (밀리초 타임스탬프)
         import time
         if expires and time.time() * 1000 > expires:
             logger.warning('Copilot token expired')
@@ -320,11 +316,11 @@ def _read_copilot_token() -> str | None:
 
 
 def _get_llm_config() -> dict | None:
-    """从 openclaw 配置读取 LLM 设置，支持环境变量覆盖。
+    """openclaw 설정에서 LLM 설정 읽기, 환경 변수 오버라이드 지원.
 
-    优先级: 环境变量 > github-copilot token > 本地 copilot-proxy > anthropic > 其他 provider
+    우선순위: 환경 변수 > github-copilot token > 로컬 copilot-proxy > anthropic > 기타 provider
     """
-    # 1. 环境变量覆盖（保留向后兼容）
+    # 1. 환경 변수 오버라이드 (하위 호환 유지)
     env_key = os.environ.get('OPENCLAW_LLM_API_KEY', '')
     if env_key:
         return {
@@ -334,10 +330,10 @@ def _get_llm_config() -> dict | None:
             'api_type': 'openai',
         }
 
-    # 2. GitHub Copilot token（最优先 — 免费、稳定、无需额外配置）
+    # 2. GitHub Copilot token (최우선 — 무료, 안정적, 추가 설정 불필요)
     copilot_token = _read_copilot_token()
     if copilot_token:
-        # 选一个 copilot 支持的模型
+        # copilot 가 지원하는 모델 선택
         model = 'gpt-4o'
         logger.info('Court discuss using github-copilot token, model=%s', model)
         return {
@@ -347,7 +343,7 @@ def _get_llm_config() -> dict | None:
             'api_type': 'github-copilot',
         }
 
-    # 3. 从 ~/.openclaw/openclaw.json 读取其他 provider 配置
+    # 3. ~/.openclaw/openclaw.json 에서 다른 provider 설정 읽기
     openclaw_cfg = os.path.expanduser('~/.openclaw/openclaw.json')
     if not os.path.exists(openclaw_cfg):
         return None
@@ -358,7 +354,7 @@ def _get_llm_config() -> dict | None:
 
         providers = cfg.get('models', {}).get('providers', {})
 
-        # 按优先级排序：copilot-proxy > anthropic > 其他
+        # 우선순위 정렬: copilot-proxy > anthropic > 기타
         ordered = []
         for preferred in ['copilot-proxy', 'anthropic']:
             if preferred in providers:
@@ -375,7 +371,7 @@ def _get_llm_config() -> dict | None:
             if not base_url:
                 continue
 
-            # 跳过无 key 且非本地的 provider
+            # key 없고 로컬도 아닌 provider 건너뜀
             if not api_key or api_key == 'n/a':
                 if 'localhost' not in base_url and '127.0.0.1' not in base_url:
                     continue
@@ -384,7 +380,7 @@ def _get_llm_config() -> dict | None:
             if not model_id:
                 continue
 
-            # 本地代理先探测是否可用
+            # 로컬 프록시는 먼저 사용 가능 여부 탐지
             if 'localhost' in base_url or '127.0.0.1' in base_url:
                 try:
                     import urllib.request
@@ -409,9 +405,9 @@ def _get_llm_config() -> dict | None:
 
 
 def _try_repair_truncated_discuss(content: str) -> dict | None:
-    """尝试从被截断的 JSON 中提取已完成的 messages 条目。"""
+    """잘린 JSON 에서 완료된 messages 항목 추출 시도."""
     import re
-    # 寻找 "messages" 数组中完整的 JSON 对象
+    # "messages" 배열의 완전한 JSON 객체 찾기
     pattern = r'\{\s*"official_id"\s*:\s*"[^"]+"\s*,\s*"name"\s*:\s*"[^"]+"\s*,\s*"content"\s*:\s*"(?:[^"\\]|\\.)*"\s*,\s*"emotion"\s*:\s*"[^"]+"\s*(?:,\s*"action"\s*:\s*"(?:[^"\\]|\\.)*"\s*)?\}'
     matches = re.findall(pattern, content)
     if not matches:
@@ -428,7 +424,7 @@ def _try_repair_truncated_discuss(content: str) -> dict | None:
 
 
 def _llm_complete(system_prompt: str, user_prompt: str, max_tokens: int = 1024) -> str | None:
-    """调用 LLM API（自动适配 GitHub Copilot / OpenAI / Anthropic 协议）。"""
+    """LLM API 호출 (GitHub Copilot / OpenAI / Anthropic 프로토콜 자동 적용)."""
     config = _get_llm_config()
     if not config:
         return None
@@ -462,7 +458,7 @@ def _llm_complete(system_prompt: str, user_prompt: str, max_tokens: int = 1024) 
             logger.warning('Anthropic LLM call failed: %s', e)
             return None
     else:
-        # OpenAI-compatible API (也适用于 github-copilot)
+        # OpenAI-compatible API (github-copilot 에도 적용)
         if api_type == 'github-copilot':
             url = config['base_url'].rstrip('/') + '/chat/completions'
             headers = {
@@ -496,79 +492,79 @@ def _llm_complete(system_prompt: str, user_prompt: str, max_tokens: int = 1024) 
 
 
 def _llm_discuss(session: dict, user_message: str = None, decree: str = None) -> dict | None:
-    """使用 LLM 生成多官员讨论。"""
+    """LLM으로 다관원 토의 발화를 생성한다."""
     officials = session['officials']
     names = '、'.join(o['name'] for o in officials)
 
     profiles = ''
     for o in officials:
-        profiles += f"\n### {o['name']}（{o['role']}）\n"
-        profiles += f"职责范围：{o.get('duty', '综合事务')}\n"
-        profiles += f"性格：{o['personality']}\n"
-        profiles += f"说话风格：{o['speaking_style']}\n"
+        profiles += f"\n### {o['name']} ({o['role']})\n"
+        profiles += f"역할 범위: {o.get('duty', '종합 업무')}\n"
+        profiles += f"성향: {o['personality']}\n"
+        profiles += f"말투: {o['speaking_style']}\n"
 
-    # 构建最近的对话历史
+    # 최근 대화 이력 구성
     history = ''
     for msg in session['messages'][-20:]:
         if msg['type'] == 'system':
-            history += f"\n【系统】{msg['content']}\n"
+            history += f"\n[시스템] {msg['content']}\n"
         elif msg['type'] == 'emperor':
-            history += f"\n皇帝：{msg['content']}\n"
+            history += f"\n임금: {msg['content']}\n"
         elif msg['type'] == 'decree':
-            history += f"\n【天命降临】{msg['content']}\n"
+            history += f"\n[천명 개입] {msg['content']}\n"
         elif msg['type'] == 'official':
             history += f"\n{msg.get('official_name', '?')}：{msg['content']}\n"
         elif msg['type'] == 'scene_note':
-            history += f"\n（{msg['content']}）\n"
+            history += f"\n({msg['content']})\n"
 
     if user_message:
-        history += f"\n皇帝：{user_message}\n"
+        history += f"\n임금: {user_message}\n"
     if decree:
-        history += f"\n【天命降临——上帝视角干预】{decree}\n"
+        history += f"\n[천명 개입 - 상위 관점] {decree}\n"
 
     decree_section = ''
     if decree:
-        decree_section = '\n请根据天命降临事件改变讨论走向，所有官员都必须对此做出反应。\n'
+        decree_section = '\n천명 개입 사건을 반영해 토의 방향을 조정하고, 모든 관원이 이에 반응하도록 작성하세요.\n'
 
-    prompt = f"""你是一个古代朝堂多角色群聊模拟器。模拟多位官员在朝堂上围绕议题的讨论。
+    prompt = f"""당신은 조정 회의를 시뮬레이션하는 다중 역할 대화 엔진입니다. 여러 관원이 의제를 중심으로 토의하는 장면을 생성하세요.
 
-## 参与官员
+## 참여 관원
 {names}
 
-## 角色设定（每位官员都有明确的职责领域，必须从自身专业角度出发讨论）
+## 역할 설정 (각 관원은 자신의 소관 영역 관점에서 발언)
 {profiles}
 
-## 当前议题
+## 현재 의제
 {session['topic']}
 
-## 对话记录
-{history if history else '（讨论刚刚开始）'}
+## 대화 이력
+{history if history else '(토의 시작 단계)'}
 {decree_section}
-## 任务
-生成每位官员的下一条发言。要求：
-1. 每位官员说1-3句话，像真实朝堂讨论一样
-2. **每位官员必须从自己的职责领域出发发言**——户部谈成本和数据、兵部谈安全和运维、工部谈技术实现、刑部谈质量和合规、礼部谈文档和规范、吏部谈人员安排、中书谈规划方案、门下谈审查风险、尚书谈执行调度、太子谈创新和大局，每个人关注的焦点不同
-3. 官员之间要有互动——回应、反驳、支持、补充，尤其是不同部门的视角碰撞
-4. 保持每位官员独特的说话风格和人格特征
-5. 讨论要围绕议题推进、有实质性观点，不要泛泛而谈
-6. 如果皇帝发言了，官员要恰当回应（但不要阿谀）
-7. 可包含动作描写用*号*包裹（如 *拱手施礼*）
+## 작업
+각 관원의 다음 발화를 생성하세요. 조건:
+1. 각 관원은 1-3문장으로 발언합니다.
+2. 각 관원은 반드시 자신의 소관 관점에서 말합니다.
+3. 관원 간 상호작용(응답, 반박, 보완, 합의)이 드러나야 합니다.
+4. 인물별 말투와 성향 차이를 유지합니다.
+5. 의제에 실질적으로 기여하는 내용으로 작성합니다.
+6. 임금 발화가 있다면 적절히 반응하되 과한 아첨은 피합니다.
+7. 필요하면 *행동 묘사*를 포함할 수 있습니다.
 
-输出JSON格式：
+출력 JSON 형식:
 {{
   "messages": [
-    {{"official_id": "zhongshu", "name": "中书令", "content": "发言内容", "emotion": "neutral|confident|worried|angry|thinking|amused", "action": "可选动作描写"}},
+    {{"official_id": "zhongshu", "name": "홍문관", "content": "발언 내용", "emotion": "neutral|confident|worried|angry|thinking|amused", "action": "선택적 행동 묘사"}},
     ...
   ],
-  "scene_note": "可选的朝堂氛围变化（如：朝堂一片哗然|群臣窃窃私语），没有则为null"
+  "scene_note": "선택적 분위기 변화 (없으면 null)"
 }}
 
-只输出JSON，不要其他内容。"""
+JSON만 출력하고 다른 설명은 포함하지 마세요."""
 
-    # 根据参与官员数量动态调整 max_tokens，避免响应被截断 (#265)
+    # 관원 수에 따라 max_tokens 동적 조정 (#265)
     token_budget = 300 * len(officials) + 200
     content = _llm_complete(
-        '你是一个古代朝堂群聊模拟器，严格输出JSON格式。',
+        '당신은 조정 회의 시뮬레이터입니다. JSON만 출력하세요.',
         prompt,
         max_tokens=max(token_budget, 1500),
     )
@@ -576,7 +572,7 @@ def _llm_discuss(session: dict, user_message: str = None, decree: str = None) ->
     if not content:
         return None
 
-    # 解析 JSON
+    # JSON 파싱
     if '```json' in content:
         content = content.split('```json')[1].split('```')[0].strip()
     elif '```' in content:
@@ -585,7 +581,7 @@ def _llm_discuss(session: dict, user_message: str = None, decree: str = None) ->
     try:
         return json.loads(content)
     except json.JSONDecodeError:
-        # 尝试修复被截断的 JSON：提取已完成的 messages 条目
+        # 잘린 JSON 복구 시도: 완료된 messages 항목 추출
         repaired = _try_repair_truncated_discuss(content)
         if repaired:
             logger.info('Repaired truncated LLM response, recovered %d messages', len(repaired.get('messages', [])))
@@ -595,7 +591,7 @@ def _llm_discuss(session: dict, user_message: str = None, decree: str = None) ->
 
 
 def _llm_summarize(session: dict) -> str | None:
-    """用 LLM 总结讨论结果。"""
+    """LLM으로 토의 결과를 요약한다."""
     official_msgs = [m for m in session['messages'] if m['type'] == 'official']
     topic = session['topic']
 
@@ -603,71 +599,71 @@ def _llm_summarize(session: dict) -> str | None:
         return None
 
     dialogue = '\n'.join(
-        f"{m.get('official_name', '?')}：{m['content']}"
+        f"{m.get('official_name', '?')}: {m['content']}"
         for m in official_msgs[-30:]
     )
 
-    prompt = f"""以下是朝堂官员围绕「{topic}」的讨论记录：
+    prompt = f"""다음은 「{topic}」 의제에 대한 조정 토의 기록입니다.
 
 {dialogue}
 
-请用2-3句话总结讨论结果、达成的共识和待决事项。用古风但简明的风格。"""
+토의 결과, 합의 사항, 미결 사항을 2-3문장으로 간결하게 요약하세요."""
 
-    return _llm_complete('你是朝堂记录官，负责总结朝议结果。', prompt, max_tokens=300)
+    return _llm_complete('당신은 조정 기록관입니다. 회의 결과를 요약하세요.', prompt, max_tokens=300)
 
 
-# ── 规则模拟（无 LLM 时的降级方案）──
+# ── 규칙 기반 시뮬레이션(LLM 미사용 시 폴백) ──
 
 _SIMULATED_RESPONSES = {
     'zhongshu': [
-        '臣以为此事需从全局着眼，分三步推进：先调研、再制定方案、最后交六部执行。',
-        '参考前朝经验，臣建议先出一个详细的规划文档，提交门下省审阅后再定。',
-        '*展开手中卷轴* 臣已拟好初步方案，待侍中审议、尚书省分派执行。',
+        '소신의 견해로는 이 사안을 전체 흐름에서 보고 세 단계로 추진해야 합니다. 먼저 조사, 다음 계획 수립, 마지막으로 육조 집행입니다.',
+        '선례를 참고하면 우선 상세 기획 문서를 만들고 사간원 심의를 받은 뒤 확정하는 것이 안전합니다.',
+        '*두루마리를 펼치며* 초안을 작성했습니다. 사간원 심의 후 승정원이 집행 배분하면 됩니다.',
     ],
     'menxia': [
-        '臣有几点疑虑：方案的风险评估似乎还不够充分，可行性存疑。',
-        '容臣直言，此方案完整性不足，遗漏了一个关键环节——资源保障。',
-        '*皱眉审视* 这个时间线恐怕过于乐观，臣建议审慎评估后再行准奏。',
+        '몇 가지 우려가 있습니다. 위험 평가가 충분하지 않아 현재 안으로는 실행 가능성이 낮아 보입니다.',
+        '직언을 올리자면 계획 완결성이 부족합니다. 특히 자원 확보 절차가 빠져 있습니다.',
+        '*표정을 가다듬으며* 일정이 지나치게 낙관적입니다. 재평가 후 재상신이 필요합니다.',
     ],
     'shangshu': [
-        '若方案通过，臣立刻安排各部分头执行——工部负责实现，兵部保障运维。',
-        '臣来说说执行层面的分工：此事当由工部主导，户部配合数据支撑。',
-        '交由臣来协调！臣会根据各部职责逐一派发子任务。',
+        '안이 통과되면 즉시 부서별 집행을 배분하겠습니다. 공조는 구현, 병조는 운영 안정화 담당이 적절합니다.',
+        '집행 분업을 말씀드리면 공조 주도, 호조 데이터 지원 체계가 가장 효율적입니다.',
+        '이 사안은 승정원에서 조율하겠습니다. 각 부서 책무에 맞게 하위 작업을 배분하겠습니다.',
     ],
     'taizi': [
-        '父皇，儿臣认为这是个创新的好机会，不妨大胆一些，先做最小可行方案验证。',
-        '本宫觉得各位大臣争论的焦点是执行节奏，不如先抓核心、小步快跑。',
-        '这个方向太对了！但请各部先各自评估本部门的落地难点再汇总。',
+        '전하, 이 사안은 혁신 실험의 기회로 보입니다. 우선 최소 기능으로 검증하는 편이 좋겠습니다.',
+        '쟁점은 집행 속도입니다. 핵심부터 작게 시작해 빠르게 검증하는 방향을 제안드립니다.',
+        '방향은 타당합니다. 다만 각 부서가 실행 난점을 먼저 평가한 뒤 합치는 절차가 필요합니다.',
     ],
     'hubu': [
-        '臣先算算账……按当前Token用量和资源消耗，这个预算恐怕需要重新评估。',
-        '从成本数据来看，臣建议分期投入——先做MVP验证效果，再追加资源。',
-        '*翻看账本* 臣统计了近期各项开支指标，目前可支撑，但需严格控制在预算范围内。',
+        '먼저 재정을 따져 보니 현재 Token 사용량과 자원 소모 기준에서 예산 재산정이 필요합니다.',
+        '비용 지표를 보면 단계별 투입이 적합합니다. MVP로 효과를 검증한 뒤 자원을 추가하시지요.',
+        '*장부를 넘기며* 최근 지출 지표를 집계했습니다. 집행은 가능하지만 예산 상한을 엄수해야 합니다.',
     ],
     'bingbu': [
-        '末将认为安全和回滚方案必须先行，万一出问题能快速止损回退。',
-        '运维保障方面，部署流程、容器编排、日志监控必须到位再上线。',
-        '兵贵神速！但安全底线不能破——权限管控和漏洞扫描须同步进行。',
+        '안전장치와 롤백 계획을 먼저 갖춰야 합니다. 장애 시 즉시 복구할 수 있어야 합니다.',
+        '운영 관점에서는 배포 절차, 컨테이너 오케스트레이션, 로그 모니터링을 선행해야 합니다.',
+        '속도도 중요하지만 보안 기준은 양보할 수 없습니다. 권한 통제와 취약점 점검을 병행해야 합니다.',
     ],
     'xingbu': [
-        '依规矩，此事需确保合规——代码审查、测试覆盖率、敏感信息排查缺一不可。',
-        '臣建议增加测试验收环节，质量是底线，不能因赶工而降低标准。',
-        '*正色道* 风险评估不可敷衍：边界条件、异常处理、日志规范都需审计过关。',
+        '규정상 준수 점검이 필수입니다. 코드 리뷰, 테스트 커버리지, 민감정보 점검을 모두 통과해야 합니다.',
+        '테스트 인수 단계를 추가해야 합니다. 일정이 급해도 품질 기준을 낮추면 안 됩니다.',
+        '*엄정하게 아뢰며* 위험 평가는 형식적으로 넘어갈 수 없습니다. 경계 조건, 예외 처리, 로그 규범까지 감사가 필요합니다.',
     ],
-    'gongbu': {
-        '从技术架构来看，这个方案是可行的，但需考虑扩展性和模块化设计。',
-        '臣可以先搭个原型出来，快速验证技术可行性，再迭代完善。',
-        '*整了整官帽* 技术实现方面臣有建议——API设计和数据结构需要先理清……',
-    },
+    'gongbu': [
+        '기술 아키텍처 관점에서 실행 가능성은 충분합니다. 다만 확장성과 모듈화를 함께 설계해야 합니다.',
+        '우선 프로토타입을 구축해 기술 타당성을 빠르게 검증한 뒤 반복 개선하겠습니다.',
+        '*관복을 정리하며* 구현에 앞서 API 설계와 데이터 구조를 먼저 정리해야 합니다.',
+    ],
     'libu': [
-        '臣建议先拟一份正式文档，明确各方职责、验收标准和输出规范。',
-        '此事当载入记录，臣来负责撰写方案文档和对外公告，确保规范统一。',
-        '*提笔拟文* 已记录在案，臣稍后整理成正式Release Notes呈上御览。',
+        '먼저 공식 문서를 작성해 역할 분담, 인수 기준, 출력 규격을 명확히 해야 합니다.',
+        '본 사안은 기록으로 남겨야 하므로 제가 문서와 대외 공지를 정리해 기준을 통일하겠습니다.',
+        '*붓을 들며* 기록을 남겼습니다. 곧 정식 릴리스 노트로 정리해 상신하겠습니다.',
     ],
     'libu_hr': [
-        '此事关键在于人员调配——需评估各部目前的工作量和能力基线再做安排。',
-        '各部当前负荷不等，臣建议调整协作规范，确保关键岗位有人盯进度。',
-        '臣可以协调人员轮岗并安排能力培训，保障团队高效协作。',
+        '핵심은 인력 배치입니다. 각 부서의 현재 업무량과 역량 기준을 평가한 뒤 배정해야 합니다.',
+        '부서별 부하가 달라 협업 규범을 조정해야 합니다. 핵심 포지션에 책임자를 명확히 두겠습니다.',
+        '순환 배치와 역량 교육을 함께 설계해 팀 협업 효율을 높이겠습니다.',
     ],
 }
 
@@ -675,7 +671,7 @@ import random
 
 
 def _simulated_discuss(session: dict, user_message: str = None, decree: str = None) -> list[dict]:
-    """无 LLM 时的规则生成讨论内容。"""
+    """LLM이 없을 때 규칙 기반으로 토의 발화를 생성합니다."""
     officials = session['officials']
     messages = []
 
@@ -685,16 +681,16 @@ def _simulated_discuss(session: dict, user_message: str = None, decree: str = No
         if isinstance(pool, set):
             pool = list(pool)
         if not pool:
-            pool = ['臣附议。', '臣有不同看法。', '臣需要再想想。']
+            pool = ['소신은 동의합니다.', '다른 견해가 있습니다.', '추가 검토가 필요합니다.']
 
         content = random.choice(pool)
         emotions = ['neutral', 'confident', 'thinking', 'amused', 'worried']
 
-        # 如果皇帝发言了或有天命降临，调整回应
+        # 임금 발화/천명 개입에 따른 반응 조정
         if decree:
-            content = f'*面露惊色* 天命如此，{content}'
+            content = f'*표정이 굳어지며* 천명에 따라, {content}'
         elif user_message:
-            content = f'回禀陛下，{content}'
+            content = f'전하, {content}'
 
         messages.append({
             'official_id': oid,

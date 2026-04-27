@@ -14,7 +14,7 @@ export default function TemplatePanel() {
   const [previewCmd, setPreviewCmd] = useState('');
 
   let tpls = TEMPLATES;
-  if (tplCatFilter !== '全部') tpls = tpls.filter((t) => t.cat === tplCatFilter);
+  if (tplCatFilter !== '전체') tpls = tpls.filter((t) => t.cat === tplCatFilter);
 
   const openForm = (tpl: Template) => {
     const vals: Record<string, string> = {};
@@ -44,22 +44,22 @@ export default function TemplatePanel() {
     if (!formTpl) return;
     const cmd = buildCmd(formTpl);
     if (!cmd.trim()) {
-      toast('请填写必填参数', 'err');
+      toast('필수 입력 항목을 채워주세요', 'err');
       return;
     }
 
-    // Pre-check gateway
+    // Gateway 사전 점검
     try {
       const st = await api.agentsStatus();
       if (st.ok && st.gateway && !st.gateway.alive) {
-        toast('⚠️ Gateway 未启动，任务将无法派发！', 'err');
-        if (!confirm('Gateway 未启动，继续？')) return;
+        toast('⚠️ Gateway가 실행 중이 아니어서 작업을 전달할 수 없습니다!', 'err');
+        if (!confirm('Gateway가 실행 중이 아닙니다. 계속하시겠습니까?')) return;
       }
     } catch {
       /* ignore */
     }
 
-    if (!confirm(`确认下旨？\n\n${cmd.substring(0, 200)}${cmd.length > 200 ? '…' : ''}`)) return;
+    if (!confirm(`어명을 하달하시겠습니까?\n\n${cmd.substring(0, 200)}${cmd.length > 200 ? '…' : ''}`)) return;
 
     try {
       const params: Record<string, string> = {};
@@ -68,21 +68,21 @@ export default function TemplatePanel() {
       }
       const r = await api.createTask({
         title: cmd.substring(0, 120),
-        org: '中书省',
+        org: '홍문관',
         targetDept: formTpl.depts[0] || '',
         priority: 'normal',
         templateId: formTpl.id,
         params,
       });
       if (r.ok) {
-        toast(`📜 ${r.taskId} 旨意已下达`, 'ok');
+        toast(`📜 ${r.taskId} 어명이 하달되었습니다`, 'ok');
         setFormTpl(null);
         loadAll();
       } else {
-        toast(r.error || '下旨失败', 'err');
+        toast(r.error || '어명 하달 실패', 'err');
       }
     } catch {
-      toast('⚠️ 服务器连接失败', 'err');
+      toast('⚠️ 서버 연결 실패', 'err');
     }
   };
 
@@ -118,7 +118,7 @@ export default function TemplatePanel() {
                 {t.est} · {t.cost}
               </span>
               <button className="tpl-go" onClick={() => openForm(t)}>
-                下旨
+                하지
               </button>
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function TemplatePanel() {
             <button className="modal-close" onClick={() => setFormTpl(null)}>✕</button>
             <div className="modal-body">
               <div style={{ fontSize: 11, color: 'var(--acc)', fontWeight: 700, letterSpacing: '.04em', marginBottom: 4 }}>
-                圣旨模板
+                어명 템플릿
               </div>
               <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 6 }}>
                 {formTpl.icon} {formTpl.name}
@@ -197,7 +197,7 @@ export default function TemplatePanel() {
                     }}
                   >
                     <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
-                      📜 将发送给中书省的旨意：
+                      📜 홍문관에 전달될 어명:
                     </div>
                     <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{previewCmd}</div>
                   </div>
@@ -205,10 +205,10 @@ export default function TemplatePanel() {
 
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                   <button type="button" className="btn btn-g" onClick={preview} style={{ padding: '8px 16px', fontSize: 12 }}>
-                    👁 预览旨意
+                    👁 어명 미리보기
                   </button>
                   <button type="submit" className="tpl-go" style={{ padding: '8px 20px', fontSize: 13 }}>
-                    📜 下旨
+                    📜 하지
                   </button>
                 </div>
               </form>

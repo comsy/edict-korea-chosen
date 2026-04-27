@@ -41,7 +41,7 @@ export default function App() {
     if (key === 'memorials') return String(edicts.filter((t) => ['Done', 'Cancelled'].includes(t.state)).length);
     if (key === 'monitor') {
       const activeDepts = tasks.filter((t) => isEdict(t) && t.state === 'Doing').length;
-      return activeDepts + '活跃';
+      return activeDepts + '활성';
     }
     return '';
   };
@@ -51,16 +51,16 @@ export default function App() {
       {/* ── Header ── */}
       <div className="hdr">
         <div>
-          <div className="logo">三省六部 · 总控台</div>
-          <div className="sub-text">OpenClaw Sansheng-Liubu Dashboard</div>
+          <div className="logo">조선식 운영체계 · 통합 대시보드</div>
+          <div className="sub-text">OpenClaw Task Dashboard</div>
         </div>
         <div className="hdr-r">
           <span className={`chip ${syncOk ? 'ok' : syncOk === false ? 'err' : ''}`}>
-            {syncOk ? '✅ 同步正常' : syncOk === false ? '❌ 服务器未启动' : '⏳ 连接中…'}
+            {syncOk ? '✅ 동기화 정상' : syncOk === false ? '❌ 서버가 시작되지 않음' : '⏳ 연결 중…'}
           </span>
-          <span className="chip">{activeEdicts.length} 道旨意</span>
+          <span className="chip">{activeEdicts.length}건 지시</span>
           <button className="btn-refresh" onClick={() => loadAll()}>
-            ⟳ 刷新
+            ⟳ 새로고침
           </button>
           <span style={{ fontSize: 11, color: 'var(--muted)' }}>⟳ {countdown}s</span>
         </div>

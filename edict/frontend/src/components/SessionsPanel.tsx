@@ -20,31 +20,31 @@ function useAgentMaps() {
 function extractAgent(t: Task): string {
   const m = (t.id || '').match(/^OC-(\w+)-/);
   if (m) return m[1];
-  return (t.org || '').replace(/省|部/g, '').toLowerCase();
+  return (t.org || '').replace(/省|部|원|조/g, '').toLowerCase();
 }
 
 function humanTitle(t: Task, labelMap: Record<string, string>): string {
   let title = t.title || '';
-  if (title === 'heartbeat 会话') return '💓 心跳检测';
+  if (title === 'heartbeat 세션') return '💓 하트비트 점검';
   const m = title.match(/^agent:(\w+):(\w+)/);
   if (m) {
     const agLabel = labelMap[m[1]] || m[1];
-    if (m[2] === 'main') return agLabel + ' · 主会话';
-    if (m[2] === 'subagent') return agLabel + ' · 子任务执行';
-    if (m[2] === 'cron') return agLabel + ' · 定时任务';
+    if (m[2] === 'main') return agLabel + ' · 메인 세션';
+    if (m[2] === 'subagent') return agLabel + ' · 하위 작업 실행';
+    if (m[2] === 'cron') return agLabel + ' · 예약 작업';
     return agLabel + ' · ' + m[2];
   }
-  return title.replace(/ 会话$/, '') || t.id;
+  return title.replace(/ 세션$/, '') || t.id;
 }
 
 function channelLabel(t: Task): { icon: string; text: string } {
   const now = t.now || '';
-  if (now.includes('feishu/direct')) return { icon: '💬', text: '飞书对话' };
-  if (now.includes('feishu')) return { icon: '💬', text: '飞书' };
+  if (now.includes('feishu/direct')) return { icon: '💬', text: '피슈 대화' };
+  if (now.includes('feishu')) return { icon: '💬', text: '피슈' };
   if (now.includes('webchat')) return { icon: '🌐', text: 'WebChat' };
-  if (now.includes('cron')) return { icon: '⏰', text: '定时' };
-  if (now.includes('direct')) return { icon: '📨', text: '直连' };
-  return { icon: '🔗', text: '会话' };
+  if (now.includes('cron')) return { icon: '⏰', text: '예약' };
+  if (now.includes('direct')) return { icon: '📨', text: '직접 연결' };
+  return { icon: '🔗', text: '세션' };
 }
 
 function lastMessage(t: Task): string {
@@ -83,8 +83,8 @@ export default function SessionsPanel() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
         {[
-          { key: 'all', label: `全部 (${sessions.length})` },
-          { key: 'active', label: '活跃' },
+          { key: 'all', label: `전체 (${sessions.length})` },
+          { key: 'active', label: '활성' },
           ...agentIds.slice(0, 8).map((id) => ({ key: id, label: labelMap[id] || id })),
         ].map((f) => (
           <span
@@ -101,7 +101,7 @@ export default function SessionsPanel() {
       <div className="sess-grid">
         {!filtered.length ? (
           <div style={{ fontSize: 13, color: 'var(--muted)', padding: 24, textAlign: 'center', gridColumn: '1/-1' }}>
-            暂无小任务/会话数据
+            세션 데이터가 없습니다
           </div>
         ) : (
           filtered.map((t) => {
@@ -201,35 +201,35 @@ function SessionDetailModal({
             {totalTokens != null && (
               <div style={{ background: 'var(--panel2)', padding: '10px 16px', borderRadius: 8, fontSize: 12 }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--acc)' }}>{totalTokens.toLocaleString()}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 10 }}>总 Tokens</div>
+                <div style={{ color: 'var(--muted)', fontSize: 10 }}>총 토큰</div>
               </div>
             )}
             {inputTokens != null && (
               <div style={{ background: 'var(--panel2)', padding: '10px 16px', borderRadius: 8, fontSize: 12 }}>
                 <div style={{ fontSize: 16, fontWeight: 700 }}>{inputTokens.toLocaleString()}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 10 }}>输入</div>
+                <div style={{ color: 'var(--muted)', fontSize: 10 }}>입력</div>
               </div>
             )}
             {outputTokens != null && (
               <div style={{ background: 'var(--panel2)', padding: '10px 16px', borderRadius: 8, fontSize: 12 }}>
                 <div style={{ fontSize: 16, fontWeight: 700 }}>{outputTokens.toLocaleString()}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 10 }}>输出</div>
+                <div style={{ color: 'var(--muted)', fontSize: 10 }}>출력</div>
               </div>
             )}
           </div>
 
           {/* Recent Activity */}
           <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>
-            📋 最近活动 <span style={{ fontWeight: 400, color: 'var(--muted)' }}>({acts.length} 条)</span>
+            📋 최근 활동 <span style={{ fontWeight: 400, color: 'var(--muted)' }}>({acts.length}건)</span>
           </div>
           <div style={{ maxHeight: 350, overflowY: 'auto', border: '1px solid var(--line)', borderRadius: 10, background: 'var(--panel2)' }}>
             {!acts.length ? (
-              <div style={{ padding: 16, color: 'var(--muted)', fontSize: 12, textAlign: 'center' }}>暂无活动记录</div>
+              <div style={{ padding: 16, color: 'var(--muted)', fontSize: 12, textAlign: 'center' }}>활동 기록이 없습니다</div>
             ) : (
               acts.slice(-15).reverse().map((a, i) => {
                 const kind = a.kind || '';
                 const kIcon = kind === 'assistant' ? '🤖' : kind === 'tool' ? '🔧' : kind === 'user' ? '👤' : '📝';
-                const kLabel = kind === 'assistant' ? '回复' : kind === 'tool' ? '工具' : kind === 'user' ? '用户' : '事件';
+                const kLabel = kind === 'assistant' ? '응답' : kind === 'tool' ? '도구' : kind === 'user' ? '사용자' : '이벤트';
                 let txt = (a.text || '').replace(/\[\[.*?\]\]/g, '').replace(/\*\*/g, '').trim();
                 if (txt.length > 200) txt = txt.substring(0, 200) + '…';
                 const time = formatDashboardTime(a.at as string | number | undefined, { showSeconds: true });

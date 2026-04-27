@@ -1,51 +1,51 @@
-# 远程 Skills 快速入门
+# 원격 스킬 빠른 시작
 
-## 5 分钟体验
+## 5분 체험
 
-### 1. 启动服务器
+### 1. 서버 시작
 
 ```bash
-# 确保你在项目根目录
+# 프로젝트 루트 디렉터리에 있는지 확인
 python3 dashboard/server.py
-# 输出: 三省六部看板启动 → http://127.0.0.1:7891
+# 출력: 3사6조 칸반 시작 → http://127.0.0.1:7891
 ```
 
-### 2. 添加官方 Skill（CLI）
+### 2. 공식 스킬 추가 (CLI)
 
 ```bash
-# 为中书省添加代码审查 skill
+# 홍문관에 코드 리뷰 스킬 추가
 python3 scripts/skill_manager.py add-remote \
   --agent zhongshu \
   --name code_review \
   --source https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md \
-  --description "代码审查能力"
+  --description "코드 리뷰 능력"
 
-# 输出:
-# ⏳ 正在从 https://raw.githubusercontent.com/... 下载...
-# ✅ 技能 code_review 已添加到 zhongshu
-#    路径: /Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md
-#    大小: 2048 字节
+# 출력:
+# ⏳ https://raw.githubusercontent.com/... 에서 다운로드 중...
+# ✅ 스킬 code_review 가 zhongshu 에 추가되었습니다
+#    경로: /Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md
+#    크기: 2048 바이트
 ```
 
-### 3. 列出所有远程 Skills
+### 3. 모든 원격 스킬 나열
 
 ```bash
 python3 scripts/skill_manager.py list-remote
 
-# 输出:
-# 📋 共 1 个远程 skills：
+# 출력:
+# 📋 총 1개의 원격 스킬:
 # 
-# Agent       | Skill 名称           | 描述                           | 添加时间
+# Agent       | 스킬 이름            | 설명                           | 추가 시각
 # ------------|----------------------|--------------------------------|----------
-# zhongshu    | code_review          | 代码审查能力                   | 2026-03-02
+# zhongshu    | code_review          | 코드 리뷰 능력                 | 2026-03-02
 ```
 
-### 4. 查看 API 响应
+### 4. API 응답 조회
 
 ```bash
 curl http://localhost:7891/api/remote-skills-list | jq .
 
-# 输出:
+# 출력:
 # {
 #   "ok": true,
 #   "remoteSkills": [
@@ -53,7 +53,7 @@ curl http://localhost:7891/api/remote-skills-list | jq .
 #       "skillName": "code_review",
 #       "agentId": "zhongshu",
 #       "sourceUrl": "https://raw.githubusercontent.com/...",
-#       "description": "代码审查能力",
+#       "description": "코드 리뷰 능력",
 #       "localPath": "/Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md",
 #       "addedAt": "2026-03-02T14:30:00Z",
 #       "lastUpdated": "2026-03-02T14:30:00Z",
@@ -67,119 +67,119 @@ curl http://localhost:7891/api/remote-skills-list | jq .
 
 ---
 
-## 常见操作
+## 자주 쓰는 작업
 
-### 一键导入官方库中的所有 skills
+### 공식 저장소의 모든 스킬을 일괄 가져오기
 
 ```bash
 python3 scripts/skill_manager.py import-official-hub \
   --agents zhongshu,menxia,shangshu,bingbu,xingbu
 ```
 
-这会自动为每个 agent 添加：
+이렇게 하면 각 agent 에 다음이 자동 추가됩니다:
 - **zhongshu**: code_review, api_design, doc_generation
 - **menxia**: code_review, api_design, security_audit, data_analysis, doc_generation, test_framework
-- **shangshu**: 同 menxia（协调者）
+- **shangshu**: menxia 와 동일 (조정자)
 - **bingbu**: code_review, api_design, test_framework
 - **xingbu**: code_review, security_audit, test_framework
 
-### 更新某个 Skill 到最新版本
+### 특정 스킬을 최신 버전으로 갱신
 
 ```bash
 python3 scripts/skill_manager.py update-remote \
   --agent zhongshu \
   --name code_review
 
-# 输出:
-# ⏳ 正在从 https://raw.githubusercontent.com/... 下载...
-# ✅ 技能 code_review 已添加到 zhongshu
-# ✅ 技能已更新
-#    路径: /Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md
-#    大小: 2156 字节
+# 출력:
+# ⏳ https://raw.githubusercontent.com/... 에서 다운로드 중...
+# ✅ 스킬 code_review 가 zhongshu 에 추가되었습니다
+# ✅ 스킬이 갱신되었습니다
+#    경로: /Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md
+#    크기: 2156 바이트
 ```
 
-### 移除某个 Skill
+### 특정 스킬 제거
 
 ```bash
 python3 scripts/skill_manager.py remove-remote \
   --agent zhongshu \
   --name code_review
 
-# 输出:
-# ✅ 技能 code_review 已从 zhongshu 移除
+# 출력:
+# ✅ 스킬 code_review 가 zhongshu 에서 제거되었습니다
 ```
 
 ---
 
-## 看板 UI 操作
+## 칸반 UI 조작
 
-### 在看板中添加 Remote Skill
+### 칸반에서 원격 스킬 추가하기
 
-1. 打开 http://localhost:7891
-2. 进入 🔧 **技能配置** 面板
-3. 点击 **➕ 添加远程 Skill** 按钮
-4. 填写表单：
-   - **Agent**: 从下拉列表选择（如 zhongshu）
-   - **Skill 名称**: 输入内部 ID 如 `code_review`
-   - **远程 URL**: 粘贴 GitHub URL 如 `https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md`
-   - **中文描述**: 可选，如 `代码审查能力`
-5. 点击 **导入** 按钮
-6. 等待 1-2 秒，看到 ✅ 成功提示
+1. http://localhost:7891 열기
+2. 🔧 **스킬 설정** 패널로 진입
+3. **➕ 원격 스킬 추가** 버튼 클릭
+4. 양식 작성:
+   - **Agent**: 드롭다운 목록에서 선택 (예: zhongshu)
+   - **스킬 이름**: 내부 ID 입력, 예: `code_review`
+   - **원격 URL**: GitHub URL 붙여넣기, 예: `https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md`
+   - **한국어 설명**: 선택, 예: `코드 리뷰 능력`
+5. **가져오기** 버튼 클릭
+6. 1~2초 대기 후 ✅ 성공 알림 확인
 
-### 管理已添加的 Skills
+### 추가된 스킬 관리
 
-在看板 → 🔧 技能配置 → **远程 Skills** 标签页：
+칸반 → 🔧 스킬 설정 → **원격 스킬** 탭에서:
 
-- **查看**: 点击 Skill 名称查看 SKILL.md 内容
-- **更新**: 点击 🔄 重新从源 URL 下载最新版本
-- **删除**: 点击 ✕ 移除本地副本
-- **复制 URL**: 快速分享给他人
+- **조회**: 스킬 이름을 클릭하여 SKILL.md 내용 확인
+- **갱신**: 🔄 클릭하여 출처 URL 에서 최신 버전을 다시 다운로드
+- **삭제**: ✕ 클릭하여 로컬 사본 제거
+- **URL 복사**: 다른 사람과 빠르게 공유
 
 ---
 
-## 创建自己的 Skill 库
+## 자체 스킬 저장소 만들기
 
-### 目录结构
+### 디렉터리 구조
 
 ```
 my-skills-hub/
 ├── code_review/
-│   └── SKILL.md          # 代码审查能力
+│   └── SKILL.md          # 코드 리뷰 능력
 ├── api_design/
-│   └── SKILL.md          # API 设计审查
+│   └── SKILL.md          # API 설계 리뷰
 ├── data_analysis/
-│   └── SKILL.md          # 数据分析
+│   └── SKILL.md          # 데이터 분석
 └── README.md
 ```
 
-### SKILL.md 模板
+### SKILL.md 템플릿
 
 ```markdown
 ---
 name: my_custom_skill
-description: 简短描述
+description: 짧은 설명
 version: 1.0.0
 tags: [tag1, tag2]
 ---
 
-# Skill 完整名称
+# 스킬 전체 이름
 
-详细描述...
+상세 설명...
 
-## 输入
+## 입력
 
-说明接收什么参数
+어떤 매개변수를 받는지 설명
 
-## 处理流程
+## 처리 흐름
 
-具体步骤...
+구체적인 단계...
 
-## 输出规范
+## 출력 규격
 
-输出格式说明
+출력 형식 설명
 ```
 
-### 上传到 GitHub
+### GitHub 에 업로드
 
 ```bash
 git init
@@ -189,25 +189,25 @@ git remote add origin https://github.com/yourname/my-skills-hub
 git push -u origin main
 ```
 
-### 导入自己的 Skill
+### 자체 스킬 가져오기
 
 ```bash
 python3 scripts/skill_manager.py add-remote \
   --agent zhongshu \
   --name my_skill \
   --source https://raw.githubusercontent.com/yourname/my-skills-hub/main/my_skill/SKILL.md \
-  --description "我的定制技能"
+  --description "내 맞춤 스킬"
 ```
 
 ---
 
-## API 完整参考
+## API 전체 참조
 
 ### POST /api/add-remote-skill
 
-添加远程 skill。
+원격 스킬을 추가합니다.
 
-**请求：**
+**요청:**
 ```bash
 curl -X POST http://localhost:7891/api/add-remote-skill \
   -H "Content-Type: application/json" \
@@ -215,15 +215,15 @@ curl -X POST http://localhost:7891/api/add-remote-skill \
     "agentId": "zhongshu",
     "skillName": "code_review",
     "sourceUrl": "https://raw.githubusercontent.com/...",
-    "description": "代码审查"
+    "description": "코드 리뷰"
   }'
 ```
 
-**响应 (200):**
+**응답 (200):**
 ```json
 {
   "ok": true,
-  "message": "技能 code_review 已从远程源添加到 zhongshu",
+  "message": "스킬 code_review 가 원격 출처에서 zhongshu 에 추가되었습니다",
   "skillName": "code_review",
   "agentId": "zhongshu",
   "source": "https://raw.githubusercontent.com/...",
@@ -235,13 +235,13 @@ curl -X POST http://localhost:7891/api/add-remote-skill \
 
 ### GET /api/remote-skills-list
 
-列出所有远程 skills。
+모든 원격 스킬을 나열합니다.
 
 ```bash
 curl http://localhost:7891/api/remote-skills-list
 ```
 
-**响应:**
+**응답:**
 ```json
 {
   "ok": true,
@@ -250,7 +250,7 @@ curl http://localhost:7891/api/remote-skills-list
       "skillName": "code_review",
       "agentId": "zhongshu",
       "sourceUrl": "https://raw.githubusercontent.com/...",
-      "description": "代码审查能力",
+      "description": "코드 리뷰 능력",
       "localPath": "/Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md",
       "addedAt": "2026-03-02T14:30:00Z",
       "lastUpdated": "2026-03-02T14:30:00Z",
@@ -264,7 +264,7 @@ curl http://localhost:7891/api/remote-skills-list
 
 ### POST /api/update-remote-skill
 
-更新远程 skill 为最新版本。
+원격 스킬을 최신 버전으로 갱신합니다.
 
 ```bash
 curl -X POST http://localhost:7891/api/update-remote-skill \
@@ -277,7 +277,7 @@ curl -X POST http://localhost:7891/api/update-remote-skill \
 
 ### DELETE /api/remove-remote-skill
 
-移除远程 skill。
+원격 스킬을 제거합니다.
 
 ```bash
 curl -X POST http://localhost:7891/api/remove-remote-skill \
@@ -290,47 +290,47 @@ curl -X POST http://localhost:7891/api/remove-remote-skill \
 
 ---
 
-## 故障排查
+## 문제 해결
 
-### Q: 下载失败，提示 "Connection timeout"
+### Q: 다운로드 실패, "Connection timeout" 표시
 
-**A:** 检查网络连接和 URL 有效性
+**A:** 네트워크 연결과 URL 유효성 확인
 
 ```bash
 curl -I https://raw.githubusercontent.com/...
-# 应该返回 HTTP/1.1 200 OK
+# HTTP/1.1 200 OK 반환되어야 함
 ```
 
-### Q: 文件格式无效
+### Q: 파일 형식이 유효하지 않음
 
-**A:** 确保 SKILL.md 以 YAML frontmatter 开头
+**A:** SKILL.md 가 YAML frontmatter 로 시작하는지 확인
 
 ```markdown
 ---
 name: skill_name
-description: 描述
+description: 설명
 ---
 
-# 正文开始...
+# 본문 시작...
 ```
 
-### Q: 导入后看不到 Skill
+### Q: 가져온 후 스킬이 보이지 않음
 
-**A:** 刷新看板或检查 Agent 是否配置正确
+**A:** 칸반을 새로 고치거나 Agent 설정이 올바른지 확인
 
 ```bash
-# 检查 Agent 是否存在
+# Agent 존재 여부 확인
 python3 scripts/skill_manager.py list-remote
 
-# 检查本地文件
+# 로컬 파일 확인
 ls -la ~/.openclaw/workspace-zhongshu/skills/
 ```
 
 ---
 
-## 更多信息
+## 더 많은 정보
 
-- 📚 [完整指南](remote-skills-guide.md)
-- 🏛️ [架构文档](task-dispatch-architecture.md)
-- 🤝 [项目贡献](../CONTRIBUTING.md)
+- 📚 [전체 가이드](remote-skills-guide.md)
+- 🏛️ [아키텍처 문서](task-dispatch-architecture.md)
+- 🤝 [프로젝트 기여](../CONTRIBUTING.md)
 

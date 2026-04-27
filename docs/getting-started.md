@@ -1,28 +1,28 @@
-# 🚀 快速上手指南
+# 🚀 빠른 시작 가이드
 
-> 从零开始，5 分钟搭建你的三省六部 AI 协同系统
+> 처음부터 5분 만에 구축하는 3사6조 AI 협업 시스템
 
 ---
 
-## 第一步：安装 OpenClaw
+## 1단계: OpenClaw 설치
 
-三省六部基于 [OpenClaw](https://openclaw.ai) 运行，请先安装：
+3사6조는 [OpenClaw](https://openclaw.ai) 위에서 동작합니다. 먼저 설치하세요.
 
 ```bash
 # macOS
 brew install openclaw
 
-# 或下载安装包
+# 또는 설치 패키지 다운로드
 # https://openclaw.ai/download
 ```
 
-安装完成后初始化：
+설치가 끝나면 초기화합니다.
 
 ```bash
 openclaw init
 ```
 
-## 第二步：克隆并安装三省六部
+## 2단계: 3사6조 클론 및 설치
 
 ```bash
 git clone https://github.com/cft0808/edict.git
@@ -30,161 +30,161 @@ cd edict
 chmod +x install.sh && ./install.sh
 ```
 
-安装脚本会自动完成：
-- ✅ 创建 12 个 Agent Workspace（`~/.openclaw/workspace-*`）
-- ✅ 写入各省部 SOUL.md 人格文件
-- ✅ 注册 Agent 及权限矩阵到 `openclaw.json`
-- ✅ 配置旨意数据清洗规则
-- ✅ 构建 React 前端到 `dashboard/dist/`（需 Node.js 18+）
-- ✅ 初始化数据目录
-- ✅ 执行首次数据同步
-- ✅ 重启 Gateway 使配置生效
+설치 스크립트가 다음을 자동으로 수행합니다.
+- ✅ 12개의 Agent Workspace 생성 (`~/.openclaw/workspace-*`)
+- ✅ 각 사·조의 SOUL.md 인격 파일 기록
+- ✅ Agent 및 권한 매트릭스를 `openclaw.json` 에 등록
+- ✅ 지시 데이터 정제 규칙 구성
+- ✅ React 프런트엔드를 `dashboard/dist/` 로 빌드 (Node.js 18+ 필요)
+- ✅ 데이터 디렉터리 초기화
+- ✅ 최초 데이터 동기화 수행
+- ✅ Gateway 재시작으로 설정 적용
 
-## 第三步：配置消息渠道
+## 3단계: 메시지 채널 구성
 
-在 OpenClaw 中配置消息渠道（Feishu / Telegram / Signal），将 `taizi`（太子）Agent 设为旨意入口。太子会自动分拣闲聊与指令，指令类消息提炼标题后转发中书省。
+OpenClaw 에서 메시지 채널 (Feishu(飞书) / Telegram / Signal) 을 구성하고, `taizi`(세자) Agent 를 지시 입구로 지정합니다. 세자는 잡담과 지시를 자동으로 분류하여, 지시성 메시지의 제목을 추출한 뒤 홍문관으로 전달합니다.
 
 ```bash
-# 查看当前渠道
+# 현재 채널 조회
 openclaw channels list
 
-# 添加飞书渠道（入口设为太子）
+# Feishu 채널 추가 (입구를 세자로 지정)
 openclaw channels add --type feishu --agent taizi
 ```
 
-参考 OpenClaw 文档：https://docs.openclaw.ai/channels
+OpenClaw 공식 문서 참고: https://docs.openclaw.ai/channels
 
-## 第四步：启动服务
+## 4단계: 서비스 기동
 
 ```bash
-# 终端 1：数据刷新循环（每 15 秒同步）
+# 터미널 1: 데이터 갱신 루프 (15초마다 동기화)
 bash scripts/run_loop.sh
 
-# 终端 2：看板服务器
+# 터미널 2: 칸반 서버
 python3 dashboard/server.py
 
-# 打开浏览器
+# 브라우저 열기
 open http://127.0.0.1:7891
 ```
 
-> 💡 **提示**：`run_loop.sh` 每 15 秒自动同步数据。可用 `&` 后台运行。
+> 💡 **팁**: `run_loop.sh` 는 15초마다 자동으로 데이터를 동기화합니다. `&` 로 백그라운드 실행이 가능합니다.
 
-> 💡 **看板即开即用**：`server.py` 内嵌 `dashboard/dashboard.html`，无需额外构建。Docker 镜像包含预构建的 React 前端。
+> 💡 **칸반은 즉시 사용 가능**: `server.py` 는 `dashboard/dashboard.html` 을 내장하고 있어 별도 빌드가 필요 없습니다. Docker 이미지에는 사전 빌드된 React 프런트엔드가 포함됩니다.
 
-## 第五步：发送第一道旨意
+## 5단계: 첫 번째 지시 보내기
 
-通过消息渠道发送任务（太子会自动识别并转发到中书省）：
+메시지 채널을 통해 작업을 전달합니다 (세자가 자동으로 식별하여 홍문관으로 전달합니다).
 
 ```
-请帮我用 Python 写一个文本分类器：
-1. 使用 scikit-learn
-2. 支持多分类
-3. 输出混淆矩阵
-4. 写完整的文档
+Python 으로 텍스트 분류기를 만들어 주세요:
+1. scikit-learn 사용
+2. 다중 분류 지원
+3. 혼동 행렬 출력
+4. 문서 완비
 ```
 
-## 第六步：观察执行过程
+## 6단계: 실행 과정 관찰
 
-打开看板 http://127.0.0.1:7891
+칸반을 엽니다. http://127.0.0.1:7891
 
-1. **📋 旨意看板** — 观察任务在各状态之间流转
-2. **🔭 省部调度** — 查看各部门工作分布
-3. **📜 奏折阁** — 任务完成后自动归档为奏折
+1. **📋 지시 칸반** — 작업이 각 상태 사이를 흘러가는 모습을 관찰
+2. **🔭 사·조 디스패치** — 각 부서별 작업 분포 확인
+3. **📜 회보각** — 작업이 끝나면 회보로 자동 보관
 
-任务流转路径：
+작업 흐름 경로:
 ```
-收件 → 太子分拣 → 中书规划 → 门下审议 → 已派发 → 执行中 → 已完成
+수신 → 세자 분류 → 홍문관 기획 → 사간원 심의 → 배정 완료 → 실행 중 → 완료
 ```
 
 ---
 
-## 🎯 进阶用法
+## 🎯 심화 활용
 
-### 使用圣旨模板
+### 어명 템플릿 사용
 
-> 看板 → 📜 旨库 → 选择模板 → 填写参数 → 下旨
+> 칸반 → 📜 어명 라이브러리 → 템플릿 선택 → 파라미터 입력 → 하지
 
-9 个预设模板：周报生成 · 代码审查 · API 设计 · 竞品分析 · 数据报告 · 博客文章 · 部署方案 · 邮件文案 · 站会摘要
+9가지 사전 정의 템플릿: 주간 보고서 · 코드 리뷰 · API 설계 · 경쟁사 분석 · 데이터 리포트 · 블로그 글 · 배포 방안 · 이메일 문안 · 스탠드업 요약
 
-### 切换 Agent 模型
+### Agent 모델 전환
 
-> 看板 → ⚙️ 模型配置 → 选择新模型 → 应用更改
+> 칸반 → ⚙️ 모델 설정 → 새 모델 선택 → 변경 적용
 
-约 5 秒后 Gateway 自动重启生效。
+약 5초 후 Gateway 가 자동으로 재시작되어 적용됩니다.
 
-### 管理技能
+### 스킬 관리
 
-> 看板 → 🛠️ 技能配置 → 查看已安装技能 → 点击添加新技能
+> 칸반 → 🛠️ 스킬 설정 → 설치된 스킬 확인 → 새 스킬 추가 클릭
 
-### 叫停 / 取消任务
+### 작업 중지 / 취소
 
-> 在旨意看板或任务详情中，点击 **⏸ 叫停** 或 **🚫 取消** 按钮
+> 지시 칸반 또는 작업 상세 화면에서 **⏸ 중지** 또는 **🚫 취소** 버튼을 클릭
 
-### 订阅天下要闻
+### 천하요문(天下要闻) 구독
 
-> 看板 → 📰 天下要闻 → ⚙️ 订阅管理 → 选择分类 / 添加源 / 配飞书推送
+> 칸반 → 📰 천하요문 → ⚙️ 구독 관리 → 카테고리 선택 / 출처 추가 / Feishu 푸시 설정
 
 ---
 
-## ❓ 故障排查
+## ❓ 문제 해결
 
-### 看板显示「服务器未启动」
+### 칸반에 「서버가 실행 중이지 않습니다」가 표시됨
 ```bash
-# 确认服务器正在运行
+# 서버가 동작 중인지 확인
 python3 dashboard/server.py
 ```
 
-### Agent 报错 "No API key found for provider"
+### Agent 가 "No API key found for provider" 오류를 출력함
 
-这是最常见的问题。三省六部有 11 个 Agent，每个都需要 API Key。
+가장 흔한 문제입니다. 3사6조에는 11개의 Agent 가 있으며 각 Agent 마다 API Key 가 필요합니다.
 
 ```bash
-# 方法一：为任意 Agent 配置后重新运行 install.sh（推荐）
-openclaw agents add taizi          # 按提示输入 Anthropic API Key
-cd edict && ./install.sh            # 自动同步到所有 Agent
+# 방법 1: 임의의 Agent 에 설정한 뒤 install.sh 를 다시 실행 (권장)
+openclaw agents add taizi          # 안내에 따라 Anthropic API Key 입력
+cd edict && ./install.sh            # 모든 Agent 로 자동 동기화
 
-# 方法二：手动复制 auth 文件
+# 방법 2: auth 파일 수동 복사
 MAIN_AUTH=$(find ~/.openclaw/agents -name auth-profiles.json | head -1)
 for agent in taizi zhongshu menxia shangshu hubu libu bingbu xingbu gongbu; do
   mkdir -p ~/.openclaw/agents/$agent/agent
   cp "$MAIN_AUTH" ~/.openclaw/agents/$agent/agent/auth-profiles.json
 done
 
-# 方法三：逐个配置
+# 방법 3: 하나씩 직접 설정
 openclaw agents add taizi
 openclaw agents add zhongshu
-# ... 其他 Agent
+# ... 그 외 Agent
 ```
 
-### Agent 不响应
+### Agent 가 응답하지 않음
 ```bash
-# 检查 Gateway 状态
+# Gateway 상태 확인
 openclaw gateway status
 
-# 必要时重启
+# 필요 시 재시작
 openclaw gateway restart
 ```
 
-### 数据不更新
+### 데이터가 갱신되지 않음
 ```bash
-# 检查刷新循环是否运行
+# 갱신 루프가 동작 중인지 확인
 ps aux | grep run_loop
 
-# 手动执行一次同步
+# 동기화를 한 번 수동 실행
 python3 scripts/refresh_live_data.py
 ```
 
-### 心跳显示红色 / 告警
+### 하트비트가 빨간색 / 경보가 발생
 ```bash
-# 检查对应 Agent 的进程
+# 해당 Agent 프로세스 점검
 openclaw agent status <agent-id>
 
-# 重启指定 Agent
+# 지정한 Agent 재시작
 openclaw agent restart <agent-id>
 ```
 
-### 模型切换后不生效
-等待约 5 秒让 Gateway 重启完成。仍不生效则：
+### 모델 전환이 적용되지 않음
+약 5초간 Gateway 재시작이 끝나기를 기다립니다. 그래도 적용되지 않으면 다음을 실행하세요.
 ```bash
 python3 scripts/apply_model_changes.py
 openclaw gateway restart
@@ -192,10 +192,9 @@ openclaw gateway restart
 
 ---
 
-## 📚 更多资源
+## 📚 더 많은 자료
 
-- [🏠 项目首页](https://github.com/cft0808/edict)
+- [🏠 프로젝트 홈페이지](https://github.com/cft0808/edict)
 - [📖 README](../README.md)
-- [🤝 贡献指南](../CONTRIBUTING.md)
-- [💬 OpenClaw 文档](https://docs.openclaw.ai)
-- [📮 公众号 · cft0808](wechat.md) — 架构拆解 / 踩坑复盘 / Token 省钱术
+- [🤝 기여 가이드](../CONTRIBUTING.md)
+- [💬 OpenClaw 공식 문서](https://docs.openclaw.ai)

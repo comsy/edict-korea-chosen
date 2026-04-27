@@ -1,48 +1,48 @@
-# 远程 Skills 资源管理指南
+# 원격 스킬 자원 관리 가이드
 
-## 概述
+## 개요
 
-三省六部现已支持从网上连接和增补 skills 资源，无需手动复制文件。支持从以下来源获取：
+3사6조는 이제 네트워크에서 스킬 자원을 연결하고 보강할 수 있도록 지원하며, 파일을 수동으로 복사할 필요가 없습니다. 다음 출처에서 가져올 수 있습니다.
 
-- **GitHub 仓库** (raw.githubusercontent.com)
-- **任何 HTTPS URL** (需返回有效的 skill 文件)
-- **本地文件路径**
-- **内置仓库** (官方 skills 库)
+- **GitHub 저장소** (raw.githubusercontent.com)
+- **모든 HTTPS URL** (유효한 스킬 파일을 반환해야 함)
+- **로컬 파일 경로**
+- **내장 저장소** (공식 스킬 라이브러리)
 
 ---
 
-## 功能架构
+## 기능 아키텍처
 
-### 1. API 端点
+### 1. API 엔드포인트
 
 #### `POST /api/add-remote-skill`
 
-从远程 URL 或本地路径为指定 Agent 添加 skill。
+원격 URL 또는 로컬 경로에서 지정된 Agent 에 스킬을 추가합니다.
 
-**请求体：**
+**요청 본문:**
 ```json
 {
   "agentId": "zhongshu",
   "skillName": "code_review",
   "sourceUrl": "https://raw.githubusercontent.com/org/skills-repo/main/code_review/SKILL.md",
-  "description": "代码审查专项技能"
+  "description": "코드 리뷰 전문 스킬"
 }
 ```
 
-**参数说明：**
-- `agentId` (string, 必需): 目标 Agent ID (验证有效性)
-- `skillName` (string, 必需): skill 的内部名称 (仅允许字母/数字/下划线/汉字)
-- `sourceUrl` (string, 必需): 远程 URL 或本地文件路径
+**매개변수 설명:**
+- `agentId` (string, 필수): 대상 Agent ID (유효성 검증)
+- `skillName` (string, 필수): 스킬의 내부 이름 (영문/숫자/밑줄/한글만 허용)
+- `sourceUrl` (string, 필수): 원격 URL 또는 로컬 파일 경로
   - GitHub: `https://raw.githubusercontent.com/user/repo/branch/path/SKILL.md`
-  - 任意 HTTPS: `https://example.com/skills/my_skill.md`
-  - 本地: `file:///Users/bingsen/skills/code_review.md` 或 `/Users/bingsen/skills/code_review.md`
-- `description` (string, 可选): skill 的中文描述
+  - 임의 HTTPS: `https://example.com/skills/my_skill.md`
+  - 로컬: `file:///Users/bingsen/skills/code_review.md` 또는 `/Users/bingsen/skills/code_review.md`
+- `description` (string, 선택): 스킬에 대한 한국어 설명
 
-**响应成功 (200)：**
+**성공 응답 (200):**
 ```json
 {
   "ok": true,
-  "message": "技能 code_review 已添加到 zhongshu",
+  "message": "스킬 code_review 가 zhongshu 에 추가되었습니다",
   "skillName": "code_review",
   "agentId": "zhongshu",
   "source": "https://raw.githubusercontent.com/...",
@@ -52,20 +52,20 @@
 }
 ```
 
-**响应失败 (400)：**
+**실패 응답 (400):**
 ```json
 {
   "ok": false,
-  "error": "URL 无效或无法访问",
+  "error": "URL 이 유효하지 않거나 접근할 수 없습니다",
   "details": "Connection timeout after 10s"
 }
 ```
 
 #### `GET /api/remote-skills-list`
 
-列出所有已添加的远程 skills 及其源信息。
+추가된 모든 원격 스킬과 출처 정보를 나열합니다.
 
-**响应：**
+**응답:**
 ```json
 {
   "ok": true,
@@ -74,7 +74,7 @@
       "skillName": "code_review",
       "agentId": "zhongshu",
       "sourceUrl": "https://raw.githubusercontent.com/org/skills-repo/main/code_review/SKILL.md",
-      "description": "代码审查专项技能",
+      "description": "코드 리뷰 전문 스킬",
       "localPath": "/Users/bingsen/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md",
       "lastUpdated": "2026-03-02T14:30:00Z",
       "status": "valid"  // valid | invalid | not-found
@@ -86,9 +86,9 @@
 
 #### `POST /api/update-remote-skill`
 
-更新已添加的远程 skill 为最新版本。
+추가된 원격 스킬을 최신 버전으로 갱신합니다.
 
-**请求体：**
+**요청 본문:**
 ```json
 {
   "agentId": "zhongshu",
@@ -96,11 +96,11 @@
 }
 ```
 
-**响应：**
+**응답:**
 ```json
 {
   "ok": true,
-  "message": "技能已更新",
+  "message": "스킬이 갱신되었습니다",
   "skillName": "code_review",
   "newVersion": "2.1.0",
   "updatedAt": "2026-03-02T15:00:00Z"
@@ -109,9 +109,9 @@
 
 #### `DELETE /api/remove-remote-skill`
 
-移除已添加的远程 skill。
+추가된 원격 스킬을 제거합니다.
 
-**请求体：**
+**요청 본문:**
 ```json
 {
   "agentId": "zhongshu",
@@ -121,25 +121,25 @@
 
 ---
 
-## CLI 命令
+## CLI 명령
 
-### 添加远程 Skill
+### 원격 스킬 추가
 
 ```bash
 python3 scripts/skill_manager.py add-remote \
   --agent zhongshu \
   --name code_review \
   --source https://raw.githubusercontent.com/org/skills-repo/main/code_review/SKILL.md \
-  --description "代码审查专项技能"
+  --description "코드 리뷰 전문 스킬"
 ```
 
-### 列出远程 Skills
+### 원격 스킬 나열
 
 ```bash
 python3 scripts/skill_manager.py list-remote
 ```
 
-### 更新远程 Skill
+### 원격 스킬 갱신
 
 ```bash
 python3 scripts/skill_manager.py update-remote \
@@ -147,7 +147,7 @@ python3 scripts/skill_manager.py update-remote \
   --name code_review
 ```
 
-### 移除远程 Skill
+### 원격 스킬 제거
 
 ```bash
 python3 scripts/skill_manager.py remove-remote \
@@ -157,24 +157,24 @@ python3 scripts/skill_manager.py remove-remote \
 
 ---
 
-## 官方 Skills 库
+## 공식 스킬 저장소
 
 ### OpenClaw Skills Hub
 
-> **官方 skills 库地址**: https://github.com/openclaw-ai/skills-hub
+> **공식 스킬 저장소 주소**: https://github.com/openclaw-ai/skills-hub
 
-可用 skills 列表：
+사용 가능한 스킬 목록:
 
-| Skill 名称 | 描述 | 适用 Agent | 源 URL |
+| 스킬 이름 | 설명 | 적용 Agent | 출처 URL |
 |-----------|------|----------|--------|
-| `code_review` | 代码审查（支持 Python/JS/Go） | 兵部/刑部 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md |
-| `api_design` | API 设计审查 | 兵部/工部 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/api_design/SKILL.md |
-| `security_audit` | 安全审计 | 刑部 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/security_audit/SKILL.md |
-| `data_analysis` | 数据分析 | 户部 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/data_analysis/SKILL.md |
-| `doc_generation` | 文档生成 | 礼部 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/doc_generation/SKILL.md |
-| `test_framework` | 测试框架设计 | 工部/刑部 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/test_framework/SKILL.md |
+| `code_review` | 코드 리뷰 (Python/JS/Go 지원) | 병조/형조 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md |
+| `api_design` | API 설계 리뷰 | 병조/공조 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/api_design/SKILL.md |
+| `security_audit` | 보안 감사 | 형조 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/security_audit/SKILL.md |
+| `data_analysis` | 데이터 분석 | 호조 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/data_analysis/SKILL.md |
+| `doc_generation` | 문서 생성 | 예조 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/doc_generation/SKILL.md |
+| `test_framework` | 테스트 프레임워크 설계 | 공조/형조 | https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/test_framework/SKILL.md |
 
-**一键导入官方 skills**
+**공식 스킬 일괄 가져오기**
 
 ```bash
 python3 scripts/skill_manager.py import-official-hub \
@@ -183,36 +183,36 @@ python3 scripts/skill_manager.py import-official-hub \
 
 ---
 
-## 看板 UI 操作
+## 칸반 UI 조작
 
-### 快捷添加 Skill
+### 빠르게 스킬 추가하기
 
-1. 打开看板 → 🔧 **技能配置** 面板
-2. 点击 **➕ 添加远程 Skill** 按钮
-3. 填写表单：
-   - **Agent**: 选择目标 Agent
-   - **Skill 名称**: 输入 skill 的内部 ID
-   - **远程 URL**: 粘贴 GitHub/HTTPS URL
-   - **中文描述**: 可选，简述 skill 功能
-4. 点击 **确认** 按钮
+1. 칸반 열기 → 🔧 **스킬 설정** 패널
+2. **➕ 원격 스킬 추가** 버튼 클릭
+3. 양식 작성:
+   - **Agent**: 대상 Agent 선택
+   - **스킬 이름**: 스킬 내부 ID 입력
+   - **원격 URL**: GitHub/HTTPS URL 붙여넣기
+   - **한국어 설명**: 선택, 스킬 기능을 간단히 기술
+4. **확인** 버튼 클릭
 
-### 管理已添加的 Skills
+### 추가된 스킬 관리
 
-1. 看板 → 🔧 **技能配置** → **远程 Skills** 标签
-2. 查看已添加的所有 skills 及其源地址
-3. 操作：
-   - **查看**: 展示 SKILL.md 内容
-   - **更新**: 从源 URL 重新下载最新版本
-   - **删除**: 移除本地副本（不影响源）
-   - **复制源 URL**: 快速分享给他人
+1. 칸반 → 🔧 **스킬 설정** → **원격 스킬** 탭
+2. 추가된 모든 스킬과 출처 주소 조회
+3. 작업:
+   - **조회**: SKILL.md 내용 표시
+   - **갱신**: 출처 URL 에서 최신 버전을 다시 다운로드
+   - **삭제**: 로컬 사본 제거 (출처에는 영향 없음)
+   - **출처 URL 복사**: 다른 사람과 빠르게 공유
 
 ---
 
-## Skill 文件规范
+## 스킬 파일 규격
 
-远程 skills 必须遵循标准的 Markdown 格式：
+원격 스킬은 표준 Markdown 형식을 반드시 따라야 합니다.
 
-### 最小必需结构
+### 최소 필수 구조
 
 ```markdown
 ---
@@ -222,54 +222,54 @@ version: 1.0.0
 tags: [tag1, tag2]
 ---
 
-# Skill 名称
+# 스킬 이름
 
-详细描述...
+상세 설명...
 
-## 输入
+## 입력
 
-说明接收什么参数
+어떤 매개변수를 받는지 설명
 
-## 处理流程
+## 처리 흐름
 
-具体步骤...
+구체적인 단계...
 
-## 输出规范
+## 출력 규격
 
-输出格式说明
+출력 형식 설명
 ```
 
-### 完整示例
+### 완전한 예시
 
 ```markdown
 ---
 name: code_review
-description: 对 Python/JavaScript 代码进行结构审查和优化建议
+description: Python/JavaScript 코드에 대한 구조 리뷰와 최적화 제안
 version: 2.1.0
 author: openclaw-ai
 tags: [code-quality, security, performance]
 compatibleAgents: [bingbu, xingbu, menxia]
 ---
 
-# 代码审查技能
+# 코드 리뷰 스킬
 
-本技能专门用于对生产代码进行多维度审查...
+본 스킬은 운영 코드에 대한 다차원 리뷰 전용입니다...
 
-## 输入
+## 입력
 
-- `code`: 要审查的源代码
-- `language`: 编程语言 (python, javascript, go, rust)
-- `focusAreas`: 审查重点 (security, performance, style, structure)
+- `code`: 리뷰할 소스 코드
+- `language`: 프로그래밍 언어 (python, javascript, go, rust)
+- `focusAreas`: 리뷰 중점 (security, performance, style, structure)
 
-## 处理流程
+## 처리 흐름
 
-1. 语言识别与语法验证
-2. 安全漏洞扫描
-3. 性能瓶颈识别
-4. 代码风格检查
-5. 最佳实践建议
+1. 언어 식별 및 문법 검증
+2. 보안 취약점 스캔
+3. 성능 병목 식별
+4. 코드 스타일 검사
+5. 모범 사례 제안
 
-## 输出规范
+## 출력 규격
 
 ```json
 {
@@ -278,8 +278,8 @@ compatibleAgents: [bingbu, xingbu, menxia]
       "type": "security|performance|style|structure",
       "severity": "critical|high|medium|low",
       "location": "line:column",
-      "message": "问题描述",
-      "suggestion": "修复建议"
+      "message": "문제 설명",
+      "suggestion": "수정 제안"
     }
   ],
   "summary": {
@@ -290,24 +290,24 @@ compatibleAgents: [bingbu, xingbu, menxia]
 }
 ```
 
-## 适用场景
+## 적용 시나리오
 
-- 兵部（代码实现）的代码产出审查
-- 刑部（合规审计）的安全检查
-- 门下省（审议把关）的质量评估
+- 병조(코드 구현)의 코드 산출물 리뷰
+- 형조(규정 감사)의 보안 점검
+- 사간원(심의 검토)의 품질 평가
 
-## 依赖与限制
+## 의존성과 제한
 
-- 需要 Python 3.9+
-- 支持文件大小: 最多 50KB
-- 执行超时: 30 秒
+- Python 3.9+ 필요
+- 지원 파일 크기: 최대 50KB
+- 실행 시간 제한: 30초
 ```
 
 ---
 
-## 数据存储
+## 데이터 저장
 
-### 本地存储结构
+### 로컬 저장 구조
 
 ```
 ~/.openclaw/
@@ -315,20 +315,20 @@ compatibleAgents: [bingbu, xingbu, menxia]
 │   └── skills/
 │       ├── code_review/
 │       │   ├── SKILL.md
-│       │   └── .source.json    # 存储源 URL 和元数据
+│       │   └── .source.json    # 출처 URL 과 메타데이터 저장
 │       └── api_design/
 │           ├── SKILL.md
 │           └── .source.json
 ├── ...
 ```
 
-### .source.json 格式
+### .source.json 형식
 
 ```json
 {
   "skillName": "code_review",
   "sourceUrl": "https://raw.githubusercontent.com/...",
-  "description": "代码审查专项技能",
+  "description": "코드 리뷰 전문 스킬",
   "version": "2.1.0",
   "addedAt": "2026-03-02T14:30:00Z",
   "lastUpdated": "2026-03-02T14:30:00Z",
@@ -340,118 +340,118 @@ compatibleAgents: [bingbu, xingbu, menxia]
 
 ---
 
-## 安全考虑
+## 보안 고려사항
 
-### URL 验证
+### URL 검증
 
-✅ **允许的 URL 类型:**
-- HTTPS URLs: `https://`
-- 本地文件: `file://` 或绝对路径
-- 相对路径: `./skills/`
+✅ **허용되는 URL 유형:**
+- HTTPS URL: `https://`
+- 로컬 파일: `file://` 또는 절대 경로
+- 상대 경로: `./skills/`
 
-❌ **禁止的 URL 类型:**
-- HTTP (非 HTTPS): `http://` 被拒绝
-- 本地模式 HTTP: `http://localhost/` (避免环回攻击)
+❌ **금지된 URL 유형:**
+- HTTP (HTTPS 가 아님): `http://` 는 거부됨
+- 로컬 모드 HTTP: `http://localhost/` (루프백 공격 회피)
 - FTP/SSH: `ftp://`, `ssh://`
 
-### 内容验证
+### 내용 검증
 
-1. **格式验证**: 确保是有效的 Markdown YAML frontmatter
-2. **大小限制**: 最多 10 MB
-3. **超时保护**: 下载超过 30 秒自动中止
-4. **路径遍历防护**: 检查解析后的 skill 名称，禁用 `../` 模式
-5. **checksum 验证**: 可选的 GPG 签名验证（仅官方库）
+1. **형식 검증**: 유효한 Markdown YAML frontmatter 인지 확인
+2. **크기 제한**: 최대 10 MB
+3. **타임아웃 보호**: 다운로드가 30초를 초과하면 자동 중단
+4. **경로 탐색 방어**: 파싱된 스킬 이름 검사, `../` 패턴 금지
+5. **checksum 검증**: 선택적 GPG 서명 검증 (공식 저장소만 해당)
 
-### 隔离执行
+### 격리 실행
 
-- 远程 skills 在沙箱中执行（由 OpenClaw runtime 提供）
-- 无法访问 `~/.openclaw/config.json` 等敏感文件
-- 只能访问分配的 workspace 目录
+- 원격 스킬은 샌드박스에서 실행됩니다 (OpenClaw runtime 이 제공)
+- `~/.openclaw/config.json` 등 민감한 파일에는 접근 불가
+- 할당된 workspace 디렉터리에만 접근 가능
 
 ---
 
-## 故障排查
+## 문제 해결
 
-### 常见问题
+### 자주 묻는 질문
 
-**Q: 下载失败，提示 "Connection timeout"**
+**Q: 다운로드 실패, "Connection timeout" 표시**
 
-A: 检查网络连接和 URL 有效性：
+A: 네트워크 연결과 URL 유효성을 확인:
 ```bash
 curl -I https://raw.githubusercontent.com/...
 ```
 
-**Q: Skill 显示 "invalid" 状态**
+**Q: 스킬이 "invalid" 상태로 표시됨**
 
-A: 检查文件格式：
+A: 파일 형식을 확인:
 ```bash
 python3 -m json.tool ~/.openclaw/workspace-zhongshu/skills/xxx/SKILL.md
 ```
 
-**Q: 能否从私有 GitHub 仓库导入？**
+**Q: 비공개 GitHub 저장소에서 가져올 수 있나요?**
 
-A: 不支持（安全考虑）。可以：
-1. 将仓库设为公开
-2. 在本地下载后直接添加
-3. 通过 GitHub Gist 的公开链接
+A: 지원하지 않습니다 (보안상). 다음 방법을 사용할 수 있습니다:
+1. 저장소를 공개로 전환
+2. 로컬에 다운로드 후 직접 추가
+3. GitHub Gist 의 공개 링크 사용
 
-**Q: 如何创建自己的 skills 库？**
+**Q: 자체 스킬 저장소를 만들려면?**
 
-A: 参考 [OpenClaw Skills Hub](https://github.com/openclaw-ai/skills-hub) 的结构创建自己的仓库，然后：
+A: [OpenClaw Skills Hub](https://github.com/openclaw-ai/skills-hub) 의 구조를 참고하여 자체 저장소를 만든 다음:
 
 ```bash
 git clone https://github.com/yourname/my-skills-hub.git
 cd my-skills-hub
-# 创建 skill 文件结构
-# 提交 & 推送到 GitHub
+# 스킬 파일 구조 생성
+# 커밋 & GitHub 에 푸시
 ```
 
-然后通过 URL 或官方库导入功能添加即可。
+이후 URL 또는 공식 저장소 가져오기 기능으로 추가하면 됩니다.
 
 ---
 
-## 最佳实践
+## 모범 사례
 
-### 1. 版本管理
+### 1. 버전 관리
 
-始终在 SKILL.md 的 frontmatter 中标注版本号：
+SKILL.md 의 frontmatter 에 항상 버전 번호를 명시하세요:
 ```yaml
 ---
 version: 2.1.0
 ---
 ```
 
-### 2. 向后兼容
+### 2. 하위 호환
 
-更新 skill 时保持输入/输出格式兼容，避免破坏现有流程。
+스킬을 갱신할 때 입력/출력 형식을 호환되도록 유지하여 기존 흐름이 깨지지 않게 합니다.
 
-### 3. 文档完整
+### 3. 문서 완비
 
-包含详细的:
-- 功能描述
-- 适用场景
-- 依赖说明
-- 输出示例
+다음을 포함하세요:
+- 기능 설명
+- 적용 시나리오
+- 의존성 설명
+- 출력 예시
 
-### 4. 定期更新
+### 4. 정기 갱신
 
-设置定期检查更新（周期可在看板中配置）：
+정기적인 갱신 점검을 설정합니다 (주기는 칸반에서 설정 가능):
 ```bash
 python3 scripts/skill_manager.py check-updates --interval weekly
 ```
 
-### 5. 贡献社区
+### 5. 커뮤니티 기여
 
-成熟的 skills 可向 [OpenClaw Skills Hub](https://github.com/openclaw-ai/skills-hub) 贡献。
+성숙한 스킬은 [OpenClaw Skills Hub](https://github.com/openclaw-ai/skills-hub) 에 기여할 수 있습니다.
 
 ---
 
-## API 完整参考
+## API 전체 참조
 
-详见 [任务分发流转架构文档](task-dispatch-architecture.md) 的第三部分（API 与工具）。
+자세한 내용은 [작업 분배 흐름 아키텍처 문서](task-dispatch-architecture.md) 의 제3부 (API 와 도구) 참조.
 
 ---
 
 <p align="center">
-  <sub>用 <strong>开放</strong> 的生态，赋能 <strong>制度化</strong> 的 AI 协作</sub>
+  <sub><strong>개방형</strong> 생태계로 <strong>제도화된</strong> AI 협업을 지원합니다</sub>
 </p>
