@@ -2015,6 +2015,17 @@ def get_task_activity(task_id):
     return result
 
 
+def get_healthz_payload():
+    """헬스체크 응답 본문을 생성한다."""
+    task_data_dir = get_task_data_dir()
+    checks = {
+        'dataDir': task_data_dir.is_dir(),
+        'tasksReadable': (task_data_dir / 'tasks_source.json').exists(),
+    }
+    checks['dataWritable'] = os.access(str(task_data_dir), os.W_OK)
+    return {'status': 'ok' if all(checks.values()) else 'degraded', 'ts': now_iso(), 'checks': checks}
+
+
 # 상태 진행 순서 (수동 진행용)
 _STATE_FLOW = {
     'Pending':  ('Taizi', '임금', '세자', '접수 대기 지시를 세자 분류 단계로 전달'),
@@ -2024,7 +2035,7 @@ _STATE_FLOW = {
     'Assigned': ('Doing', '승정원', '육조', '승정원 배분 완료, 육조 집행 시작'),
     'Next':     ('Doing', '승정원', '육조', '집행 대기 상태에서 집행 시작'),
     'Doing':    ('Review', '육조', '승정원', '육조 집행 완료, 승정원 취합 검토로 이동'),
-    'Review':   ('Done', '승정원', '세자', '취합 검토 완료, 세자 상신 후 종료'),
+    'Review':   ('Done', '승정원', '세자', '취합 검토 완료, 세자 결과 보고 후 종료'),
 }
 _STATE_LABELS = {
     'Pending': '접수 대기',
@@ -2339,11 +2350,7 @@ class Handler(BaseHTTPRequestHandler):
         if p in ('', '/dashboard', '/dashboard.html'):
             self.send_file(DIST / 'index.html')
         elif p == '/healthz':
-            task_data_dir = get_task_data_dir()
-            checks = {'dataDir': task_data_dir.is_dir(), 'tasksReadable': (task_data_dir / 'tasks_source.json').exists()}
-            checks['dataWritable'] = os.access(str(task_data_dir), os.W_OK)
-            all_ok = all(checks.values())
-            self.send_json({'status': 'ok' if all_ok else 'degraded', 'ts': now_iso(), 'checks': checks})
+            self.send_json(get_healthz_payload())
         elif p == '/api/live-status':
             task_data_dir = get_task_data_dir()
             self.send_json(read_json(task_data_dir / 'live_status.json'))

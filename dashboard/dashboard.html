@@ -700,7 +700,7 @@
     <div class="tab" data-tab="models">⚙️ 모델 설정</div>
     <div class="tab" data-tab="skills">🛠️ 스킬 설정</div>
     <div class="tab" data-tab="sessions">💬 세션 <span class="tbadge" id="tb-s">0</span></div>
-    <div class="tab" data-tab="memorials">📜 상신 보고 <span class="tbadge" id="tb-mem">0</span></div>
+    <div class="tab" data-tab="memorials">📜 결과 보고 <span class="tbadge" id="tb-mem">0</span></div>
     <div class="tab" data-tab="templates">📜 지시 템플릿</div>
     <div class="tab" data-tab="morning">📰 조보 요약</div>
   </div>
@@ -774,12 +774,12 @@
     <div id="sess-grid" class="sess-grid"></div>
   </div>
 
-  <!-- ══ 상신 보고 ══ -->
+  <!-- ══ 결과 보고 ══ -->
   <div class="panel" id="panel-memorials">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
       <div style="flex:1">
-        <div class="sec-title" style="margin-bottom:2px">📜 상신 보고 · 지시 보관</div>
-        <div style="font-size:11px;color:var(--muted)">작업 완료 후 상신 보고가 자동 생성되며, 지시 등록부터 완료까지 전 과정을 기록합니다.</div>
+        <div class="sec-title" style="margin-bottom:2px">📜 결과 보고 · 지시 보관</div>
+        <div style="font-size:11px;color:var(--muted)">작업 완료 후 결과 보고가 자동 생성되며, 지시 등록부터 완료까지 전 과정을 기록합니다.</div>
       </div>
       <select id="mem-filter" onchange="renderMemorials()" style="font-size:11px;padding:4px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--text);outline:none">
         <option value="all">전체</option>
@@ -961,12 +961,12 @@ const PIPE = [
   {key:'Assigned', dept:'승정원', icon:'📮', action:'배분'},
   {key:'Doing',    dept:'육조',   icon:'⚙️', action:'집행'},
   {key:'Review',   dept:'승정원', icon:'🔎', action:'취합'},
-  {key:'Done',     dept:'상신',   icon:'✅', action:'완료'},
+  {key:'Done',     dept:'결과 보고',   icon:'✅', action:'완료'},
 ];
 const PIPE_STATE_IDX = {Inbox:0,Pending:0,Taizi:1,Zhongshu:2,Menxia:3,Assigned:4,Doing:5,Review:6,Done:7,Blocked:5,Cancelled:5,Next:4};
 
 /* ══ DEPT COLORS ══ */
-const DEPT_COLOR = {'세자':'#e8a040','홍문관':'#a07aff','사간원':'#6a9eff','승정원':'#6aef9a','예조':'#f5c842','호조':'#ff9a6a','병조':'#ff5270','형조':'#cc4444','공조':'#44aaff','이조':'#9b59b6','임금':'#ffd700','상신':'#2ecc8a'};
+const DEPT_COLOR = {'세자':'#e8a040','홍문관':'#a07aff','사간원':'#6a9eff','승정원':'#6aef9a','예조':'#f5c842','호조':'#ff9a6a','병조':'#ff5270','형조':'#cc4444','공조':'#44aaff','이조':'#9b59b6','임금':'#ffd700','결과 보고':'#2ecc8a'};
 function deptColor(d){return DEPT_COLOR[d]||'#6a9eff'}
 
 /* ══ UTILS ══ */
@@ -2919,7 +2919,7 @@ function skipCeremony(){
   setTimeout(()=>{el.style.display='none'}, 500);
 }
 
-/* ══ MEMORIALS (상신 보고 시스템) ══ */
+/* ══ MEMORIALS (결과 보고 시스템) ══ */
 function renderMemorials(){
   const tasks = liveStatus ? (liveStatus.tasks||[]) : [];
   const filter = (document.getElementById('mem-filter')||{}).value || 'all';
@@ -2929,7 +2929,7 @@ function renderMemorials(){
   animateCounter(document.getElementById('tb-mem'), mems.length);
 
   const el = document.getElementById('mem-list');
-  if(!mems.length){ el.innerHTML='<div class="mem-empty">아직 상신 보고가 없습니다 — 작업 완료 후 자동 생성됩니다</div>'; return; }
+  if(!mems.length){ el.innerHTML='<div class="mem-empty">아직 결과 보고가 없습니다 — 작업 완료 후 자동 생성됩니다</div>'; return; }
 
   el.innerHTML = mems.map(t=>{
     const fl = t.flow_log||[];
@@ -2965,7 +2965,7 @@ function openMemorial(jsonStr){
     if(f.from==='임금') originLog.push(f);
     else if(f.to==='홍문관'||f.from==='홍문관') planLog.push(f);
     else if(f.to==='사간원'||f.from==='사간원') reviewLog.push(f);
-    else if(f.remark&&(f.remark.includes('완료')||f.remark.includes('상신'))) resultLog.push(f);
+    else if(f.remark&&(f.remark.includes('완료')||f.remark.includes('상신')||f.remark.includes('회보')||f.remark.includes('결과 보고'))) resultLog.push(f);
     else execLog.push(f);
   }
 
@@ -3004,17 +3004,17 @@ function openMemorial(jsonStr){
     ${renderPhase('홍문관 기획', '📋', planLog)}
     ${renderPhase('사간원 심의', '🔍', reviewLog)}
     ${renderPhase('육조집행', '⚔️', execLog)}
-    ${renderPhase('취합상신', '📨', resultLog)}
+    ${renderPhase('종합 결과 보고', '📨', resultLog)}
 
     ${t.output&&t.output!=='-'?`<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">
       <div style="font-size:11px;font-weight:600;margin-bottom:4px">📦 산출물</div>
       <code style="font-size:11px;word-break:break-all">${esc(t.output)}</code>
-      <button class="btn btn-g" onclick="loadTaskOutput('${esc(t.id)}')" style="font-size:11px;padding:4px 12px;margin-left:8px">📖 상신문 보기</button>
+      <button class="btn btn-g" onclick="loadTaskOutput('${esc(t.id)}')" style="font-size:11px;padding:4px 12px;margin-left:8px">📖 결과 보고문 보기</button>
       <div id="task-output-content" style="display:none;margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px;max-height:400px;overflow-y:auto;font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-word"></div>
     </div>`:''}
 
     <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
-      <button class="btn btn-g" onclick="exportMemorial(${JSON.stringify(JSON.stringify(t.id))})" style="font-size:12px;padding:6px 16px">📋 상신 보고 복사</button>
+      <button class="btn btn-g" onclick="exportMemorial(${JSON.stringify(JSON.stringify(t.id))})" style="font-size:12px;padding:6px 16px">📋 결과 보고 복사</button>
     </div>
   `;
   document.getElementById('modal-bg').classList.add('open');
@@ -3026,7 +3026,7 @@ function exportMemorial(taskIdJson){
   const t = tasks.find(x=>x.id===taskId);
   if(!t){ toast('작업을 찾을 수 없습니다','err'); return; }
   const fl = t.flow_log||[];
-  let md = `# 📜 상신 보고 · ${t.title}\n\n`;
+  let md = `# 📜 결과 보고 · ${t.title}\n\n`;
   md += `- **작업 번호**: ${t.id}\n`;
   md += `- **상태**: ${t.state}\n`;
   md += `- **담당 부서**: ${t.org}\n`;
@@ -3051,7 +3051,7 @@ function exportMemorial(taskIdJson){
     md += `- **${f.from}** → **${f.to}**  \n  ${f.remark}  \n  _${(f.at||'').substring(0,19)}_\n\n`;
   }
   if(t.output && t.output!=='-') md += `## 산출물\n\n\`${t.output}\`\n`;
-  navigator.clipboard.writeText(md).then(()=>toast('✅ 상신 보고를 Markdown으로 복사했습니다','ok')).catch(()=>toast('복사에 실패했습니다','err'));
+  navigator.clipboard.writeText(md).then(()=>toast('✅ 결과 보고를 Markdown으로 복사했습니다','ok')).catch(()=>toast('복사에 실패했습니다','err'));
 }
 
 /* ══ TEMPLATES (지시 템플릿 라이브러리) ══ */
@@ -3279,7 +3279,7 @@ function toggleTheme(){
   }
 })();
 
-/* ══ TASK OUTPUT / 상신문 보기 ══ */
+/* ══ TASK OUTPUT / 결과 보고문 보기 ══ */
 async function loadTaskOutput(taskId){
   const el = document.getElementById('task-output-content');
   if(!el) return;

@@ -26,7 +26,7 @@ export const PIPE = [
   { key: 'Assigned', dept: '승정원', icon: '📮', action: '배분' },
   { key: 'Doing',    dept: '육조',   icon: '⚙️', action: '집행' },
   { key: 'Review',   dept: '승정원', icon: '🔎', action: '취합' },
-  { key: 'Done',     dept: '상신',   icon: '✅', action: '완료' },
+  { key: 'Done',     dept: '결과 보고',   icon: '✅', action: '완료' },
 ] as const;
 
 export const PIPE_STATE_IDX: Record<string, number> = {
@@ -37,7 +37,7 @@ export const PIPE_STATE_IDX: Record<string, number> = {
 export const DEPT_COLOR: Record<string, string> = {
   '세자': '#e8a040', '홍문관': '#a07aff', '사간원': '#6a9eff', '승정원': '#6aef9a',
   '예조': '#f5c842', '호조': '#ff9a6a', '병조': '#ff5270', '형조': '#cc4444',
-  '공조': '#44aaff', '이조': '#9b59b6', '임금': '#ffd700', '상신': '#2ecc8a',
+  '공조': '#44aaff', '이조': '#9b59b6', '임금': '#ffd700', '결과 보고': '#2ecc8a',
 };
 
 export const STATE_LABEL: Record<string, string> = {
@@ -102,7 +102,7 @@ export const TAB_DEFS: { key: TabKey; label: string; icon: string }[] = [
   { key: 'models',    label: '모델 설정', icon: '🤖' },
   { key: 'skills',    label: '스킬 설정', icon: '🎯' },
   { key: 'sessions',  label: '세션', icon: '💬' },
-  { key: 'memorials', label: '상신 보고', icon: '📜' },
+  { key: 'memorials', label: '결과 보고', icon: '📜' },
   { key: 'templates', label: '지시 템플릿', icon: '📋' },
   { key: 'morning',   label: '조보 요약', icon: '🌅' },
 ];

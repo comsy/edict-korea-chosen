@@ -1,6 +1,7 @@
 """tests for scripts/kanban_update.py"""
 import json
 import pathlib
+import subprocess
 import sys
 
 # Ensure scripts/ is importable
@@ -105,10 +106,10 @@ def test_done_routes_to_review(tmp_path):
         tasks = json.loads(tasks_file.read_text(encoding="utf-8"))
         task = tasks[0]
         assert task["state"] == "Review"
-        assert task["org"] == "尚书省"
+        assert task["org"] == "승정원"
         assert task["output"] == "/tmp/output.md"
         assert task["now"] == "功能已全部实现"
-        assert any("提交审查" in entry.get("remark", "") for entry in task["flow_log"])
+        assert any("검토 요청" in entry.get("remark", "") for entry in task["flow_log"])
     finally:
         kb.TASKS_FILE = original
 
@@ -207,3 +208,36 @@ def test_progress_log_capped(tmp_path):
         assert len(task.get("progress_log", [])) == kb.MAX_PROGRESS_LOG
     finally:
         kb.TASKS_FILE = original
+
+
+def test_create_uses_korean_default_order_wording(tmp_path):
+    """기본 생성 문구는 한국어 기준의 어명 표현을 사용해야 한다."""
+    tasks_file = tmp_path / "tasks_source.json"
+    tasks_file.write_text("[]", encoding="utf-8")
+
+    original = kb.TASKS_FILE
+    kb.TASKS_FILE = tasks_file
+    try:
+        kb.cmd_create("TEST-ORDER-001", "사용자 인증 흐름 정리", "Zhongshu", "홍문관", "홍문관제학")
+        tasks = json.loads(tasks_file.read_text(encoding="utf-8"))
+        task = next(t for t in tasks if t["id"] == "TEST-ORDER-001")
+        assert task["now"] == "어명 접수, 홍문관 확인 대기"
+        assert task["flow_log"][0]["remark"] == "어명 하달: 사용자 인증 흐름 정리"
+    finally:
+        kb.TASKS_FILE = original
+
+
+def test_kanban_cli_help_is_korean():
+    """CLI 기본 안내는 한국어 중심이어야 한다."""
+    result = subprocess.run(
+        [sys.executable, str(SCRIPTS / "kanban_update.py")],
+        cwd=str(SCRIPTS.parent),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = result.stdout + result.stderr
+    assert "칸반 작업 갱신 도구" in output
+    assert "어명 접수 시" in output
+    assert "看板任务更新工具" not in output

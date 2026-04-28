@@ -1,33 +1,34 @@
 #!/usr/bin/env python3
 """
-看板任务更新工具 - 供各省部 Agent 调用
+칸반 작업 갱신 도구 - 각 관청 Agent 공용 CLI
 
-本工具操作 data/tasks_source.json（JSON 看板模式）。
-如果您已部署 edict/backend（Postgres + Redis 事件总线模式），
-请使用 edict/backend API 端点代替本脚本，或运行迁移脚本：
+이 도구는 `data/tasks_source.json`을 직접 갱신하는 JSON 칸반 모드용 스크립트입니다.
+이미 `edict/backend`(Postgres + Redis 이벤트 버스 모드)를 배포했다면
+이 스크립트 대신 backend API를 사용하거나 다음 마이그레이션 스크립트를 실행하십시오.
+
   python3 edict/migration/migrate_json_to_pg.py
 
-两种模式互相独立，数据不会自动同步。
+두 모드는 서로 독립적이며 데이터가 자동 동기화되지 않습니다.
 
-用法:
-  # 新建任务（收旨时）
-  python3 kanban_update.py create JJC-20260223-012 "任务标题" Zhongshu 中书省 中书令
+사용 예시:
+  # 새 작업 생성 (어명 접수 시)
+  python3 kanban_update.py create JJC-20260223-012 "작업 제목" Zhongshu 홍문관 홍문관제학
 
-  # 更新状态
-  python3 kanban_update.py state JJC-20260223-012 Menxia "规划方案已提交门下省"
+  # 상태 갱신
+  python3 kanban_update.py state JJC-20260223-012 Menxia "기안안을 사간원 심의로 제출"
 
-  # 添加流转记录
-  python3 kanban_update.py flow JJC-20260223-012 "中书省" "门下省" "规划方案提交审核"
+  # 흐름 기록 추가
+  python3 kanban_update.py flow JJC-20260223-012 "홍문관" "사간원" "기안안 심의 요청"
 
-  # 完成任务
-  python3 kanban_update.py done JJC-20260223-012 "/path/to/output" "任务完成摘要"
+  # 작업 완료 보고
+  python3 kanban_update.py done JJC-20260223-012 "/path/to/output" "작업 완료 요약"
 
-  # 添加/更新子任务 todo
-  python3 kanban_update.py todo JJC-20260223-012 1 "实现API接口" in-progress
+  # 하위 todo 추가/갱신
+  python3 kanban_update.py todo JJC-20260223-012 1 "API 인터페이스 구현" in-progress
   python3 kanban_update.py todo JJC-20260223-012 1 "" completed
 
-  # 🔥 实时进展汇报（Agent 主动调用，频率不限）
-  python3 kanban_update.py progress JJC-20260223-012 "正在分析需求，拟定3个子方案" "1.调研技术选型|2.撰写设计文档|3.实现原型"
+  # 실시간 진행 보고 (Agent가 수시 호출)
+  python3 kanban_update.py progress JJC-20260223-012 "요구사항을 분석해 3가지 방안을 비교 중" "기술 검토|설계 문서 작성|프로토타입 구현"
 """
 import datetime
 import json, pathlib, sys, subprocess, logging, os, re
@@ -73,10 +74,10 @@ def _load_canonical_transitions() -> dict:
 
 
 STATE_ORG_MAP = {
-    'Taizi': '太子', 'Zhongshu': '中书省', 'Menxia': '门下省',
-    'Assigned': '尚书省', 'Next': '尚书省',
-    'Doing': '执行中', 'Review': '尚书省', 'Done': '完成', 'Blocked': '阻塞',
-    'PendingConfirm': '尚书省', 'Pending': '中书省',
+    'Taizi': '세자', 'Zhongshu': '홍문관', 'Menxia': '사간원',
+    'Assigned': '승정원', 'Next': '승정원',
+    'Doing': '집행 중', 'Review': '승정원', 'Done': '완료', 'Blocked': '중단',
+    'PendingConfirm': '승정원', 'Pending': '홍문관',
 }
 
 _STATE_AGENT_MAP = {
@@ -90,16 +91,19 @@ _STATE_AGENT_MAP = {
 }
 
 _ORG_AGENT_MAP = {
+    '예조': 'libu', '호조': 'hubu', '병조': 'bingbu',
+    '형조': 'xingbu', '공조': 'gongbu', '이조': 'libu_hr',
+    '홍문관': 'zhongshu', '사간원': 'menxia', '승정원': 'shangshu',
     '礼部': 'libu', '户部': 'hubu', '兵部': 'bingbu',
     '刑部': 'xingbu', '工部': 'gongbu', '吏部': 'libu_hr',
     '中书省': 'zhongshu', '门下省': 'menxia', '尚书省': 'shangshu',
 }
 
 _AGENT_LABELS = {
-    'main': '太子', 'taizi': '太子',
-    'zhongshu': '中书省', 'menxia': '门下省', 'shangshu': '尚书省',
-    'libu': '礼部', 'hubu': '户部', 'bingbu': '兵部', 'xingbu': '刑部',
-    'gongbu': '工部', 'libu_hr': '吏部', 'zaochao': '钦天监',
+    'main': '세자', 'taizi': '세자',
+    'zhongshu': '홍문관', 'menxia': '사간원', 'shangshu': '승정원',
+    'libu': '예조', 'hubu': '호조', 'bingbu': '병조', 'xingbu': '형조',
+    'gongbu': '공조', 'libu_hr': '이조', 'zaochao': '관상감',
 }
 
 MAX_PROGRESS_LOG = 100  # 单任务最大进展日志条数
@@ -154,7 +158,7 @@ def _append_audit(task_id, agent, action, old_val=None, new_val=None, reason="")
             return logs
         atomic_json_update(AUDIT_FILE, modifier, [])
     except Exception as e:
-        log.warning(f"审计日志写入失败: {e}")
+        log.warning(f"감사 로그 기록에 실패했습니다: {e}")
 
 
 # ── 越权检测（Agent 权限策略）──
@@ -181,8 +185,8 @@ def _check_permission(agent_id, cmd):
         return  # 未注册的 Agent 不拦截
     if cmd not in policy["commands"]:
         _append_audit(None, agent_id, "permission_denied", cmd, None, f"{agent_id} 越权执行 {cmd}")
-        log.warning(f"⛔ {agent_id} 无权执行 {cmd}（允许: {policy['commands']}）")
-        print(f"[看板] 越权拒绝: {agent_id} 不可执行 {cmd}", flush=True)
+        log.warning(f"⛔ {agent_id} 에는 {cmd} 실행 권한이 없습니다 (허용: {policy['commands']})")
+        print(f"[칸반] 권한 거부: {agent_id} 는 {cmd} 명령을 실행할 수 없습니다", flush=True)
         sys.exit(1)
 
 
@@ -199,7 +203,7 @@ _JUNK_TITLES = {
 }
 
 def _sanitize_text(raw, max_len=80):
-    """清洗文本：剥离文件路径、URL、Conversation 元数据、传旨前缀、截断过长内容。"""
+    """텍스트 정리: 경로, URL, 메타데이터, 과거 접두사를 제거하고 길이를 제한한다."""
     t = (raw or '').strip()
     # 1) 剥离 Conversation info / Conversation 后面的所有内容
     t = re.split(r'\n*Conversation\b', t, maxsplit=1)[0].strip()
@@ -271,18 +275,18 @@ def _is_valid_task_title(title):
     """校验标题是否足够作为一个旨意任务。"""
     t = (title or '').strip()
     if len(t) < _MIN_TITLE_LEN:
-        return False, f'标题过短（{len(t)}<{_MIN_TITLE_LEN}字），疑似非旨意'
+        return False, f'제목이 너무 짧습니다 ({len(t)}<{_MIN_TITLE_LEN})'
     if t.lower() in _JUNK_TITLES:
-        return False, f'标题 "{t}" 不是有效旨意'
+        return False, f'"{t}" 는 유효한 작업 제목이 아닙니다'
     # 纯标点或问号
     if re.fullmatch(r'[\s?？!！.。,，…·\-—~]+', t):
-        return False, '标题只有标点符号'
+        return False, '제목이 기호만으로 이루어져 있습니다'
     # 看起来像文件路径
     if re.match(r'^[/\\~.]', t) or re.search(r'/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+', t):
-        return False, f'标题看起来像文件路径，请用中文概括任务'
+        return False, '제목이 파일 경로처럼 보입니다. 작업 내용을 짧게 요약해 주세요'
     # 只剩标点和空白（清洗后可能变空）
     if re.fullmatch(r'[\s\W]*', t):
-        return False, '标题清洗后为空'
+        return False, '제목을 정리한 뒤 내용이 비어 있습니다'
     return True, ''
 
 
@@ -293,32 +297,32 @@ def cmd_create(task_id, title, state, org, official, remark=None):
     # 旨意标题校验
     valid, reason = _is_valid_task_title(title)
     if not valid:
-        log.warning(f'⚠️ 拒绝创建 {task_id}：{reason}')
-        print(f'[看板] 拒绝创建：{reason}', flush=True)
+        log.warning(f'⚠️ {task_id} 생성을 거부했습니다: {reason}')
+        print(f'[칸반] 생성 거부: {reason}', flush=True)
         return
     actual_org = STATE_ORG_MAP.get(state, org)
-    clean_remark = _sanitize_remark(remark) if remark else f"下旨：{title}"
+    clean_remark = _sanitize_remark(remark) if remark else f"어명 하달: {title}"
     def modifier(tasks):
         existing = next((t for t in tasks if t.get('id') == task_id), None)
         if existing:
             if existing.get('state') in ('Done', 'Cancelled'):
-                log.warning(f'⚠️ 任务 {task_id} 已完结 (state={existing["state"]})，不可覆盖')
+                log.warning(f'⚠️ 작업 {task_id} 는 이미 종료 상태({existing["state"]})이므로 덮어쓸 수 없습니다')
                 return tasks
             if existing.get('state') not in (None, '', 'Inbox', 'Pending'):
-                log.warning(f'任务 {task_id} 已存在 (state={existing["state"]})，将被覆盖')
+                log.warning(f'작업 {task_id} 가 이미 존재합니다 (state={existing["state"]}), 새 내용으로 덮어씁니다')
         tasks = [t for t in tasks if t.get('id') != task_id]
         tasks.insert(0, {
             "id": task_id, "title": title, "official": official,
             "org": actual_org, "state": state,
-            "now": clean_remark[:60] if remark else f"已下旨，等待{actual_org}接旨",
-            "eta": "-", "block": "无", "output": "", "ac": "",
-            "flow_log": [{"at": now_iso(), "from": "皇上", "to": actual_org, "remark": clean_remark}],
+            "now": clean_remark[:60] if remark else f"어명 접수, {actual_org} 확인 대기",
+            "eta": "-", "block": "없음", "output": "", "ac": "",
+            "flow_log": [{"at": now_iso(), "from": "임금", "to": actual_org, "remark": clean_remark}],
             "updatedAt": now_iso()
         })
         return tasks
     atomic_json_update(TASKS_FILE, modifier, [])
     _trigger_refresh()
-    log.info(f'✅ 创建 {task_id} | {title[:30]} | state={state}')
+    log.info(f'✅ 작업 생성 {task_id} | {title[:30]} | state={state}')
     _append_audit(task_id, _infer_agent_id_from_runtime(), 'create', None, state, title)
 
 
@@ -370,12 +374,12 @@ def cmd_state(task_id, new_state, now_text=None):
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
-            log.error(f'任务 {task_id} 不存在')
+            log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         old_state[0] = t['state']
         allowed = _VALID_TRANSITIONS.get(old_state[0])
         if allowed is not None and new_state not in allowed:
-            log.warning(f'⚠️ 非法状态转换 {task_id}: {old_state[0]} → {new_state}（允许: {allowed}）')
+            log.warning(f'⚠️ 허용되지 않은 상태 전이 {task_id}: {old_state[0]} → {new_state} (허용: {allowed})')
             rejected[0] = True
             return tasks
         # 高风险操作拦截 → 进入 PendingConfirm
@@ -388,7 +392,7 @@ def cmd_state(task_id, new_state, now_text=None):
                 'requested_at': now_iso(),
                 'confirm_by': CONFIRM_AUTHORITY.get(old_state[0], 'shangshu'),
             }
-            t['now'] = f'待确认: {old_state[0]}→{new_state}'
+            t['now'] = f'확인 대기: {old_state[0]} → {new_state}'
             t['updatedAt'] = now_iso()
             pending_confirm[0] = True
             return tasks
@@ -402,13 +406,13 @@ def cmd_state(task_id, new_state, now_text=None):
     atomic_json_update(TASKS_FILE, modifier, [])
     _trigger_refresh()
     if rejected[0]:
-        log.info(f'❌ {task_id} 状态转换被拒: {old_state[0]} → {new_state}')
+        log.info(f'❌ {task_id} 상태 전이가 거부되었습니다: {old_state[0]} → {new_state}')
         _append_audit(task_id, _infer_agent_id_from_runtime(), 'state_rejected', old_state[0], new_state, '非法状态转换')
     elif pending_confirm[0]:
-        log.info(f'⏳ {task_id} 高风险操作 {old_state[0]}→{new_state}，进入 PendingConfirm 待确认')
-        _append_audit(task_id, _infer_agent_id_from_runtime(), 'pending_confirm', old_state[0], new_state, f'需 {CONFIRM_AUTHORITY.get(old_state[0], "shangshu")} 确认')
+        log.info(f'⏳ {task_id} 고위험 전이 {old_state[0]}→{new_state}, PendingConfirm 상태로 보류되었습니다')
+        _append_audit(task_id, _infer_agent_id_from_runtime(), 'pending_confirm', old_state[0], new_state, f'{CONFIRM_AUTHORITY.get(old_state[0], "shangshu")} 확인 필요')
     else:
-        log.info(f'✅ {task_id} 状态更新: {old_state[0]} → {new_state}')
+        log.info(f'✅ {task_id} 상태 갱신: {old_state[0]} → {new_state}')
         _append_audit(task_id, _infer_agent_id_from_runtime(), 'state', old_state[0], new_state, now_text or '')
 
 
@@ -420,7 +424,7 @@ def cmd_flow(task_id, from_dept, to_dept, remark):
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
-            log.error(f'任务 {task_id} 不存在')
+            log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         t.setdefault('flow_log', []).append({
             "at": now_iso(), "from": from_dept, "to": to_dept, "remark": clean_remark,
@@ -432,7 +436,7 @@ def cmd_flow(task_id, from_dept, to_dept, remark):
         return tasks
     atomic_json_update(TASKS_FILE, modifier, [])
     _trigger_refresh()
-    log.info(f'✅ {task_id} 流转记录: {from_dept} → {to_dept}')
+    log.info(f'✅ {task_id} 흐름 기록: {from_dept} → {to_dept}')
     _append_audit(task_id, _infer_agent_id_from_runtime(), 'flow', from_dept, to_dept, clean_remark)
 
 
@@ -443,27 +447,27 @@ def cmd_done(task_id, output_path='', summary=''):
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
-            log.error(f'任务 {task_id} 不存在')
+            log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         old_state = t.get('state')
         if old_state not in ('Doing', 'Next'):
             rejected[0] = True
-            reject_reason[0] = f'当前状态 {old_state} 不允许直接上报完成'
+            reject_reason[0] = f'현재 상태 {old_state} 에서는 바로 완료 보고를 올릴 수 없습니다'
             return tasks
         completed, total = _todo_counts(t)
         if total > 0 and completed < total:
             rejected[0] = True
-            reject_reason[0] = f'todos 未完成（{completed}/{total}），禁止直接收口'
+            reject_reason[0] = f'todo 가 아직 모두 끝나지 않았습니다 ({completed}/{total})'
             return tasks
 
-        from_org = t.get('org', '执行部门')
+        from_org = t.get('org', '집행 부서')
         t['state'] = 'Review'
         t['org'] = STATE_ORG_MAP.get('Review', t.get('org', ''))
         t['output'] = output_path
-        t['now'] = summary or '执行已完成，提交尚书省汇总审查'
+        t['now'] = summary or '집행 완료, 승정원 검토 대기'
         t.setdefault('flow_log', []).append({
             "at": now_iso(), "from": from_org,
-            "to": "尚书省", "remark": f"✅ 执行完成，提交审查：{summary or '待尚书省汇总'}"
+            "to": "승정원", "remark": f"✅ 집행 완료, 검토 요청: {summary or '승정원 검토 대기'}"
         })
         # 同步设置 outputMeta，避免依赖 refresh_live_data.py 异步补充
         if output_path:
@@ -478,10 +482,10 @@ def cmd_done(task_id, output_path='', summary=''):
     atomic_json_update(TASKS_FILE, modifier, [])
     _trigger_refresh()
     if rejected[0]:
-        log.warning(f'⚠️ {task_id} done 被拒绝：{reject_reason[0]}')
+        log.warning(f'⚠️ {task_id} 완료 보고가 거부되었습니다: {reject_reason[0]}')
         _append_audit(task_id, _infer_agent_id_from_runtime(), 'done_rejected', None, 'Review', reject_reason[0])
         return
-    log.info(f'✅ {task_id} 执行完成，已提交尚书省审查')
+    log.info(f'✅ {task_id} 집행 완료, 승정원 검토로 전달했습니다')
     _append_audit(task_id, _infer_agent_id_from_runtime(), 'done', None, 'Review', summary or '')
 
 
@@ -490,7 +494,7 @@ def cmd_block(task_id, reason):
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
-            log.error(f'任务 {task_id} 不存在')
+            log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         t['state'] = 'Blocked'
         t['block'] = reason
@@ -498,12 +502,12 @@ def cmd_block(task_id, reason):
         return tasks
     atomic_json_update(TASKS_FILE, modifier, [])
     _trigger_refresh()
-    log.warning(f'⚠️ {task_id} 已阻塞: {reason}')
+    log.warning(f'⚠️ {task_id} 작업이 중단되었습니다: {reason}')
     _append_audit(task_id, _infer_agent_id_from_runtime(), 'block', None, 'Blocked', reason)
 
 
 def cmd_confirm(task_id, action, reason=''):
-    """确认或驳回 PendingConfirm 状态的高风险操作。
+    """PendingConfirm 상태의 고위험 작업을 승인하거나 반려한다.
 
     action: approve / reject
     """
@@ -512,10 +516,10 @@ def cmd_confirm(task_id, action, reason=''):
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
-            log.error(f'任务 {task_id} 不存在')
+            log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         if t.get('state') != 'PendingConfirm':
-            log.warning(f'⚠️ {task_id} 不在 PendingConfirm 状态 (当前: {t.get("state")})')
+            log.warning(f'⚠️ {task_id} 는 PendingConfirm 상태가 아닙니다 (현재: {t.get("state")})')
             rejected[0] = True
             return tasks
         pending = t.get('pending_confirm', {})
@@ -524,36 +528,36 @@ def cmd_confirm(task_id, action, reason=''):
             t['state'] = target
             if target in STATE_ORG_MAP:
                 t['org'] = STATE_ORG_MAP[target]
-            t['now'] = reason or f'确认通过 → {target}'
+            t['now'] = reason or f'승인 완료 → {target}'
             result_state[0] = target
         elif action == 'reject':
             # 驳回 → 回到 Review
             t['state'] = 'Review'
             t['org'] = STATE_ORG_MAP.get('Review', t.get('org', ''))
-            t['now'] = reason or '确认被驳回，退回复审'
+            t['now'] = reason or '승인이 반려되어 재검토로 되돌립니다'
             result_state[0] = 'Review'
         else:
-            log.error(f'未知 confirm 操作: {action}')
+            log.error(f'알 수 없는 confirm 동작입니다: {action}')
             rejected[0] = True
             return tasks
         t.pop('pending_confirm', None)
         t['updatedAt'] = now_iso()
         t.setdefault('flow_log', []).append({
             'at': now_iso(), 'from': 'PendingConfirm', 'to': result_state[0],
-            'remark': f'{"✅ 批准" if action == "approve" else "❌ 驳回"}: {reason}',
+            'remark': f'{"✅ 승인" if action == "approve" else "❌ 반려"}: {reason}',
         })
         return tasks
     atomic_json_update(TASKS_FILE, modifier, [])
     _trigger_refresh()
     if rejected[0]:
-        log.info(f'❌ {task_id} confirm 操作失败')
+        log.info(f'❌ {task_id} confirm 처리에 실패했습니다')
     else:
         log.info(f'✅ {task_id} confirm {action} → {result_state[0]}')
     _append_audit(task_id, _infer_agent_id_from_runtime(), f'confirm_{action}', 'PendingConfirm', result_state[0], reason)
 
 
 def cmd_progress(task_id, now_text, todos_pipe='', tokens=0, cost=0.0, elapsed=0):
-    """🔥 实时进展汇报 — Agent 主动调用，不改变状态，只更新 now + todos
+    """실시간 진행 보고. 상태는 바꾸지 않고 now 와 todo/progress 만 갱신한다.
 
     now_text: 当前正在做什么的一句话描述（必填）
     todos_pipe: 可选，用 | 分隔的 todo 列表，格式：
@@ -606,7 +610,7 @@ def cmd_progress(task_id, now_text, todos_pipe='', tokens=0, cost=0.0, elapsed=0
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
-            log.error(f'任务 {task_id} 不存在')
+            log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         t['now'] = clean
         if parsed_todos is not None:
@@ -641,7 +645,7 @@ def cmd_progress(task_id, now_text, todos_pipe='', tokens=0, cost=0.0, elapsed=0
     res_info = ''
     if tokens or cost or elapsed:
         res_info = f' [res: {tokens}tok/${cost:.4f}/{elapsed}s]'
-    log.info(f'📡 {task_id} 进展: {clean[:40]}... [{done_cnt[0]}/{total_cnt[0]}]{res_info}')
+    log.info(f'📡 {task_id} 진행 보고: {clean[:40]}... [{done_cnt[0]}/{total_cnt[0]}]{res_info}')
     _append_audit(task_id, _infer_agent_id_from_runtime(), 'progress', None, None, clean)
 
 def cmd_todo(task_id, todo_id, title, status='not-started', detail=''):
@@ -661,7 +665,7 @@ def cmd_todo(task_id, todo_id, title, status='not-started', detail=''):
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
-            log.error(f'任务 {task_id} 不存在')
+            log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         if 'todos' not in t:
             t['todos'] = []
@@ -672,8 +676,8 @@ def cmd_todo(task_id, todo_id, title, status='not-started', detail=''):
                            if td.get('status') == 'in-progress' and str(td.get('id')) != str(todo_id)]
             if existing_ip:
                 log.warning(
-                    f'⚠️ todo #{existing_ip[0]["id"]} 正在执行中，'
-                    f'请先完成或取消后再开始 #{todo_id}'
+                    f'⚠️ todo #{existing_ip[0]["id"]} 가 이미 진행 중입니다. '
+                    f'#{todo_id} 를 시작하기 전에 먼저 정리해 주세요'
                 )
                 rejected[0] = True
                 return tasks
@@ -701,12 +705,12 @@ def cmd_todo(task_id, todo_id, title, status='not-started', detail=''):
     atomic_json_update(TASKS_FILE, modifier, [])
     _trigger_refresh()
     if rejected[0]:
-        log.info(f'❌ {task_id} todo #{todo_id} → in-progress 被拒（已有进行中的 todo）')
+        log.info(f'❌ {task_id} todo #{todo_id} → in-progress 거부 (이미 진행 중인 todo 존재)')
         _append_audit(task_id, _infer_agent_id_from_runtime(), 'todo_rejected', todo_id, 'in-progress', 'single in-progress constraint')
         return
     log.info(f'✅ {task_id} todo [{result_info[0]}/{result_info[1]}]: {todo_id} → {status}')
     if ready_to_close[0]:
-        log.info(f'🎯 {task_id} 所有子任务完成，ready_to_close=true')
+        log.info(f'🎯 {task_id} 의 모든 하위 todo 가 완료되었습니다 (ready_to_close=true)')
     _append_audit(task_id, _infer_agent_id_from_runtime(), 'todo', todo_id, status, title)
 
 
@@ -754,7 +758,7 @@ def cmd_memory(agent_id, mem_type, content, source_task='', tags=''):
         return data
 
     atomic_json_update(mem_file, modifier, {})
-    log.info(f'🧠 {agent_id} 记忆写入: [{mem_type}] {content[:40]}...')
+    log.info(f'🧠 {agent_id} 기억 저장: [{mem_type}] {content[:40]}...')
     _append_audit(source_task or 'system', agent_id, 'memory', None, mem_type, content)
 
 
@@ -907,7 +911,7 @@ def cmd_delegate_result(sub_task_id, result_json):
         t = find_task(tasks, sub_task_id)
         if t:
             t['state'] = 'Done'
-            t['now'] = f'委派结果已提交'
+            t['now'] = '위임 결과가 제출되었습니다'
             t['updatedAt'] = now_iso()
             t['delegation_result'] = result_json
         return tasks
@@ -920,7 +924,7 @@ def cmd_delegate_result(sub_task_id, result_json):
         chain_entry = {
             'agent': to_agent,
             'phase': 'delegation_result',
-            'key_decisions': [f'委派结果: {result_json[:200]}'],
+            'key_decisions': [f'위임 결과: {result_json[:200]}'],
             'warnings': [],
             'at': now_iso(),
             'delegation_from': sub_task_id,
@@ -933,7 +937,7 @@ def cmd_delegate_result(sub_task_id, result_json):
         atomic_json_update(memo_file, memo_modifier, {})
 
     _trigger_refresh()
-    log.info(f'✅ 委派结果 {sub_task_id} → 父任务 {parent_id}')
+    log.info(f'✅ 위임 결과 반영 {sub_task_id} → 상위 작업 {parent_id}')
     _append_audit(parent_id, to_agent, 'delegate_result', sub_task_id, None, result_json[:100])
 
 _CMD_MIN_ARGS = {
@@ -950,7 +954,7 @@ if __name__ == '__main__':
         sys.exit(0)
     cmd = args[0]
     if cmd in _CMD_MIN_ARGS and len(args) < _CMD_MIN_ARGS[cmd]:
-        print(f'错误："{cmd}" 命令至少需要 {_CMD_MIN_ARGS[cmd]} 个参数，实际 {len(args)} 个')
+        print(f'오류: "{cmd}" 명령에는 최소 {_CMD_MIN_ARGS[cmd]}개의 인자가 필요합니다. 현재 {len(args)}개가 전달되었습니다')
         print(__doc__)
         sys.exit(1)
     # 越权检测：推断当前 Agent 身份，校验是否有权执行该命令

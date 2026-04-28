@@ -14,7 +14,7 @@ export default function MemorialPanel() {
 
   const exportMemorial = (t: Task) => {
     const fl = t.flow_log || [];
-    let md = `# 📜 회보 · ${t.title}\n\n`;
+    let md = `# 📜 결과 보고 · ${t.title}\n\n`;
     md += `- **작업 번호**: ${t.id}\n`;
     md += `- **상태**: ${t.state}\n`;
     md += `- **담당 부서**: ${t.org}\n`;
@@ -30,7 +30,7 @@ export default function MemorialPanel() {
     }
     if (t.output && t.output !== '-') md += `## 산출물\n\n\`${t.output}\`\n`;
     navigator.clipboard.writeText(md).then(
-      () => toast('✅ 회보를 Markdown으로 복사했습니다', 'ok'),
+      () => toast('✅ 결과 보고를 Markdown으로 복사했습니다', 'ok'),
       () => toast('복사 실패', 'err')
     );
   };
@@ -58,7 +58,7 @@ export default function MemorialPanel() {
       {/* List */}
       <div className="mem-list">
         {!mems.length ? (
-          <div className="mem-empty">아직 회보가 없습니다 — 작업이 완료되면 자동 생성됩니다</div>
+          <div className="mem-empty">아직 결과 보고가 없습니다 — 작업이 완료되면 자동 생성됩니다</div>
         ) : (
           mems.map((t) => {
             const fl = t.flow_log || [];
@@ -124,7 +124,7 @@ function MemorialDetailModal({
     if (f.from === '皇上' || f.from === '임금') originLog.push(f);
     else if (f.to === '中书省' || f.from === '中书省' || f.to === '홍문관' || f.from === '홍문관') planLog.push(f);
     else if (f.to === '门下省' || f.from === '门下省' || f.to === '사간원' || f.from === '사간원') reviewLog.push(f);
-    else if (f.remark && (f.remark.includes('完成') || f.remark.includes('回奏') || f.remark.includes('완료') || f.remark.includes('회보'))) resultLog.push(f);
+    else if (f.remark && (f.remark.includes('完成') || f.remark.includes('回奏') || f.remark.includes('완료') || f.remark.includes('회보') || f.remark.includes('상신') || f.remark.includes('결과 보고'))) resultLog.push(f);
     else execLog.push(f);
   }
 
@@ -181,7 +181,7 @@ function MemorialDetailModal({
           {renderPhase('홍문관 기획', '📋', planLog)}
           {renderPhase('사간원 심의', '🔍', reviewLog)}
           {renderPhase('6조 집행', '⚔️', execLog)}
-          {renderPhase('종합 회보', '📨', resultLog)}
+          {renderPhase('종합 결과 보고', '📨', resultLog)}
 
           {t.output && t.output !== '-' && (
             <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--line)' }}>
@@ -192,7 +192,7 @@ function MemorialDetailModal({
 
           <div style={{ display: 'flex', gap: 8, marginTop: 16, justifyContent: 'flex-end' }}>
             <button className="btn btn-g" onClick={() => onExport(t)} style={{ fontSize: 12, padding: '6px 16px' }}>
-              📋 회보 복사
+              📋 결과 보고 복사
             </button>
           </div>
         </div>

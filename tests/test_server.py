@@ -1,6 +1,6 @@
 """tests for dashboard/server.py route handling"""
-import json, pathlib, sys, threading, time
-from http.client import HTTPConnection
+import pathlib
+import sys
 
 # Add project paths
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -9,32 +9,20 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 
 
 def test_healthz(tmp_path):
-    """GET /healthz returns 200 with status ok."""
+    """healthz payload reports status and checks without binding a port."""
     # Create minimal data dir
     data_dir = tmp_path / 'data'
     data_dir.mkdir()
-    (data_dir / 'live_status.json').write_text('{}')
+    (data_dir / 'tasks_source.json').write_text('[]')
     (data_dir / 'agent_config.json').write_text('{}')
 
     # Import and patch server
     import server as srv
     srv.DATA = data_dir
+    srv.get_task_data_dir = lambda: data_dir
 
-    from http.server import HTTPServer
-    port = 18971
+    body = srv.get_healthz_payload()
 
-    httpd = HTTPServer(('127.0.0.1', port), srv.Handler)
-    t = threading.Thread(target=httpd.handle_request, daemon=True)
-    t.start()
-
-    time.sleep(0.1)
-    conn = HTTPConnection('127.0.0.1', port, timeout=5)
-    conn.request('GET', '/healthz')
-    resp = conn.getresponse()
-    body = json.loads(resp.read())
-    conn.close()
-
-    assert resp.status == 200
-    assert body['status'] in ('ok', 'degraded')
-
-    httpd.server_close()
+    assert body['status'] == 'ok'
+    assert body['checks']['dataDir'] is True
+    assert body['checks']['tasksReadable'] is True
