@@ -45,8 +45,14 @@ def test_file_url_path_traversal_blocked(tmp_path):
         f"VULNERABILITY: file:// URL read arbitrary file outside allowed_roots! "
         f"Result: {result}"
     )
-    assert '路径' in result.get('error', '') or 'allow' in result.get('error', '').lower(), (
-        f"Expected path restriction error, got: {result.get('error')}"
+    error_msg = result.get('error', '')
+    assert (
+        '路径' in error_msg
+        or 'allow' in error_msg.lower()
+        or '허용' in error_msg
+        or '디렉터리' in error_msg
+    ), (
+        f"Expected path restriction error, got: {error_msg}"
     )
 
 

@@ -45,7 +45,16 @@ def project(tmp_path, monkeypatch):
     monkeypatch.setattr(sac, '_SOUL_DEPLOY_MAP', {'agent-a': 'aaa'})
     monkeypatch.setattr(pathlib.Path, 'home', staticmethod(lambda: home))
 
-    return types.SimpleNamespace(root=proj, scripts=scripts, data=data, home=home)
+    # agent_rows for sync_scripts_to_workspaces() — runtime_id + workspace path
+    openclaw = home / '.openclaw'
+    agent_rows = [
+        {'id': 'aaa', 'workspace': str(openclaw / 'workspace-aaa')},
+        {'id': 'main', 'workspace': str(openclaw / 'workspace-main')},
+    ]
+
+    return types.SimpleNamespace(
+        root=proj, scripts=scripts, data=data, home=home, agent_rows=agent_rows
+    )
 
 
 # ── Tests ────────────────────────────────────────────────────────
@@ -135,7 +144,7 @@ class TestSyncScriptsToWorkspaces:
     """Integration tests for the full ``sync_scripts_to_workspaces`` flow."""
 
     def test_creates_symlinks_in_workspace(self, project):
-        sac.sync_scripts_to_workspaces()
+        sac.sync_scripts_to_workspaces(project.agent_rows)
 
         ws = project.home / '.openclaw' / 'workspace-aaa' / 'scripts'
         assert ws.is_dir()
@@ -148,13 +157,13 @@ class TestSyncScriptsToWorkspaces:
         assert rf.is_symlink()
 
     def test_skips_dunder_files(self, project):
-        sac.sync_scripts_to_workspaces()
+        sac.sync_scripts_to_workspaces(project.agent_rows)
 
         ws = project.home / '.openclaw' / 'workspace-aaa' / 'scripts'
         assert not (ws / '__init__.py').exists()
 
     def test_legacy_workspace_main(self, project):
-        sac.sync_scripts_to_workspaces()
+        sac.sync_scripts_to_workspaces(project.agent_rows)
 
         ws_main = project.home / '.openclaw' / 'workspace-main' / 'scripts'
         assert ws_main.is_dir()
@@ -164,8 +173,8 @@ class TestSyncScriptsToWorkspaces:
         assert kb.resolve() == (project.scripts / 'kanban_update.py').resolve()
 
     def test_idempotent_rerun(self, project):
-        sac.sync_scripts_to_workspaces()
-        sac.sync_scripts_to_workspaces()  # second run should be a no-op
+        sac.sync_scripts_to_workspaces(project.agent_rows)
+        sac.sync_scripts_to_workspaces(project.agent_rows)  # second run should be a no-op
 
         ws = project.home / '.openclaw' / 'workspace-aaa' / 'scripts'
         kb = ws / 'kanban_update.py'
@@ -179,7 +188,7 @@ class TestSyncScriptsToWorkspaces:
         old_copy = ws / 'kanban_update.py'
         old_copy.write_text('# stale physical copy')
 
-        sac.sync_scripts_to_workspaces()
+        sac.sync_scripts_to_workspaces(project.agent_rows)
 
         assert old_copy.is_symlink(), 'old physical copy should be replaced'
         assert old_copy.resolve() == (project.scripts / 'kanban_update.py').resolve()
@@ -187,7 +196,7 @@ class TestSyncScriptsToWorkspaces:
     def test_file_resolves_to_project_root(self, project):
         """The whole point of #56: __file__ should resolve to project scripts/,
         so Path(__file__).resolve().parent.parent == project root."""
-        sac.sync_scripts_to_workspaces()
+        sac.sync_scripts_to_workspaces(project.agent_rows)
 
         ws = project.home / '.openclaw' / 'workspace-aaa' / 'scripts'
         ws_script = ws / 'kanban_update.py'
@@ -215,7 +224,7 @@ class TestSyncScriptsToWorkspaces:
         ws_main_scripts = ws_main / 'scripts'
         os.symlink(project.scripts, ws_main_scripts)  # directory-level symlink
 
-        sac.sync_scripts_to_workspaces()
+        sac.sync_scripts_to_workspaces(project.agent_rows)
 
         # Source files must still be real files with their original content
         for script in project.scripts.iterdir():

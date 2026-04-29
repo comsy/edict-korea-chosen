@@ -24,19 +24,19 @@ import pathlib
 log = logging.getLogger('kanban')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(name)s] %(message)s', datefmt='%H:%M:%S')
 
-# Edict API 地址 — 环境变量 > 默认 localhost:8000
+# Edict API 주소 — 환경변수 > 기본값 localhost:8000
 EDICT_API_URL = os.environ.get('EDICT_API_URL', 'http://localhost:8000')
 
-# 是否启用 API 模式（EDICT_MODE=api | json | auto）
+# API 모드 설정 (EDICT_MODE=api | json | auto)
 EDICT_MODE = os.environ.get('EDICT_MODE', 'auto').lower()
 
-# ── 文本清洗逻辑（与旧版完全一致） ──
+# ── 텍스트 정제 로직 (구버전과 완전 동일) ──
 
 _MIN_TITLE_LEN = 6
 _JUNK_TITLES = {
-    '?', '？', '好', '好的', '是', '否', '不', '不是', '对', '了解', '收到',
-    '嗯', '哦', '知道了', '开启了么', '可以', '不行', '行', 'ok', 'yes', 'no',
-    '你去开启', '测试', '试试', '看看',
+    '?', '？', '좋아', '좋아요', '네', '아니요', '아니', '아니에요', '맞아', '알겠습니다', '수신',
+    '음', '오', '알았어', '시작했어?', '돼', '안 돼', '되겠어', 'ok', 'yes', 'no',
+    '네가 시작해', '테스트', '해봐', '봐봐',
 }
 
 STATE_ORG_MAP = {
@@ -59,7 +59,7 @@ def _sanitize_text(raw, max_len=80):
     t = re.split(r'\n*```', t, maxsplit=1)[0].strip()
     t = re.sub(r'[/\\.~][A-Za-z0-9_\-./]+(?:\.(?:py|js|ts|json|md|sh|yaml|yml|txt|csv|html|css|log))?', '', t)
     t = re.sub(r'https?://\S+', '', t)
-    t = re.sub(r'^(传旨|下旨)([（(][^)）]*[)）])?[：:\uff1a]\s*', '', t)
+    t = re.sub(r'^(전지|하교)([（(][^)）]*[)）])?[：:：]\s*', '', t)
     t = re.sub(r'(message_id|session_id|chat_id|open_id|user_id|tenant_key)\s*[:=]\s*\S+', '', t)
     t = re.sub(r'\s+', ' ', t).strip()
     if len(t) > max_len:
@@ -78,15 +78,15 @@ def _sanitize_remark(raw):
 def _is_valid_task_title(title):
     t = (title or '').strip()
     if len(t) < _MIN_TITLE_LEN:
-        return False, f'标题过短（{len(t)}<{_MIN_TITLE_LEN}字），疑似非旨意'
+        return False, f'제목이 너무 짧습니다 ({len(t)}<{_MIN_TITLE_LEN}자). 유효한 어명이 아닌 것 같습니다'
     if t.lower() in _JUNK_TITLES:
-        return False, f'标题 "{t}" 不是有效旨意'
+        return False, f'제목 "{t}"은(는) 유효한 어명이 아닙니다'
     if re.fullmatch(r'[\s?？!！.。,，…·\-—~]+', t):
-        return False, '标题只有标点符号'
+        return False, '제목이 구두점만으로 이루어져 있습니다'
     if re.match(r'^[/\\~.]', t) or re.search(r'/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+', t):
-        return False, f'标题看起来像文件路径，请用中文概括任务'
+        return False, f'제목이 파일 경로처럼 보입니다. 한국어로 업무를 요약해 주세요'
     if re.fullmatch(r'[\s\W]*', t):
-        return False, '标题清洗后为空'
+        return False, '제목 정제 후 내용이 비어 있습니다'
     return True, ''
 
 
@@ -102,15 +102,15 @@ def _infer_agent_id():
     return 'system'
 
 
-# ── API 客户端 ──
+# ── API 클라이언트 ──
 
 def _api_available() -> bool:
-    """检查 Edict API 是否可用。"""
+    """Edict API 사용 가능 여부 확인."""
     if EDICT_MODE == 'json':
         return False
     if EDICT_MODE == 'api':
         return True
-    # auto mode: 探测
+    # auto 모드: 탐지
     try:
         import urllib.request
         req = urllib.request.Request(f"{EDICT_API_URL}/health", method='GET')
@@ -122,7 +122,7 @@ def _api_available() -> bool:
 
 
 def _api_post(path: str, data: dict) -> dict | None:
-    """向 Edict API 发送 POST 请求。"""
+    """Edict API에 POST 요청 전송."""
     try:
         import urllib.request
         body = json.dumps(data, ensure_ascii=False).encode('utf-8')
@@ -135,12 +135,12 @@ def _api_post(path: str, data: dict) -> dict | None:
         with urllib.request.urlopen(req, timeout=10) as resp:
             return json.loads(resp.read())
     except Exception as e:
-        log.warning(f'API 调用失败 ({path}): {e}')
+        log.warning(f'API 호출 실패 ({path}): {e}')
         return None
 
 
 def _api_put(path: str, data: dict) -> dict | None:
-    """向 Edict API 发送 PUT 请求。"""
+    """Edict API에 PUT 요청 전송."""
     try:
         import urllib.request
         body = json.dumps(data, ensure_ascii=False).encode('utf-8')
@@ -153,13 +153,13 @@ def _api_put(path: str, data: dict) -> dict | None:
         with urllib.request.urlopen(req, timeout=10) as resp:
             return json.loads(resp.read())
     except Exception as e:
-        log.warning(f'API 调用失败 ({path}): {e}')
+        log.warning(f'API 호출 실패 ({path}): {e}')
         return None
 
 
-# ── 命令 → API 调用 ──
+# ── 명령어 → API 호출 ──
 
-# 缓存 API 可用性
+# API 사용 가능 여부 캐시
 _api_ok = None
 
 
@@ -168,15 +168,15 @@ def _check_api():
     if _api_ok is None:
         _api_ok = _api_available()
         if _api_ok:
-            log.debug('Edict API 可用，使用 API 模式')
+            log.debug('Edict API 사용 가능 — API 모드로 실행')
         else:
-            log.debug('Edict API 不可用，降级到 JSON 模式')
+            log.debug('Edict API 사용 불가 — JSON 모드로 전환')
     return _api_ok
 
 
 def _fallback_json():
-    """降级：导入旧版 kanban_update 逻辑。"""
-    # 回退到同目录下的旧版实现
+    """폴백: 구버전 kanban_update 로직으로 전환."""
+    # 같은 디렉토리의 구버전 구현으로 폴백
     old_path = pathlib.Path(__file__).parent / 'kanban_update_legacy.py'
     if old_path.exists():
         import importlib.util
@@ -191,53 +191,52 @@ def cmd_create(task_id, title, state, org, official, remark=None):
     title = _sanitize_title(title)
     valid, reason = _is_valid_task_title(title)
     if not valid:
-        log.warning(f'⚠️ 拒绝创建 {task_id}：{reason}')
-        print(f'[看板] 拒绝创建：{reason}', flush=True)
+        log.warning(f'⚠️ {task_id} 생성 거부: {reason}')
+        print(f'[칸반] 생성 거부: {reason}', flush=True)
         return
 
     if _check_api():
         edict_state = _STATE_TO_EDICT.get(state, state.lower())
         result = _api_post('/api/tasks', {
             'title': title,
-            'description': remark or f'下旨：{title}',
-            'priority': '中',
+            'description': remark or f'하교: {title}',
+            'priority': '중',
             'assignee_org': org,
             'creator': official,
             'tags': [task_id],
             'meta': {'legacy_id': task_id, 'legacy_state': state},
         })
         if result:
-            log.info(f'✅ 创建 {task_id} → Edict {result.get("task_id", "?")} | {title[:30]}')
+            log.info(f'✅ {task_id} 생성 → Edict {result.get("task_id", "?")} | {title[:30]}')
             return
 
-    # 降级
+    # 폴백
     legacy = _fallback_json()
     if legacy:
         legacy.cmd_create(task_id, title, state, org, official, remark)
     else:
-        log.error(f'无法创建任务：API 不可用且无降级模块')
+        log.error(f'업무 생성 실패: API 사용 불가 및 폴백 모듈 없음')
 
 
 def cmd_state(task_id, new_state, now_text=None):
     if _check_api():
         edict_state = _STATE_TO_EDICT.get(new_state, new_state.lower())
         agent = _infer_agent_id()
-        # 需要先通过 legacy_id 查找 edict task_id
-        # 暂用 legacy_id tag 搜索
+        # legacy_id 태그로 edict task_id 조회 후 전이
         result = _api_post(f'/api/tasks/by-legacy/{task_id}/transition', {
             'new_state': edict_state,
             'agent': agent,
-            'reason': now_text or f'状态更新为 {new_state}',
+            'reason': now_text or f'상태 변경: {new_state}',
         })
         if result:
-            log.info(f'✅ {task_id} 状态更新 → {new_state}')
+            log.info(f'✅ {task_id} 상태 변경 → {new_state}')
             return
 
     legacy = _fallback_json()
     if legacy:
         legacy.cmd_state(task_id, new_state, now_text)
     else:
-        log.error(f'无法更新状态：API 不可用且无降级模块')
+        log.error(f'상태 변경 실패: API 사용 불가 및 폴백 모듈 없음')
 
 
 def cmd_flow(task_id, from_dept, to_dept, remark):
@@ -246,10 +245,10 @@ def cmd_flow(task_id, from_dept, to_dept, remark):
         agent = _infer_agent_id()
         result = _api_post(f'/api/tasks/by-legacy/{task_id}/progress', {
             'agent': agent,
-            'content': f'流转: {from_dept} → {to_dept} | {clean_remark}',
+            'content': f'유관: {from_dept} → {to_dept} | {clean_remark}',
         })
         if result:
-            log.info(f'✅ {task_id} 流转记录: {from_dept} → {to_dept}')
+            log.info(f'✅ {task_id} 유관 기록: {from_dept} → {to_dept}')
             return
 
     legacy = _fallback_json()
@@ -294,7 +293,7 @@ def cmd_block(task_id, reason):
 def cmd_progress(task_id, now_text, todos_pipe='', tokens=0, cost=0.0, elapsed=0):
     clean = _sanitize_remark(now_text)
 
-    # 解析 todos
+    # todos 파싱
     parsed_todos = None
     if todos_pipe:
         new_todos = []
@@ -317,17 +316,17 @@ def cmd_progress(task_id, now_text, todos_pipe='', tokens=0, cost=0.0, elapsed=0
 
     if _check_api():
         agent = _infer_agent_id()
-        # 更新进度
+        # 진행 상황 업데이트
         _api_post(f'/api/tasks/by-legacy/{task_id}/progress', {
             'agent': agent,
             'content': clean,
         })
-        # 更新 todos
+        # todos 업데이트
         if parsed_todos:
             _api_put(f'/api/tasks/by-legacy/{task_id}/todos', {
                 'todos': parsed_todos,
             })
-        log.info(f'📡 {task_id} 进展: {clean[:40]}...')
+        log.info(f'📡 {task_id} 진행: {clean[:40]}...')
         return
 
     legacy = _fallback_json()
@@ -340,8 +339,7 @@ def cmd_todo(task_id, todo_id, title, status='not-started', detail=''):
         status = 'not-started'
 
     if _check_api():
-        # 读取现有 todos，更新后写回
-        # 这里简化处理，直接发进度更新
+        # 기존 todos 조회 후 업데이트 (여기서는 간략히 진행 업데이트로 처리)
         agent = _infer_agent_id()
         _api_post(f'/api/tasks/by-legacy/{task_id}/progress', {
             'agent': agent,
@@ -355,7 +353,7 @@ def cmd_todo(task_id, todo_id, title, status='not-started', detail=''):
         legacy.cmd_todo(task_id, todo_id, title, status, detail)
 
 
-# ── CLI 分发 ──
+# ── CLI 분기 ──
 
 _CMD_MIN_ARGS = {
     'create': 6, 'state': 3, 'flow': 5, 'done': 2, 'block': 3, 'todo': 4, 'progress': 3,
@@ -369,7 +367,7 @@ if __name__ == '__main__':
 
     cmd = args[0]
     if cmd in _CMD_MIN_ARGS and len(args) < _CMD_MIN_ARGS[cmd]:
-        print(f'错误："{cmd}" 命令至少需要 {_CMD_MIN_ARGS[cmd]} 个参数，实际 {len(args)} 个')
+        print(f'오류: "{cmd}" 명령은 최소 {_CMD_MIN_ARGS[cmd]}개의 인수가 필요합니다. 실제 {len(args)}개')
         print(__doc__)
         sys.exit(1)
 
