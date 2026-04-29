@@ -40,8 +40,8 @@ def main():
         t['org'] = t.get('org') or org_map.get(t.get('official', ''), '')
         t['outputMeta'] = output_meta(t.get('output', ''))
 
-        # 心跳时效检测：对 Doing/Assigned 状态的任务标注活跃度
-        if t.get('state') in ('Doing', 'Assigned', 'Review'):
+        # 心跳时效检测：对 InProgress/SeungjeongwonAssigned 状态的任务标注活跃度
+        if t.get('state') in ('InProgress', 'SeungjeongwonAssigned', 'FinalReview'):
             updated_raw = t.get('updatedAt') or t.get('sourceMeta', {}).get('updatedAt')
             age_sec = None
             if updated_raw:
@@ -66,7 +66,7 @@ def main():
 
     today_str = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
     def _is_today_done(t):
-        if t.get('state') != 'Done':
+        if t.get('state') != 'Completed':
             return False
         ua = t.get('updatedAt', '')
         if isinstance(ua, str) and ua[:10] == today_str:
@@ -77,13 +77,13 @@ def main():
             return True
         return False
     today_done = sum(1 for t in tasks if _is_today_done(t))
-    total_done = sum(1 for t in tasks if t.get('state') == 'Done')
-    in_progress = sum(1 for t in tasks if t.get('state') in ['Doing', 'Review', 'Next', 'Blocked'])
+    total_done = sum(1 for t in tasks if t.get('state') == 'Completed')
+    in_progress = sum(1 for t in tasks if t.get('state') in ['InProgress', 'FinalReview', 'Ready', 'Blocked'])
     blocked = sum(1 for t in tasks if t.get('state') == 'Blocked')
 
     history = []
     for t in tasks:
-        if t.get('state') == 'Done':
+        if t.get('state') == 'Completed':
             lm = t.get('outputMeta', {}).get('lastModified')
             history.append({
                 'at': lm or '未知',
@@ -101,8 +101,8 @@ def main():
         'history': history,
         'metrics': {
             'officialCount': len(officials),
-            'todayDone': today_done,
-            'totalDone': total_done,
+            'todayCompleted': today_done,
+            'totalCompleted': total_done,
             'inProgress': in_progress,
             'blocked': blocked
         },

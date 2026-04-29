@@ -1,17 +1,18 @@
 {
   "agents": {
     "list": [
-      {"id": "taizi", "workspace": "/app/.openclaw/workspace-taizi", "subagents": {"allowAgents": ["zhongshu"]}},
-      {"id": "zhongshu", "workspace": "/app/.openclaw/workspace-zhongshu", "subagents": {"allowAgents": ["menxia", "shangshu"]}},
-      {"id": "menxia", "workspace": "/app/.openclaw/workspace-menxia", "subagents": {"allowAgents": ["shangshu", "zhongshu"]}},
-      {"id": "shangshu", "workspace": "/app/.openclaw/workspace-shangshu", "subagents": {"allowAgents": ["zhongshu", "menxia", "hubu", "libu", "bingbu", "xingbu", "gongbu", "libu_hr"]}},
-      {"id": "hubu", "workspace": "/app/.openclaw/workspace-hubu", "subagents": {"allowAgents": ["shangshu"]}},
-      {"id": "libu", "workspace": "/app/.openclaw/workspace-libu", "subagents": {"allowAgents": ["shangshu"]}},
-      {"id": "bingbu", "workspace": "/app/.openclaw/workspace-bingbu", "subagents": {"allowAgents": ["shangshu"]}},
-      {"id": "xingbu", "workspace": "/app/.openclaw/workspace-xingbu", "subagents": {"allowAgents": ["shangshu"]}},
-      {"id": "gongbu", "workspace": "/app/.openclaw/workspace-gongbu", "subagents": {"allowAgents": ["shangshu"]}},
-      {"id": "libu_hr", "workspace": "/app/.openclaw/workspace-libu_hr", "subagents": {"allowAgents": ["shangshu"]}},
-      {"id": "zaochao", "workspace": "/app/.openclaw/workspace-zaochao", "subagents": {"allowAgents": []}}
+      {"id": "seja", "workspace": "/app/.openclaw/workspace-seja", "subagents": {"allowAgents": ["hongmungwan"]}},
+      {"id": "hongmungwan", "workspace": "/app/.openclaw/workspace-hongmungwan", "subagents": {"allowAgents": ["saganwon", "seungjeongwon"]}},
+      {"id": "saganwon", "workspace": "/app/.openclaw/workspace-saganwon", "subagents": {"allowAgents": ["seungjeongwon", "hongmungwan"]}},
+      {"id": "seungjeongwon", "workspace": "/app/.openclaw/workspace-seungjeongwon", "subagents": {"allowAgents": ["hongmungwan", "saganwon", "hojo", "yejo", "byeongjo", "hyeongjo", "gongjo", "ijo"]}},
+      {"id": "hojo", "workspace": "/app/.openclaw/workspace-hojo", "subagents": {"allowAgents": ["seungjeongwon"]}},
+      {"id": "yejo", "workspace": "/app/.openclaw/workspace-yejo", "subagents": {"allowAgents": ["seungjeongwon"]}},
+      {"id": "byeongjo", "workspace": "/app/.openclaw/workspace-byeongjo", "subagents": {"allowAgents": ["seungjeongwon"]}},
+      {"id": "hyeongjo", "workspace": "/app/.openclaw/workspace-hyeongjo", "subagents": {"allowAgents": ["seungjeongwon"]}},
+      {"id": "gongjo", "workspace": "/app/.openclaw/workspace-gongjo", "subagents": {"allowAgents": ["seungjeongwon"]}},
+      {"id": "ijo", "workspace": "/app/.openclaw/workspace-ijo", "subagents": {"allowAgents": ["seungjeongwon"]}},
+      {"id": "jobocheong", "workspace": "/app/.openclaw/workspace-jobocheong", "subagents": {"allowAgents": []}},
+      {"id": "gwansanggam", "workspace": "/app/.openclaw/workspace-gwansanggam", "subagents": {"allowAgents": []}}
     ]
   }
 }

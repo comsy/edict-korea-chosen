@@ -12,26 +12,27 @@ import type {
 } from '../api';
 
 const AGENT_LABELS: Record<string, string> = {
-  main: '세자',
-  zhongshu: '홍문관',
-  menxia: '사간원',
-  shangshu: '승정원',
-  libu: '예조',
-  hubu: '호조',
-  bingbu: '병조',
-  xingbu: '형조',
-  gongbu: '공조',
-  libu_hr: '이조',
-  zaochao: '조보청',
+  seja: '세자',
+  hongmungwan: '홍문관',
+  saganwon: '사간원',
+  seungjeongwon: '승정원',
+  yejo: '예조',
+  hojo: '호조',
+  byeongjo: '병조',
+  hyeongjo: '형조',
+  gongjo: '공조',
+  ijo: '이조',
+  jobocheong: '조보청',
+  gwansanggam: '관상감',
 };
 
 const NEXT_LABELS: Record<string, string> = {
-  Taizi: '홍문관 기안',
-  Zhongshu: '사간원 심의',
-  Menxia: '승정원 배분',
-  Assigned: '집행 시작',
-  Doing: '취합 검토',
-  Review: '완료',
+  SejaFinalReview: '홍문관 기안',
+  HongmungwanDraft: '사간원 심의',
+  SaganwonFinalReview: '승정원 배분',
+  SeungjeongwonAssigned: '집행 시작',
+  InProgress: '취합 검토',
+  FinalReview: '완료',
 };
 
 function fmtStalled(sec: number): string {
@@ -86,7 +87,7 @@ export default function TaskModal() {
     fetchActivity();
     fetchSched();
 
-    const isDone = ['Done', 'Cancelled'].includes(task.state);
+    const isDone = ['Completed', 'Cancelled'].includes(task.state);
     if (!isDone) {
       laTimerRef.current = setInterval(() => {
         fetchActivity();
@@ -118,7 +119,7 @@ export default function TaskModal() {
   const todos = task.todos || [];
   const todoDone = todos.filter((x) => x.status === 'completed').length;
   const todoTotal = todos.length;
-  const canStop = !['Done', 'Blocked', 'Cancelled'].includes(task.state);
+  const canStop = !['Completed', 'Blocked', 'Cancelled'].includes(task.state);
   const canResume = ['Blocked', 'Cancelled'].includes(task.state);
 
   const doTaskAction = async (action: string, reason: string) => {
@@ -270,13 +271,13 @@ export default function TaskModal() {
             {canResume && (
               <button className="btn-action btn-resume" onClick={() => doTaskAction('resume', '집행 재개')}>▶️ 집행 재개</button>
             )}
-            {['Review', 'Menxia'].includes(task.state) && (
+            {['FinalReview', 'SaganwonFinalReview'].includes(task.state) && (
               <>
                 <button className="btn-action" style={{ background: '#2ecc8a22', color: '#2ecc8a', border: '1px solid #2ecc8a44' }} onClick={() => doReview('approve')}>✅ 승인</button>
                 <button className="btn-action" style={{ background: '#ff527022', color: '#ff5270', border: '1px solid #ff527044' }} onClick={() => doReview('reject')}>🚫 반려</button>
               </>
             )}
-            {['Pending', 'Taizi', 'Zhongshu', 'Menxia', 'Assigned', 'Doing', 'Review', 'Next'].includes(task.state) && (
+            {['Pending', 'SejaFinalReview', 'HongmungwanDraft', 'SaganwonFinalReview', 'SeungjeongwonAssigned', 'InProgress', 'FinalReview', 'Ready'].includes(task.state) && (
               <button className="btn-action" style={{ background: '#7c5cfc18', color: '#7c5cfc', border: '1px solid #7c5cfc44' }} onClick={doAdvance}>⏩ 다음 단계로 진행</button>
             )}
           </div>
@@ -386,7 +387,7 @@ export default function TaskModal() {
           )}
 
           {/* Live Activity */}
-          <LiveActivitySection data={activityData} isDone={['Done', 'Cancelled'].includes(task.state)} logRef={logRef} />
+          <LiveActivitySection data={activityData} isDone={['Completed', 'Cancelled'].includes(task.state)} logRef={logRef} />
         </div>
       </div>
     </div>

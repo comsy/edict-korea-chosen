@@ -17,17 +17,17 @@ _SPEC.loader.exec_module(dashboard_server)
 
 
 def test_review_approve_rejects_incomplete_todos(monkeypatch):
-    """Review approve should not close a task when todos are still incomplete."""
+    """FinalReview approve should not close a task when todos are still incomplete."""
     tasks = [{
         "id": "JJC-REVIEW-001",
         "title": "review gate",
-        "state": "Review",
-        "org": "尚书省",
-        "now": "汇总中",
+        "state": "FinalReview",
+        "org": "승정원",
+        "now": "취합 중",
         "flow_log": [],
         "todos": [
-            {"id": "1", "title": "已完成", "status": "completed"},
-            {"id": "2", "title": "未完成", "status": "in-progress"},
+            {"id": "1", "title": "완료됨", "status": "completed"},
+            {"id": "2", "title": "미완료", "status": "in-progress"},
         ],
     }]
 
@@ -40,26 +40,25 @@ def test_review_approve_rejects_incomplete_todos(monkeypatch):
         lambda payload: saved.setdefault("tasks", json.loads(json.dumps(payload, ensure_ascii=False))),
     )
 
-    result = dashboard_server.handle_review_action("JJC-REVIEW-001", "approve", "试图提前完结")
-
+    result = dashboard_server.handle_review_action("JJC-REVIEW-001", "approve", "시도 조기 완료")
     assert result["ok"] is False
     assert "2/2" not in result["error"]
-    assert "不能直接准奏完结" in result["error"]
+    assert "완료할 수 없습니다" in result["error"]
     assert "tasks" not in saved
 
 
 def test_review_approve_allows_complete_todos(monkeypatch):
-    """Review approve may finish a task once all todos are completed."""
+    """FinalReview approve may finish a task once all todos are completed."""
     tasks = [{
         "id": "JJC-REVIEW-002",
         "title": "review gate ok",
-        "state": "Review",
-        "org": "尚书省",
-        "now": "汇总中",
+        "state": "FinalReview",
+        "org": "승정원",
+        "now": "취합 중",
         "flow_log": [],
         "todos": [
-            {"id": "1", "title": "已完成", "status": "completed"},
-            {"id": "2", "title": "已完成2", "status": "completed"},
+            {"id": "1", "title": "완료됨", "status": "completed"},
+            {"id": "2", "title": "완료됨2", "status": "completed"},
         ],
     }]
 
@@ -72,7 +71,6 @@ def test_review_approve_allows_complete_todos(monkeypatch):
         lambda payload: saved.setdefault("tasks", json.loads(json.dumps(payload, ensure_ascii=False))),
     )
 
-    result = dashboard_server.handle_review_action("JJC-REVIEW-002", "approve", "全部完成")
-
+    result = dashboard_server.handle_review_action("JJC-REVIEW-002", "approve", "전체 완료")
     assert result["ok"] is True
-    assert saved["tasks"][0]["state"] == "Done"
+    assert saved["tasks"][0]["state"] == "Completed"

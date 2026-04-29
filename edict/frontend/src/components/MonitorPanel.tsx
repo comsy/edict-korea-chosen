@@ -15,7 +15,7 @@ export default function MonitorPanel() {
   }, [loadAgentsStatus]);
 
   const tasks = liveStatus?.tasks || [];
-  const activeTasks = tasks.filter((t) => isEdict(t) && t.state !== 'Done' && t.state !== 'Next');
+  const activeTasks = tasks.filter((t) => isEdict(t) && t.state !== 'Completed' && t.state !== 'Ready');
 
   // Build official map
   const offMap: Record<string, OfficialInfo> = {};
@@ -113,7 +113,7 @@ export default function MonitorPanel() {
       <div className="duty-grid">
         {DEPTS.map((d) => {
           const myTasks = activeTasks.filter((t) => t.org === d.label);
-          const isActive = myTasks.some((t) => t.state === 'Doing');
+          const isActive = myTasks.some((t) => t.state === 'InProgress');
           const isBlocked = myTasks.some((t) => t.state === 'Blocked');
           const off = offMap[d.id];
           const hb = off?.heartbeat || { status: 'idle', label: '⚪' };

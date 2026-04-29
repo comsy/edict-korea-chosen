@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    三省六部数据刷新循环 (Windows PowerShell 版本)
+    3사6조数据刷新循环 (Windows PowerShell 版本)
 .DESCRIPTION
     run_loop.sh 的 Windows 等效脚本。
     用法: .\run_loop.ps1 [-Interval 15] [-ScanInterval 120]

@@ -54,7 +54,7 @@
       "title": "A계획: 3사6조 GitHub 핵심 프로젝트 구축",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Doing",
+      "state": "InProgress",
       "now": "Week1 완료: README 갱신/Topics/비교표 배포. 결정 대기: ①Docker Hub 배포 권한 ②Demo GIF 녹화",
       "eta": "2026-03-24",
       "block": "사간원 disabled, 임금 권한으로 직접 집행",
@@ -103,7 +103,7 @@
       "title": "배터리 사이클 데이터 정제 소형 모델 방안",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Zhongshu",
+      "state": "HongmungwanDraft",
       "now": "홍문관에서 기획안 기초 중",
       "eta": "-",
       "block": "없음",
@@ -130,7 +130,7 @@
       "title": "매일 조보 브리핑 시스템 (7시 이미지 뉴스)",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Done",
+      "state": "Completed",
       "now": "조보 브리핑 시스템 배포 완료: 20건 뉴스, 오늘 밤 첫 실행 성공",
       "eta": "-",
       "block": "없음",
@@ -166,7 +166,7 @@
           "at": "2026-02-23T16:18:33.625030Z",
           "from": "공조",
           "to": "승정원",
-          "remark": "✅ 완료: 조보 탭 배포, zaochao cron 매일 6:00 등록, 20건 뉴스 수집 성공"
+          "remark": "✅ 완료: 조보 탭 배포, jobocheong cron 매일 6:00 등록, 20건 뉴스 수집 성공"
         },
         {
           "at": "2026-02-23T16:18:33.625030Z",
@@ -187,7 +187,7 @@
       "title": "대시보드 플로우 준법 검토 + 3사6조 디스패치 탭 개선",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Done",
+      "state": "Completed",
       "now": "3건 모두 완료: 6조 SOUL 준법/3사6조 디스패치 재설계/연속 흐름 복구",
       "eta": "-",
       "block": "없음",
@@ -244,7 +244,7 @@
       "title": "관원 총람 대시보드 재설계",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Done",
+      "state": "Completed",
       "now": "관원 총람 전면 재설계 완료: 좌우 분할+품계 순위+참여 어명+비용 정확화",
       "eta": "-",
       "block": "없음",
@@ -301,7 +301,7 @@
       "title": "대시보드 관원 총람 패널 추가",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Done",
+      "state": "Completed",
       "now": "관원 총람 탭 배포 완료: 공적 순위/Token 비용/하트비트 모니터링",
       "eta": "2026-02-23 23:10",
       "block": "없음",
@@ -357,7 +357,7 @@
       "title": "3사6조제 오픈소스 GitHub 프로젝트",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Done",
+      "state": "Completed",
       "now": "완료: 프로젝트를 https://github.com/cft0808/openclaw-sansheng-liubu 로 push 완료",
       "eta": "2026-02-23 22:37",
       "block": "없음",
@@ -401,11 +401,11 @@
       "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Done",
+      "state": "Completed",
       "now": "전부 완료, 임금께 결과 보고함",
       "eta": "2026-02-23 21:30",
       "block": "없음",
-      "output": "/Users/bingsen/.openclaw/workspace-shangshu/",
+      "output": "/Users/bingsen/.openclaw/workspace-seungjeongwon/",
       "flow_log": [
         {
           "at": "2026-02-23T12:23:15Z",
@@ -499,7 +499,7 @@
       "title": "홍문관: 병렬 플로우 기획",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Done",
+      "state": "Completed",
       "now": "완료: 3사6조 병렬 플로우 기획",
       "eta": "완료 2026-02-23 10:27",
       "block": "없음",
@@ -522,7 +522,7 @@
       "title": "병조: 대시보드 세부 렌더링 수정",
       "official": "병조판서",
       "org": "병조",
-      "state": "Done",
+      "state": "Completed",
       "now": "완료: 드로어 상세 및 이벤트 흐름 렌더링",
       "eta": "완료 2026-02-23 10:27",
       "block": "없음",
@@ -545,7 +545,7 @@
       "title": "사간원: 병렬 작업 심의",
       "official": "사간원 대사간",
       "org": "사간원",
-      "state": "Done",
+      "state": "Completed",
       "now": "완료: 가결 후 보관",
       "eta": "완료 2026-02-23 10:27",
       "block": "없음",
@@ -564,19 +564,19 @@
       "heartbeat": null
     },
     {
-      "id": "OC-zhongshu-af6ad7f2",
+      "id": "OC-hongmungwan-af6ad7f2",
       "title": "저봉천 세션",
       "official": "홍문관 대제학",
       "org": "홍문관",
-      "state": "Review",
+      "state": "FinalReview",
       "now": "feishu/direct · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:11:03",
       "block": "없음",
-      "output": "/Users/bingsen/.openclaw/agents/zhongshu/sessions/af6ad7f2-0130-4d88-81f0-dad420cc0dc7.jsonl",
+      "output": "/Users/bingsen/.openclaw/agents/hongmungwan/sessions/af6ad7f2-0130-4d88-81f0-dad420cc0dc7.jsonl",
       "flow": {
-        "draft": "agent=zhongshu",
+        "draft": "agent=hongmungwan",
         "review": "updatedAt=2026-02-24 22:11:03",
-        "dispatch": "sessionKey=agent:zhongshu:main"
+        "dispatch": "sessionKey=agent:hongmungwan:main"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
@@ -632,8 +632,8 @@
         }
       ],
       "sourceMeta": {
-        "agentId": "zhongshu",
-        "sessionKey": "agent:zhongshu:main",
+        "agentId": "hongmungwan",
+        "sessionKey": "agent:hongmungwan:main",
         "sessionId": "af6ad7f2-0130-4d88-81f0-dad420cc0dc7",
         "updatedAt": 1771942263194,
         "ageMs": 123373,
@@ -658,7 +658,7 @@
       "title": "heartbeat 세션",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Review",
+      "state": "FinalReview",
       "now": "-/direct · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:10:35",
       "block": "없음",
@@ -744,26 +744,26 @@
       }
     },
     {
-      "id": "OC-shangshu-8be927fe",
-      "title": "agent:shangshu:main 세션",
+      "id": "OC-seungjeongwon-8be927fe",
+      "title": "agent:seungjeongwon:main 세션",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Review",
+      "state": "FinalReview",
       "now": "feishu/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:10:18",
       "block": "없음",
-      "output": "/Users/bingsen/.openclaw/agents/shangshu/sessions/8be927fe-8360-449e-b02d-4c7d70d9f141.jsonl",
+      "output": "/Users/bingsen/.openclaw/agents/seungjeongwon/sessions/8be927fe-8360-449e-b02d-4c7d70d9f141.jsonl",
       "flow": {
-        "draft": "agent=shangshu",
+        "draft": "agent=seungjeongwon",
         "review": "updatedAt=2026-02-24 22:10:18",
-        "dispatch": "sessionKey=agent:shangshu:main"
+        "dispatch": "sessionKey=agent:seungjeongwon:main"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
         {
           "at": "2026-02-24T14:08:13.069Z",
           "kind": "assistant",
-          "text": "NO_REPLY  ✅ Subagent bingbu finished  ✅ 병조 완료 작업ID: JJC-20260224-014 산출: - `/Users/bingsen/clawd/junjichu-v2/docs/screens"
+          "text": "NO_REPLY  ✅ Subagent byeongjo finished  ✅ 병조 완료 작업ID: JJC-20260224-014 산출: - `/Users/bingsen/clawd/junjichu-v2/docs/screens"
         },
         {
           "at": "2026-02-24T14:08:21.354Z",
@@ -793,7 +793,7 @@
         {
           "at": "2026-02-24T14:08:49.235Z",
           "kind": "assistant",
-          "text": "⏱️ Subagent bingbu timed out  모든 산출 파일 준비 완료. 작업 완료.  ---  ✅ **병조 완료** **작업ID**: JJC-20260224-014  **산출 파일**: | 파일 | 크기 | 내용 | |--"
+          "text": "⏱️ Subagent byeongjo timed out  모든 산출 파일 준비 완료. 작업 완료.  ---  ✅ **병조 완료** **작업ID**: JJC-20260224-014  **산출 파일**: | 파일 | 크기 | 내용 | |--"
         },
         {
           "at": "2026-02-24T14:08:54.212Z",
@@ -812,8 +812,8 @@
         }
       ],
       "sourceMeta": {
-        "agentId": "shangshu",
-        "sessionKey": "agent:shangshu:main",
+        "agentId": "seungjeongwon",
+        "sessionKey": "agent:seungjeongwon:main",
         "sessionId": "8be927fe-8360-449e-b02d-4c7d70d9f141",
         "updatedAt": 1771942218056,
         "ageMs": 168511,
@@ -834,19 +834,19 @@
       }
     },
     {
-      "id": "OC-gongbu-77f5e08c",
-      "title": "agent:gongbu:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447 세션",
+      "id": "OC-gongjo-77f5e08c",
+      "title": "agent:gongjo:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447 세션",
       "official": "공조판서",
       "org": "공조",
-      "state": "Review",
+      "state": "FinalReview",
       "now": "webchat/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:07:50",
       "block": "없음",
-      "output": "/Users/bingsen/.openclaw/agents/gongbu/sessions/77f5e08c-e75c-4094-b4db-071eae702f7d.jsonl",
+      "output": "/Users/bingsen/.openclaw/agents/gongjo/sessions/77f5e08c-e75c-4094-b4db-071eae702f7d.jsonl",
       "flow": {
-        "draft": "agent=gongbu",
+        "draft": "agent=gongjo",
         "review": "updatedAt=2026-02-24 22:07:50",
-        "dispatch": "sessionKey=agent:gongbu:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447"
+        "dispatch": "sessionKey=agent:gongjo:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
@@ -902,8 +902,8 @@
         }
       ],
       "sourceMeta": {
-        "agentId": "gongbu",
-        "sessionKey": "agent:gongbu:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447",
+        "agentId": "gongjo",
+        "sessionKey": "agent:gongjo:subagent:de641ed5-fefa-4d35-9ca1-6895fa103447",
         "sessionId": "77f5e08c-e75c-4094-b4db-071eae702f7d",
         "updatedAt": 1771942070958,
         "ageMs": 315609,
@@ -924,19 +924,19 @@
       }
     },
     {
-      "id": "OC-libu-2f31143a",
-      "title": "agent:libu:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff 세션",
+      "id": "OC-yejo-2f31143a",
+      "title": "agent:yejo:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff 세션",
       "official": "예조판서",
       "org": "예조",
-      "state": "Review",
+      "state": "FinalReview",
       "now": "webchat/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 22:07:43",
       "block": "없음",
-      "output": "/Users/bingsen/.openclaw/agents/libu/sessions/2f31143a-11f7-47fc-a2ef-86a65596486f.jsonl",
+      "output": "/Users/bingsen/.openclaw/agents/yejo/sessions/2f31143a-11f7-47fc-a2ef-86a65596486f.jsonl",
       "flow": {
-        "draft": "agent=libu",
+        "draft": "agent=yejo",
         "review": "updatedAt=2026-02-24 22:07:43",
-        "dispatch": "sessionKey=agent:libu:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff"
+        "dispatch": "sessionKey=agent:yejo:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
@@ -987,8 +987,8 @@
         }
       ],
       "sourceMeta": {
-        "agentId": "libu",
-        "sessionKey": "agent:libu:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff",
+        "agentId": "yejo",
+        "sessionKey": "agent:yejo:subagent:9a63ae48-0851-4d63-8a37-0326007a24ff",
         "sessionId": "2f31143a-11f7-47fc-a2ef-86a65596486f",
         "updatedAt": 1771942063789,
         "ageMs": 322778,
@@ -1009,19 +1009,19 @@
       }
     },
     {
-      "id": "OC-bingbu-53af4339",
-      "title": "agent:bingbu:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba 세션",
+      "id": "OC-byeongjo-53af4339",
+      "title": "agent:byeongjo:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba 세션",
       "official": "병조판서",
       "org": "병조",
-      "state": "Review",
+      "state": "FinalReview",
       "now": "webchat/- · 모델 -",
       "eta": "2026-02-24 22:05:48",
       "block": "없음",
-      "output": "/Users/bingsen/.openclaw/agents/bingbu/sessions/53af4339-e3f9-49ec-8162-9880d0c51e26.jsonl",
+      "output": "/Users/bingsen/.openclaw/agents/byeongjo/sessions/53af4339-e3f9-49ec-8162-9880d0c51e26.jsonl",
       "flow": {
-        "draft": "agent=bingbu",
+        "draft": "agent=byeongjo",
         "review": "updatedAt=2026-02-24 22:05:48",
-        "dispatch": "sessionKey=agent:bingbu:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba"
+        "dispatch": "sessionKey=agent:byeongjo:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [
@@ -1077,8 +1077,8 @@
         }
       ],
       "sourceMeta": {
-        "agentId": "bingbu",
-        "sessionKey": "agent:bingbu:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba",
+        "agentId": "byeongjo",
+        "sessionKey": "agent:byeongjo:subagent:36d6c4fc-66c7-49f1-bf15-b4ce9613c0ba",
         "sessionId": "53af4339-e3f9-49ec-8162-9880d0c51e26",
         "updatedAt": 1771941948040,
         "ageMs": 438527,
@@ -1099,25 +1099,25 @@
       }
     },
     {
-      "id": "OC-shangshu-ef5d83a2",
-      "title": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704 세션",
+      "id": "OC-seungjeongwon-ef5d83a2",
+      "title": "agent:seungjeongwon:cron:3d21409f-eb0b-4f13-9f00-283e249e1704 세션",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Next",
+      "state": "Ready",
       "now": "-/- · 모델 -",
       "eta": "2026-02-24 06:19:47",
       "block": "없음",
       "output": "",
       "flow": {
-        "draft": "agent=shangshu",
+        "draft": "agent=seungjeongwon",
         "review": "updatedAt=2026-02-24 06:19:47",
-        "dispatch": "sessionKey=agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704"
+        "dispatch": "sessionKey=agent:seungjeongwon:cron:3d21409f-eb0b-4f13-9f00-283e249e1704"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
-        "agentId": "shangshu",
-        "sessionKey": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704",
+        "agentId": "seungjeongwon",
+        "sessionKey": "agent:seungjeongwon:cron:3d21409f-eb0b-4f13-9f00-283e249e1704",
         "sessionId": "ef5d83a2-9e5a-42f1-b16c-396ab2f8b871",
         "updatedAt": 1771885187176,
         "ageMs": 57199391,
@@ -1134,25 +1134,25 @@
       "heartbeat": null
     },
     {
-      "id": "OC-shangshu-ef5d83a2",
-      "title": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871 세션",
+      "id": "OC-seungjeongwon-ef5d83a2",
+      "title": "agent:seungjeongwon:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871 세션",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Next",
+      "state": "Ready",
       "now": "-/- · 모델 -",
       "eta": "2026-02-24 06:19:47",
       "block": "없음",
       "output": "",
       "flow": {
-        "draft": "agent=shangshu",
+        "draft": "agent=seungjeongwon",
         "review": "updatedAt=2026-02-24 06:19:47",
-        "dispatch": "sessionKey=agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871"
+        "dispatch": "sessionKey=agent:seungjeongwon:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
-        "agentId": "shangshu",
-        "sessionKey": "agent:shangshu:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871",
+        "agentId": "seungjeongwon",
+        "sessionKey": "agent:seungjeongwon:cron:3d21409f-eb0b-4f13-9f00-283e249e1704:run:ef5d83a2-9e5a-42f1-b16c-396ab2f8b871",
         "sessionId": "ef5d83a2-9e5a-42f1-b16c-396ab2f8b871",
         "updatedAt": 1771885187130,
         "ageMs": 57199437,
@@ -1169,25 +1169,25 @@
       "heartbeat": null
     },
     {
-      "id": "OC-shangshu-5d3c50db",
-      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2 세션",
+      "id": "OC-seungjeongwon-5d3c50db",
+      "title": "agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2 세션",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Next",
+      "state": "Ready",
       "now": "-/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 06:03:01",
       "block": "없음",
       "output": "",
       "flow": {
-        "draft": "agent=shangshu",
+        "draft": "agent=seungjeongwon",
         "review": "updatedAt=2026-02-24 06:03:01",
-        "dispatch": "sessionKey=agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2"
+        "dispatch": "sessionKey=agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
-        "agentId": "shangshu",
-        "sessionKey": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2",
+        "agentId": "seungjeongwon",
+        "sessionKey": "agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2",
         "sessionId": "5d3c50db-0b91-4ff0-a9eb-26114ffb4339",
         "updatedAt": 1771884181137,
         "ageMs": 58205430,
@@ -1204,25 +1204,25 @@
       "heartbeat": null
     },
     {
-      "id": "OC-shangshu-5d3c50db",
-      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339 세션",
+      "id": "OC-seungjeongwon-5d3c50db",
+      "title": "agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339 세션",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Next",
+      "state": "Ready",
       "now": "-/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 06:03:01",
       "block": "없음",
       "output": "",
       "flow": {
-        "draft": "agent=shangshu",
+        "draft": "agent=seungjeongwon",
         "review": "updatedAt=2026-02-24 06:03:01",
-        "dispatch": "sessionKey=agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339"
+        "dispatch": "sessionKey=agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
-        "agentId": "shangshu",
-        "sessionKey": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339",
+        "agentId": "seungjeongwon",
+        "sessionKey": "agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:5d3c50db-0b91-4ff0-a9eb-26114ffb4339",
         "sessionId": "5d3c50db-0b91-4ff0-a9eb-26114ffb4339",
         "updatedAt": 1771884181137,
         "ageMs": 58205430,
@@ -1239,25 +1239,25 @@
       "heartbeat": null
     },
     {
-      "id": "OC-shangshu-aaa29ca8",
-      "title": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227 세션",
+      "id": "OC-seungjeongwon-aaa29ca8",
+      "title": "agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227 세션",
       "official": "승정원 도승지",
       "org": "승정원",
-      "state": "Next",
+      "state": "Ready",
       "now": "-/- · 모델 claude-sonnet-4-6",
       "eta": "2026-02-24 00:12:22",
       "block": "없음",
       "output": "",
       "flow": {
-        "draft": "agent=shangshu",
+        "draft": "agent=seungjeongwon",
         "review": "updatedAt=2026-02-24 00:12:22",
-        "dispatch": "sessionKey=agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227"
+        "dispatch": "sessionKey=agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227"
       },
       "ac": "OpenClaw runtime sessions 기반 실시간 매핑",
       "activity": [],
       "sourceMeta": {
-        "agentId": "shangshu",
-        "sessionKey": "agent:shangshu:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227",
+        "agentId": "seungjeongwon",
+        "sessionKey": "agent:seungjeongwon:cron:b03078fe-c25d-4a65-a05a-2f7a9453ddb2:run:aaa29ca8-46d1-4dfd-87a8-c474f9bb8227",
         "sessionId": "aaa29ca8-46d1-4dfd-87a8-c474f9bb8227",
         "updatedAt": 1771863142993,
         "ageMs": 79243574,
@@ -1278,7 +1278,7 @@
       "title": "병조: Mission Control 매핑 검수",
       "official": "병조판서",
       "org": "병조",
-      "state": "Done",
+      "state": "Completed",
       "now": "Mission Control 매핑 검수 완료, 시스템 정상 운영",
       "eta": "-",
       "block": "없음",
@@ -1309,7 +1309,7 @@
       "title": "저봉천 세션",
       "official": "공조판서",
       "org": "공조",
-      "state": "Next",
+      "state": "Ready",
       "now": "feishu/direct · 모델 gpt-5.3-codex",
       "eta": "2026-02-23 15:20:53",
       "block": "없음",
@@ -1431,7 +1431,7 @@
       "at": "2026-02-23 21:27:18",
       "official": "승정원 도승지",
       "task": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
-      "out": "/Users/bingsen/.openclaw/workspace-shangshu/",
+      "out": "/Users/bingsen/.openclaw/workspace-seungjeongwon/",
       "qa": "승인"
     },
     {

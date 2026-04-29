@@ -1,7 +1,7 @@
 ∏# 🤝 参与贡献
 
 <p align="center">
-  <strong>三省六部欢迎各路英雄好汉 ⚔️</strong><br>
+  <strong>3사6조欢迎各路英雄好汉 ⚔️</strong><br>
   <sub>无论是修一个 typo 还是设计一个新的 Agent 角色，我们都万分感谢</sub>
 </p>
 
@@ -231,5 +231,5 @@ curl -s http://localhost:7891/api/live-status | python3 -m json.tool | head -20
 ---
 
 <p align="center">
-  <sub>感谢每一位贡献者，你们是三省六部的基石 ⚔️</sub>
+  <sub>感谢每一位贡献者，你们是3사6조的基石 ⚔️</sub>
 </p>

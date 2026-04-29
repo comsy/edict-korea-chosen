@@ -1,7 +1,7 @@
-"""Event 模型 — 事件持久化表，支持回放和审计。
+"""Event 모델 — 이벤트 영속성 테이블, 재생 및 감사 지원.
 
-每个事件对应一次系统行为：任务创建、状态变更、Agent 思考、Todo 更新等。
-遵循 Edict Architecture §3 事件结构规范。
+각 이벤트는 시스템 동작(업무 생성, 상태 변경, Agent 사고, Todo 업데이트 등)에 대응.
+Edict Architecture §3 이벤트 구조 규격 준수.
 """
 
 import uuid
@@ -14,21 +14,21 @@ from ..db import Base
 
 
 class Event(Base):
-    """事件表 — 所有系统事件的持久化记录。"""
+    """이벤트 테이블 — 모든 시스템 이벤트의 영속성 기록."""
     __tablename__ = "events"
 
     event_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    trace_id = Column(String(32), nullable=False, index=True, comment="关联任务ID")
+    trace_id = Column(String(32), nullable=False, index=True, comment="연관 업무 ID")
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
-    # 事件分类
-    topic = Column(String(128), nullable=False, index=True, comment="事件主题, e.g. task.created")
-    event_type = Column(String(128), nullable=False, comment="事件类型, e.g. state.changed")
-    producer = Column(String(128), nullable=False, comment="事件生产者, e.g. orchestrator:v1")
+    # 이벤트 분류
+    topic = Column(String(128), nullable=False, index=True, comment="이벤트 주제, 예: task.created")
+    event_type = Column(String(128), nullable=False, comment="이벤트 유형, 예: state.changed")
+    producer = Column(String(128), nullable=False, comment="이벤트 생산자, 예: orchestrator:v1")
 
-    # 事件数据
-    payload = Column(JSONB, default=dict, comment="事件负载")
-    meta = Column(JSONB, default=dict, comment="元数据 {priority, model, version}")
+    # 이벤트 데이터
+    payload = Column(JSONB, default=dict, comment="이벤트 페이로드")
+    meta = Column(JSONB, default=dict, comment="메타데이터 {priority, model, version}")
 
     __table_args__ = (
         Index("ix_events_trace_topic", "trace_id", "topic"),

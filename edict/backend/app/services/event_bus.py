@@ -1,9 +1,10 @@
-"""Redis Streams 事件总线 — 可靠的事件发布/消费。
+"""Redis Streams 이벤트 버스 — 안정적인 이벤트 발행/소비.
 
-核心能力：
-- publish: XADD 发布事件到 stream
-- subscribe: XREADGROUP 消费者组消费，带 ACK 保证from __future__ import annotations- 未 ACK 的事件在消费者崩溃后会被自动重新投递
-- 解决旧架构 daemon 线程丢失导致派发永久中断的根因
+핵심 기능:
+- publish: XADD로 스트림에 이벤트 발행
+- subscribe: XREADGROUP으로 소비자 그룹 소비, ACK 보장
+- ACK되지 않은 이벤트는 소비자 크래시 후 자동 재전달
+- 기존 아키텍처 데몬 스레드 손실로 인한 발송 영구 중단의 근본 원인 해결
 """
 
 import json
@@ -18,7 +19,7 @@ from ..config import get_settings
 
 log = logging.getLogger("edict.event_bus")
 
-# ── 标准 Topic 常量 ──
+# ── 표준 Topic 상수 ──
 TOPIC_TASK_CREATED = "task.created"
 TOPIC_TASK_PLANNING_REQUEST = "task.planning.request"
 TOPIC_TASK_PLANNING_COMPLETE = "task.planning.complete"
@@ -36,19 +37,19 @@ TOPIC_AGENT_THOUGHTS = "agent.thoughts"
 TOPIC_AGENT_TODO_UPDATE = "agent.todo.update"
 TOPIC_AGENT_HEARTBEAT = "agent.heartbeat"
 
-# 所有 topic 对应的 Redis Stream key 前缀
+# 모든 topic에 대응하는 Redis Stream key 접두사
 STREAM_PREFIX = "edict:stream:"
 
 
 class EventBus:
-    """Redis Streams 事件总线。"""
+    """Redis Streams 이벤트 버스."""
 
     def __init__(self, redis_url: str | None = None):
         self._redis_url = redis_url or get_settings().redis_url
         self._redis: aioredis.Redis | None = None
 
     async def connect(self):
-        """建立 Redis 连接。"""
+        """Redis 연결 생성."""
         if self._redis is None:
             self._redis = aioredis.from_url(
                 self._redis_url,
@@ -79,10 +80,10 @@ class EventBus:
         payload: dict[str, Any] | None = None,
         meta: dict[str, Any] | None = None,
     ) -> str:
-        """发布事件到 Redis Stream。
+        """Redis Stream에 이벤트 발행.
 
         Returns:
-            event_id (str): 由 Redis 自动生成的 Stream entry ID
+            event_id (str): Redis가 자동 생성한 Stream entry ID
         """
         event = {
             "event_id": str(uuid.uuid4()),
@@ -98,13 +99,13 @@ class EventBus:
         entry_id = await self.redis.xadd(stream_key, event, maxlen=10000)
         log.debug(f"📤 Published {topic}/{event_type} → {stream_key} [{entry_id}] trace={trace_id}")
 
-        # 同时发布到 Pub/Sub 频道（供 WebSocket 实时推送）
+        # 동시에 Pub/Sub 채널로 발행 (WebSocket 실시간 푸시용)
         await self.redis.publish(f"edict:pubsub:{topic}", json.dumps(event, ensure_ascii=False))
 
         return entry_id
 
     async def ensure_consumer_group(self, topic: str, group: str):
-        """确保消费者组存在（幂等）。"""
+        """소비자 그룹 존재 확인 (멱등)."""
         stream_key = self._stream_key(topic)
         try:
             await self.redis.xgroup_create(stream_key, group, id="0", mkstream=True)
@@ -121,7 +122,7 @@ class EventBus:
         count: int = 10,
         block_ms: int = 5000,
     ) -> list[tuple[str, dict]]:
-        """从消费者组消费事件。
+        """소비자 그룹에서 이벤트 소비.
 
         Returns:
             list of (entry_id, event_dict)
@@ -138,7 +139,7 @@ class EventBus:
         if results:
             for _stream, messages in results:
                 for entry_id, data in messages:
-                    # 反序列化 JSON 字段
+                    # JSON 필드 역직렬화
                     if "payload" in data:
                         data["payload"] = json.loads(data["payload"])
                     if "meta" in data:
@@ -147,13 +148,13 @@ class EventBus:
         return events
 
     async def ack(self, topic: str, group: str, entry_id: str):
-        """确认消费 — ACK 后事件不会被重新投递。"""
+        """소비 확인 — ACK 후 이벤트는 재전달되지 않음."""
         stream_key = self._stream_key(topic)
         await self.redis.xack(stream_key, group, entry_id)
         log.debug(f"✅ ACK {stream_key} [{entry_id}] group={group}")
 
     async def get_pending(self, topic: str, group: str, count: int = 10) -> list:
-        """查看未 ACK 的 pending 事件（用于诊断和恢复）。"""
+        """ACK되지 않은 pending 이벤트 조회 (진단 및 복구용)."""
         stream_key = self._stream_key(topic)
         return await self.redis.xpending_range(stream_key, group, min="-", max="+", count=count)
 
@@ -165,7 +166,7 @@ class EventBus:
         min_idle_ms: int = 60000,
         count: int = 10,
     ) -> list[tuple[str, dict]]:
-        """认领超时的 pending 事件（消费者崩溃恢复）。"""
+        """타임아웃된 pending 이벤트 청구 (소비자 크래시 복구)."""
         stream_key = self._stream_key(topic)
         results = await self.redis.xautoclaim(
             stream_key, group, consumer, min_idle_time=min_idle_ms, start_id="0-0", count=count
@@ -183,7 +184,7 @@ class EventBus:
         return []
 
     async def stream_info(self, topic: str) -> dict:
-        """获取 Stream 信息（长度、消费者组等）。"""
+        """Stream 정보 조회 (길이, 소비자 그룹 등)."""
         stream_key = self._stream_key(topic)
         try:
             info = await self.redis.xinfo_stream(stream_key)
@@ -199,7 +200,7 @@ class EventBus:
         count: int = 10,
         block_ms: int = 2000,
     ) -> list[tuple[str, str, dict]]:
-        """从多个 topic 同时消费事件（单次 XREADGROUP 多 stream）。
+        """여러 topic에서 동시 소비 (단일 XREADGROUP 다중 stream).
 
         Returns:
             list of (topic, entry_id, event_dict)
@@ -214,7 +215,7 @@ class EventBus:
         )
         events = []
         if results:
-            # 建立反向映射: stream_key → topic
+            # 역매핑 생성: stream_key → topic
             key_to_topic = {self._stream_key(t): t for t in topics}
             for stream_key, messages in results:
                 topic = key_to_topic.get(stream_key, stream_key)
@@ -230,9 +231,9 @@ class EventBus:
         self,
         events: list[dict],
     ) -> list[str]:
-        """批量发布事件（pipeline 模式，减少 RTT）。
+        """이벤트 일괄 발행 (pipeline 모드, RTT 감소).
 
-        每个 event dict 须包含: topic, trace_id, event_type, producer, payload, meta(可选)
+        각 event dict는 다음을 포함해야 함: topic, trace_id, event_type, producer, payload, meta(선택)
         Returns:
             list of entry_ids
         """
@@ -253,25 +254,25 @@ class EventBus:
             pipe.xadd(stream_key, event_data, maxlen=10000)
             pipe.publish(f"edict:pubsub:{topic}", json.dumps(event_data, ensure_ascii=False))
         results = await pipe.execute()
-        # 每个事件产生 2 个 pipeline 命令 (xadd + publish)，entry_id 在偶数位
+        # 각 이벤트는 2개의 pipeline 명령어(xadd + publish) 생성, entry_id는 짝수 위치
         entry_ids = [results[i] for i in range(0, len(results), 2)]
         log.debug(f"📤 Batch published {len(events)} events")
         return entry_ids
 
     async def get_delivery_count(self, topic: str, group: str, entry_id: str) -> int:
-        """获取某条消息的累计投递次数。"""
+        """메시지의 누적 전달 횟수 조회."""
         stream_key = self._stream_key(topic)
-        # XPENDING <stream> <group> <start> <end> <count> 返回每条消息的详情
+        # XPENDING <stream> <group> <start> <end> <count>는 각 메시지의 상세 정보 반환
         pending = await self.redis.xpending_range(
             stream_key, group, min=entry_id, max=entry_id, count=1
         )
         if pending:
-            # 每条 pending 条目格式: {message_id, consumer, idle_time, delivery_count}
+            # 각 pending 항목 형식: {message_id, consumer, idle_time, delivery_count}
             return pending[0].get("times_delivered", 0)
         return 0
 
 
-# ── 全局单例 ──
+# ── 전역 싱글턴 ──
 _bus: EventBus | None = None
 
 

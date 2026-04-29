@@ -35,28 +35,29 @@ def state_from_session(age_ms, aborted):
     if aborted:
         return 'Blocked'
     if age_ms <= 2 * 60 * 1000:
-        return 'Doing'
+        return 'InProgress'
     if age_ms <= 60 * 60 * 1000:
-        return 'Review'
-    return 'Next'
+        return 'FinalReview'
+    return 'Ready'
 
 
 def detect_official(agent_id):
     mapping = {
-        'main':    ('储君', '太子'),        # legacy id for taizi
-        'taizi':   ('储君', '太子'),
-        'zhongshu': ('中书令', '中书省'),
-        'menxia':  ('侍中', '门下省'),
-        'shangshu': ('尚书令', '尚书省'),
-        'hubu':    ('户部尚书', '户部'),
-        'libu':    ('礼部尚书', '礼部'),
-        'bingbu':  ('兵部尚书', '兵部'),
-        'xingbu':  ('刑部尚书', '刑部'),
-        'gongbu':  ('工部尚书', '工部'),
-        'libu_hr': ('吏部尚书', '吏部'),
-        'zaochao': ('钦天监', '钦天监'),
+        'main':    ('储君', '세자'),        # legacy id for seja
+        'seja':   ('储君', '세자'),
+        'hongmungwan': ('中书令', '홍문관'),
+        'saganwon':  ('侍中', '사간원'),
+        'seungjeongwon': ('尚书令', '승정원'),
+        'hojo':    ('호조판서', '호조'),
+        'yejo':    ('예조판서', '예조'),
+        'byeongjo':  ('병조판서', '병조'),
+        'hyeongjo':  ('형조판서', '형조'),
+        'gongjo':  ('공조판서', '공조'),
+        'ijo':     ('이조판서', '이조'),
+        'jobocheong': ('조보관', '조보청'),
+        'gwansanggam': ('관상감정', '관상감'),
     }
-    return mapping.get(agent_id, ('尚书令', '尚书省'))
+    return mapping.get(agent_id, ('도승지', '승정원'))
 
 
 def load_activity(session_file, limit=12):
@@ -293,10 +294,10 @@ def main():
                     continue
 
             # 3. 排除已冷却的 OC 会话，避免污染看板
-            # 保留 Doing（<2min）、Review（<60min）、Blocked（报错）
-            # 仅过滤掉 Next（>60min 无响应）等已结束/闲置的会话
+            # 保留 InProgress（<2min）、FinalReview（<60min）、Blocked（报错）
+            # 仅过滤掉 Ready（>60min 无响应）等已结束/闲置的会话
             state = t.get('state')
-            if state not in ('Doing', 'Review', 'Blocked'):
+            if state not in ('InProgress', 'FinalReview', 'Blocked'):
                 continue
 
             filtered_tasks.append(t)

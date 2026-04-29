@@ -1,4 +1,4 @@
-"""Edict 配置管理 — 从环境变量加载所有配置。"""
+"""Edict 설정 관리 — 환경 변수에서 모든 설정 로드."""
 from __future__ import annotations
 
 from functools import lru_cache

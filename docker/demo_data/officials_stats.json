@@ -2,7 +2,7 @@
   "generatedAt": "2026-02-24 22:13:06",
   "officials": [
     {
-      "id": "zhongshu",
+      "id": "hongmungwan",
       "label": "홍문관",
       "role": "홍문관 대제학",
       "emoji": "📜",
@@ -31,49 +31,49 @@
         {
           "id": "JJC-20260224-014",
           "title": "A계획: 3사6조 GitHub 핵심 프로젝트 구축",
-          "state": "Doing"
+          "state": "InProgress"
         },
         {
           "id": "JJC-20260224-013",
           "title": "배터리 사이클 데이터 정제 소형 모델 방안",
-          "state": "Zhongshu"
+          "state": "HongmungwanDraft"
         },
         {
           "id": "JJC-20260224-001",
           "title": "매일 조보 브리핑 시스템 (7시 이미지 뉴스)",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-014",
           "title": "대시보드 플로우 준법 검토 + 3사6조 디스패치 탭 개선",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-013",
           "title": "관원 총람 대시보드 재설계",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-012",
           "title": "대시보드 관원 총람 패널 추가",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-011",
           "title": "3사6조제 오픈소스 GitHub 프로젝트",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-010",
           "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
-          "state": "Done"
+          "state": "Completed"
         }
       ],
       "merit_score": 107,
       "merit_rank": 1
     },
     {
-      "id": "shangshu",
+      "id": "seungjeongwon",
       "label": "승정원",
       "role": "승정원 도승지",
       "emoji": "📮",
@@ -102,39 +102,39 @@
         {
           "id": "JJC-20260224-014",
           "title": "A계획: 3사6조 GitHub 핵심 프로젝트 구축",
-          "state": "Doing"
+          "state": "InProgress"
         },
         {
           "id": "JJC-20260224-001",
           "title": "매일 조보 브리핑 시스템 (7시 이미지 뉴스)",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-014",
           "title": "대시보드 플로우 준법 검토 + 3사6조 디스패치 탭 개선",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-013",
           "title": "관원 총람 대시보드 재설계",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-012",
           "title": "대시보드 관원 총람 패널 추가",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-010",
           "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
-          "state": "Done"
+          "state": "Completed"
         }
       ],
       "merit_score": 62,
       "merit_rank": 2
     },
     {
-      "id": "menxia",
+      "id": "saganwon",
       "label": "사간원",
       "role": "사간원 대사간",
       "emoji": "🔍",
@@ -163,34 +163,34 @@
         {
           "id": "JJC-20260224-001",
           "title": "매일 조보 브리핑 시스템 (7시 이미지 뉴스)",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-014",
           "title": "대시보드 플로우 준법 검토 + 3사6조 디스패치 탭 개선",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-013",
           "title": "관원 총람 대시보드 재설계",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-012",
           "title": "대시보드 관원 총람 패널 추가",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-010",
           "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
-          "state": "Done"
+          "state": "Completed"
         }
       ],
       "merit_score": 34,
       "merit_rank": 3
     },
     {
-      "id": "bingbu",
+      "id": "byeongjo",
       "label": "병조",
       "role": "병조판서",
       "emoji": "⚔️",
@@ -219,14 +219,14 @@
         {
           "id": "JJC-20260223-010",
           "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
-          "state": "Done"
+          "state": "Completed"
         }
       ],
       "merit_score": 25,
       "merit_rank": 4
     },
     {
-      "id": "gongbu",
+      "id": "gongjo",
       "label": "공조",
       "role": "공조판서",
       "emoji": "🔧",
@@ -255,34 +255,34 @@
         {
           "id": "JJC-20260224-001",
           "title": "매일 조보 브리핑 시스템 (7시 이미지 뉴스)",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-014",
           "title": "대시보드 플로우 준법 검토 + 3사6조 디스패치 탭 개선",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-013",
           "title": "관원 총람 대시보드 재설계",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-012",
           "title": "대시보드 관원 총람 패널 추가",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-011",
           "title": "3사6조제 오픈소스 GitHub 프로젝트",
-          "state": "Done"
+          "state": "Completed"
         }
       ],
       "merit_score": 17,
       "merit_rank": 5
     },
     {
-      "id": "libu",
+      "id": "yejo",
       "label": "예조",
       "role": "예조판서",
       "emoji": "📝",
@@ -311,19 +311,19 @@
         {
           "id": "JJC-20260223-011",
           "title": "3사6조제 오픈소스 GitHub 프로젝트",
-          "state": "Done"
+          "state": "Completed"
         },
         {
           "id": "JJC-20260223-010",
           "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
-          "state": "Done"
+          "state": "Completed"
         }
       ],
       "merit_score": 9,
       "merit_rank": 6
     },
     {
-      "id": "hubu",
+      "id": "hojo",
       "label": "호조",
       "role": "호조판서",
       "emoji": "💰",
@@ -352,14 +352,14 @@
         {
           "id": "JJC-20260223-010",
           "title": "배터리 사이클 테스트 데이터 예측 알고리즘 설계 및 시각화 검증",
-          "state": "Done"
+          "state": "Completed"
         }
       ],
       "merit_score": 6,
       "merit_rank": 7
     },
     {
-      "id": "xingbu",
+      "id": "hyeongjo",
       "label": "형조",
       "role": "형조판서",
       "emoji": "⚖️",

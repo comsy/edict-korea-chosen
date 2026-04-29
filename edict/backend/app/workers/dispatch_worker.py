@@ -1,15 +1,15 @@
-"""Dispatch Worker — 消费 task.dispatch 事件，执行 OpenClaw agent 调用。
+"""Dispatch Worker — task.dispatch 이벤트를 소비하여 OpenClaw agent 호출 실행.
 
-核心解决旧架构痛点：
-- 旧: daemon 线程 + subprocess.run → kill -9 丢失一切
-- 新: Redis Streams ACK 保证 → 崩溃后自动重新投递
+핵심 해결 과제:
+- 기존: daemon 스레드 + subprocess.run → kill -9 시 모든 정보 손실
+- 신규: Redis Streams ACK 보장 → 크래시 후 자동 재전송
 
-流程:
-1. 从 task.dispatch stream 消费事件
-2. 组装富上下文 (_build_agent_context)
-3. 调用 OpenClaw CLI: `openclaw agent --agent xxx -m "..."`
-4. 解析 agent 输出（kanban_update.py 调用结果）
-5. ACK 事件
+프로세스:
+1. task.dispatch stream에서 이벤트 소비
+2. 풍부한 컨텍스트 조립 (_build_agent_context)
+3. OpenClaw CLI 호출: `openclaw agent --agent xxx -m "..."`
+4. agent 출력 파싱 (kanban_update.py 호출 결과)
+5. 이벤트 ACK
 """
 
 import asyncio
@@ -42,25 +42,27 @@ CONSUMER = "disp-1"
 
 
 class DispatchError(Exception):
-    """带分类的派发错误。"""
+    """분류된 디스패치 오류."""
 
     def __init__(self, msg: str, retryable: bool = True):
         super().__init__(msg)
         self.retryable = retryable
 
-# Agent 分组映射 — 用于加载 group 级 prompt
+
+# Agent 그룹 매핑 — group 레벨 prompt 로드용
 _GROUP_MAP = {
-    "taizi": "sansheng",
-    "zhongshu": "sansheng",
-    "menxia": "sansheng",
-    "shangshu": "sansheng",
-    "hubu": "liubu",
-    "libu": "liubu",
-    "bingbu": "liubu",
-    "xingbu": "liubu",
-    "gongbu": "liubu",
-    "libu_hr": "liubu",
-    "zaochao": None,
+    "seja": "sansheng",
+    "hongmungwan": "sansheng",
+    "saganwon": "sansheng",
+    "seungjeongwon": "sansheng",
+    "hojo": "liubu",
+    "yejo": "liubu",
+    "byeongjo": "liubu",
+    "hyeongjo": "liubu",
+    "gongjo": "liubu",
+    "ijo": "liubu",
+    "jobocheong": None,
+    "gwansanggam": None,
 }
 
 
@@ -145,25 +147,25 @@ def _build_task_context(payload: dict) -> str:
 
 
 def _build_reminder(agent_id: str, payload: dict) -> str:
-    """在 prompt 尾部注入动态提醒（借鉴 Claude 的 reminderInstructions）。"""
+    """prompt 말미에 동적 리마인더 주입 (Claude의 reminderInstructions 차용)."""
     reminders = []
 
     state = payload.get("state", "")
-    if state == "Doing":
-        reminders.append("先创建 todo 分解任务，再开始执行。每完成一步立即用 progress 上报。")
-    elif state == "Review":
-        reminders.append("这是复审任务。审核完毕后用 state 命令流转状态，附带审核意见。")
-    elif state == "Menxia":
-        reminders.append("门下省审核：通过则流转 Assigned，不通过则退回 Zhongshu 并说明原因。")
+    if state == "InProgress":
+        reminders.append("먼저 todo를 생성하여 작업을 분해하고 실행을 시작하세요. 각 단계 완료 시 즉시 progress로 보고하세요.")
+    elif state == "FinalReview":
+        reminders.append("이것은 최종 검토 업무입니다. 검토 완료 후 state 명령으로 상태를 전이하고 검토 의견을 첨부하세요.")
+    elif state == "SaganwonFinalReview":
+        reminders.append("사간원 심의: 통과하면 SeungjeongwonAssigned로 전이, 불통하면 HongmungwanDraft로 반송하고 사유를 설명하세요.")
 
-    # 如果有未完成的 todos，提醒继续
+    # 미완료 todos가 있으면 계속하도록 리마인드
     todos = payload.get("todos", [])
     in_progress = [t for t in todos if t.get("status") == "in-progress"]
     not_started = [t for t in todos if t.get("status") == "not-started"]
     if in_progress:
-        reminders.append(f"有 {len(in_progress)} 个进行中的子任务，优先完成它们。")
+        reminders.append(f"진행 중인 하위 업무 {len(in_progress)}개가 있습니다. 우선 완료하세요.")
     elif not_started:
-        reminders.append(f"有 {len(not_started)} 个待开始的子任务。")
+        reminders.append(f"시작하지 않은 하위 업무 {len(not_started)}개가 있습니다.")
 
     # 阻塞提醒
     block = payload.get("block", "")
@@ -309,10 +311,10 @@ def _load_agent_skills(agent_id: str, payload: dict) -> str:
 class DispatchWorker:
     """Agent 派发 Worker — 快慢 Agent 分桶并发控制。"""
 
-    # 快/慢 Agent 分桶 — 互不阻塞
+    # 빠른/느린 Agent 분류 — 상호 차단 없음
     _BUCKET_CONFIG = {
-        "fast": {"agents": {"taizi", "zhongshu", "menxia", "shangshu", "zaochao"}, "limit": 4},
-        "slow": {"agents": {"hubu", "libu", "bingbu", "xingbu", "gongbu", "libu_hr"}, "limit": 3},
+        "fast": {"agents": {"seja", "hongmungwan", "saganwon", "seungjeongwon", "jobocheong"}, "limit": 4},
+        "slow": {"agents": {"hojo", "yejo", "byeongjo", "hyeongjo", "gongjo", "ijo"}, "limit": 3},
     }
 
     def __init__(self):

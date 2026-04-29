@@ -1,4 +1,4 @@
-"""Edict 数据模型包。"""
+"""Edict 데이터 모델 패키지."""
 
 from .audit import AuditLog
 from .outbox import OutboxEvent

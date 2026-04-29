@@ -3,8 +3,8 @@ import { api, type Task } from '../api';
 
 // 정렬 가중치
 const STATE_ORDER: Record<string, number> = {
-  Doing: 0, Review: 1, Assigned: 2, Menxia: 3, Zhongshu: 4,
-  Taizi: 5, Inbox: 6, Blocked: 7, Next: 8, Done: 9, Cancelled: 10,
+  InProgress: 0, FinalReview: 1, SeungjeongwonAssigned: 2, SaganwonFinalReview: 3, HongmungwanDraft: 4,
+  SejaFinalReview: 5, Pending: 6, Blocked: 7, Ready: 8, Completed: 9, Cancelled: 10, PendingConfirm: 11,
 };
 
 function MiniPipe({ task }: { task: Task }) {
@@ -36,7 +36,7 @@ function EdictCard({ task }: { task: Task }) {
   const todos = task.todos || [];
   const todoDone = todos.filter((x) => x.status === 'completed').length;
   const todoTotal = todos.length;
-  const canStop = !['Done', 'Blocked', 'Cancelled'].includes(task.state);
+  const canStop = !['Completed', 'Blocked', 'Cancelled'].includes(task.state);
   const canResume = ['Blocked', 'Cancelled'].includes(task.state);
   const archived = isArchived(task);
   const isBlocked = task.block && task.block !== '无' && task.block !== '-';
@@ -171,7 +171,7 @@ export default function EdictBoard() {
 
   edicts.sort((a, b) => (STATE_ORDER[a.state] ?? 9) - (STATE_ORDER[b.state] ?? 9));
 
-  const unArchivedDone = allEdicts.filter((t) => !t.archived && ['Done', 'Cancelled'].includes(t.state));
+  const unArchivedDone = allEdicts.filter((t) => !t.archived && ['Completed', 'Cancelled'].includes(t.state));
 
   const handleArchiveAll = async () => {
     if (!confirm('완료/취소된 모든 지시를 보관함으로 이동하시겠습니까?')) return;

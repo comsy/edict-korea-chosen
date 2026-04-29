@@ -25,17 +25,18 @@ MODEL_PRICING = {
 }
 
 OFFICIALS = [
-    {'id':'taizi',   'label':'太子',  'role':'太子',    'emoji':'🤴','rank':'储君'},
-    {'id':'zhongshu','label':'中书省','role':'中书令',  'emoji':'📜','rank':'正一品'},
-    {'id':'menxia',  'label':'门下省','role':'侍中',    'emoji':'🔍','rank':'正一品'},
-    {'id':'shangshu','label':'尚书省','role':'尚书令',  'emoji':'📮','rank':'正一品'},
-    {'id':'libu',    'label':'礼部',  'role':'礼部尚书','emoji':'📝','rank':'正二品'},
-    {'id':'hubu',    'label':'户部',  'role':'户部尚书','emoji':'💰','rank':'正二品'},
-    {'id':'bingbu',  'label':'兵部',  'role':'兵部尚书','emoji':'⚔️','rank':'正二品'},
-    {'id':'xingbu',  'label':'刑部',  'role':'刑部尚书','emoji':'⚖️','rank':'正二品'},
-    {'id':'gongbu',  'label':'工部',  'role':'工部尚书','emoji':'🔧','rank':'正二品'},
-    {'id':'libu_hr', 'label':'吏部',  'role':'吏部尚书','emoji':'👔','rank':'正二品'},
-    {'id':'zaochao', 'label':'钦天监','role':'朝报官',  'emoji':'📰','rank':'正三品'},
+    {'id':'seja',        'label':'세자',   'role':'세자',    'emoji':'🤴','rank':'왕세자'},
+    {'id':'hongmungwan', 'label':'홍문관', 'role':'대제학',  'emoji':'📜','rank':'정일품'},
+    {'id':'saganwon',    'label':'사간원', 'role':'대사간',  'emoji':'🔍','rank':'정일품'},
+    {'id':'seungjeongwon','label':'승정원','role':'도승지',  'emoji':'📮','rank':'정일품'},
+    {'id':'yejo',        'label':'예조',  'role':'예조판서','emoji':'📝','rank':'정이품'},
+    {'id':'hojo',        'label':'호조',  'role':'호조판서','emoji':'💰','rank':'정이품'},
+    {'id':'byeongjo',    'label':'병조',  'role':'병조판서','emoji':'⚔️','rank':'정이품'},
+    {'id':'hyeongjo',    'label':'형조',  'role':'형조판서','emoji':'⚖️','rank':'정이품'},
+    {'id':'gongjo',      'label':'공조',  'role':'공조판서','emoji':'🔧','rank':'정이품'},
+    {'id':'ijo',         'label':'이조',  'role':'이조판서','emoji':'👔','rank':'정이품'},
+    {'id':'jobocheong',  'label':'조보청','role':'조보관',  'emoji':'📰','rank':'정삼품'},
+    {'id':'gwansanggam', 'label':'관상감','role':'관상감정','emoji':'🔭','rank':'정삼품'},
 ]
 
 def rj(p, d):
@@ -68,8 +69,8 @@ def get_model(agent_id):
     for a in cfg.get('agents',{}).get('list',[]):
         if a.get('id') == agent_id:
             return normalize_model(a.get('model', default), default)
-    # 兼容历史：太子曾使用 main 作为运行时 id
-    if agent_id == 'taizi':
+    # 兼容历史：세자曾使用 main 作为运行时 id
+    if agent_id == 'seja':
         for a in cfg.get('agents',{}).get('list',[]):
             if a.get('id') == 'main':
                 return normalize_model(a.get('model', default), default)
@@ -78,7 +79,7 @@ def get_model(agent_id):
 def scan_agent(agent_id):
     """从 sessions.json 读取 token 统计（累计所有 session）"""
     sj = AGENTS_ROOT / agent_id / 'sessions' / 'sessions.json'
-    if not sj.exists() and agent_id == 'taizi':
+    if not sj.exists() and agent_id == 'seja':
         sj = AGENTS_ROOT / 'main' / 'sessions' / 'sessions.json'
     if not sj.exists():
         return {'tokens_in':0,'tokens_out':0,'cache_read':0,'cache_write':0,'sessions':0,'last_active':None,'messages':0}
@@ -135,8 +136,8 @@ def calc_cost(s, model):
     return round(usd, 4)
 
 def get_task_stats(org_label, tasks):
-    done   = [t for t in tasks if t.get('state')=='Done' and t.get('org')==org_label]
-    active = [t for t in tasks if t.get('state') in ('Doing','Review','Assigned') and t.get('org')==org_label]
+    done   = [t for t in tasks if t.get('state')=='Completed' and t.get('org')==org_label]
+    active = [t for t in tasks if t.get('state') in ('InProgress','FinalReview','SeungjeongwonAssigned') and t.get('org')==org_label]
     fl = sum(1 for t in tasks for f in t.get('flow_log',[])
              if f.get('from')==org_label or f.get('to')==org_label)
     # 参与的旨意（JJC）列表

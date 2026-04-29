@@ -33,7 +33,7 @@ class SlackChannel(NotificationChannel):
                 'type': 'actions',
                 'elements': [{
                     'type': 'button',
-                    'text': {'type': 'plain_text', 'text': '查看详情'},
+                    'text': {'type': 'plain_text', 'text': '상세 보기'},
                     'url': url
                 }]
             })

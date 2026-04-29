@@ -1,11 +1,11 @@
-"""任务服务层 — CRUD + 状态机逻辑。
+"""업무 서비스 레이어 — CRUD + 상태기 로직.
 
-所有业务规则集中在此：
-- 创建任务 → 事件写入 outbox 表（同一事务）
-- 状态流转 → 校验合法性 + SELECT FOR UPDATE 防并发 + outbox 事件
-- 查询、过滤、聚合
+모든 업무 규칙을 여기에 집중:
+- 업무 생성 → outbox 테이블에 이벤트 기록 (같은 트랜잭션)
+- 상태 전이 → 합법성 검증 + SELECT FOR UPDATE 동시 쓰기 방지 + outbox 이벤트
+- 조회, 필터, 집계
 
-事件投递由 OutboxRelay worker 异步完成，保证 DB/Event 原子一致。
+이벤트 전달은 OutboxRelay worker가 비동기 수행, DB/Event 원자적 일관성 보장.
 """
 
 import logging
@@ -31,23 +31,23 @@ log = logging.getLogger("edict.task_service")
 class TaskService:
     def __init__(self, db: AsyncSession, event_bus=None):
         self.db = db
-        # event_bus 保留用于 request_dispatch 等直接发布场景
+        # event_bus는 request_dispatch 등 직접 발행 시 사용
         self.bus = event_bus
 
-    # ── 创建 ──
+    # ── 생성 ──
 
     async def create_task(
         self,
         title: str,
         description: str = "",
-        priority: str = "中",
+        priority: str = "중",
         assignee_org: str | None = None,
         creator: str = "emperor",
         tags: list[str] | None = None,
-        initial_state: TaskState = TaskState.Taizi,
+        initial_state: TaskState = TaskState.SejaFinalReview,
         meta: dict | None = None,
     ) -> Task:
-        """创建任务，事件写入 outbox 表（同一事务原子提交）。"""
+        """업무 생성 — outbox 테이블에 이벤트 기록 (같은 트랜잭션 원자 커밋)."""
         now = datetime.now(timezone.utc)
         trace_id = str(uuid.uuid4())
         target_org = Task.org_for_state(initial_state, assignee_org)
@@ -64,14 +64,14 @@ class TaskService:
             tags=tags or [],
             org=target_org,
             official=creator,
-            now=description or "任务创建",
+            now=description or "업무 생성",
             target_dept=assignee_org or "",
             flow_log=[
                 {
                     "from": None,
                     "to": initial_state.value,
                     "agent": "system",
-                    "reason": "任务创建",
+                    "reason": "업무 생성",
                     "ts": now.isoformat(),
                 }
             ],
@@ -103,7 +103,7 @@ class TaskService:
         log.info(f"Created task {task.task_id}: {title} [{initial_state.value}]")
         return task
 
-    # ── 状态流转 ──
+    # ── 상태 전이 ──
 
     async def transition_state(
         self,
@@ -112,8 +112,8 @@ class TaskService:
         agent: str = "system",
         reason: str = "",
     ) -> Task:
-        """执行状态流转。SELECT FOR UPDATE 防止并发 flow_log 丢失。"""
-        # 行级排他锁 — 串行化同一任务的并发写入
+        """상태 전이 실행. SELECT FOR UPDATE로 동시 flow_log 손실 방지."""
+        # 행 레벨 배타 잠금 — 같은 업무의 동시 쓰기 직렬화
         stmt = select(Task).where(Task.task_id == task_id).with_for_update()
         result = await self.db.execute(stmt)
         task = result.scalar_one_or_none()
@@ -122,7 +122,7 @@ class TaskService:
 
         old_state = task.state
 
-        # 校验合法流转
+        # 합법 전이 검증
         allowed = STATE_TRANSITIONS.get(old_state, set())
         if new_state not in allowed:
             raise ValueError(
@@ -136,7 +136,7 @@ class TaskService:
             task.now = reason
         task.updated_at = datetime.now(timezone.utc)
 
-        # 在行锁保护下安全追加 flow_log
+        # 행 잠금 보호 하에 flow_log 안전 추가
         flow_entry = {
             "from": old_state.value,
             "to": new_state.value,
@@ -148,7 +148,7 @@ class TaskService:
             task.flow_log = []
         task.flow_log = [*task.flow_log, flow_entry]
 
-        # 事件写入 outbox（同一事务）
+        # outbox에 이벤트 기록 (같은 트랜잭션)
         topic = TOPIC_TASK_COMPLETED if new_state in TERMINAL_STATES else TOPIC_TASK_STATUS
         outbox = OutboxEvent(
             topic=topic,
@@ -169,7 +169,7 @@ class TaskService:
         log.info(f"Task {task_id} state: {old_state.value} → {new_state.value} by {agent}")
         return task
 
-    # ── 派发请求 ──
+    # ── 배분 요청 ──
 
     async def request_dispatch(
         self,
@@ -177,7 +177,7 @@ class TaskService:
         target_agent: str,
         message: str = "",
     ):
-        """发布 task.dispatch 事件到 outbox，由 OutboxRelay 投递后 DispatchWorker 消费。"""
+        """task.dispatch 이벤트를 outbox에 발행, OutboxRelay 전달 후 DispatchWorker가 소비."""
         task = await self._get_task(task_id)
         outbox = OutboxEvent(
             topic=TOPIC_TASK_DISPATCH,
@@ -195,7 +195,7 @@ class TaskService:
         await self.db.commit()
         log.info(f"Dispatch requested: task {task_id} → agent {target_agent}")
 
-    # ── 进度/备注更新 ──
+    # ── 진행 상황/비고 갱신 ──
 
     async def add_progress(
         self,
@@ -238,7 +238,7 @@ class TaskService:
         await self.db.commit()
         return task
 
-    # ── 查询 ──
+    # ── 조회 ──
 
     async def get_task(self, task_id: uuid.UUID) -> Task:
         return await self._get_task(task_id)
@@ -266,7 +266,7 @@ class TaskService:
         return list(result.scalars().all())
 
     async def get_live_status(self) -> dict[str, Any]:
-        """生成兼容旧 live_status.json 格式的全局状态。"""
+        """live_status.json 형식 호환 전역 상태 생성."""
         tasks = await self.list_tasks(limit=200)
         active_tasks = {}
         completed_tasks = {}
@@ -289,7 +289,7 @@ class TaskService:
         result = await self.db.execute(stmt)
         return result.scalar_one()
 
-    # ── 内部 ──
+    # ── 내부 ──
 
     async def _get_task(self, task_id: uuid.UUID) -> Task:
         task = await self.db.get(Task, task_id)

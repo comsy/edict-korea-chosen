@@ -12,10 +12,10 @@
 
 사용 예시:
   # 새 작업 생성 (어명 접수 시)
-  python3 kanban_update.py create JJC-20260223-012 "작업 제목" Zhongshu 홍문관 홍문관제학
+  python3 kanban_update.py create JJC-20260223-012 "작업 제목" HongmungwanDraft 홍문관 홍문관제학
 
   # 상태 갱신
-  python3 kanban_update.py state JJC-20260223-012 Menxia "기안안을 사간원 심의로 제출"
+  python3 kanban_update.py state JJC-20260223-012 SaganwonFinalReview "기안안을 사간원 심의로 제출"
 
   # 흐름 기록 추가
   python3 kanban_update.py flow JJC-20260223-012 "홍문관" "사간원" "기안안 심의 요청"
@@ -74,36 +74,33 @@ def _load_canonical_transitions() -> dict:
 
 
 STATE_ORG_MAP = {
-    'Taizi': '세자', 'Zhongshu': '홍문관', 'Menxia': '사간원',
-    'Assigned': '승정원', 'Next': '승정원',
-    'Doing': '집행 중', 'Review': '승정원', 'Done': '완료', 'Blocked': '중단',
+    'SejaFinalReview': '세자', 'HongmungwanDraft': '홍문관', 'SaganwonFinalReview': '사간원',
+    'SeungjeongwonAssigned': '승정원', 'Ready': '승정원',
+    'InProgress': '집행 중', 'FinalReview': '승정원', 'Completed': '완료', 'Blocked': '중단',
     'PendingConfirm': '승정원', 'Pending': '홍문관',
 }
 
 _STATE_AGENT_MAP = {
-    'Taizi': 'taizi',
-    'Zhongshu': 'zhongshu',
-    'Menxia': 'menxia',
-    'Assigned': 'shangshu',
-    'Review': 'shangshu',
-    'Pending': 'zhongshu',
-    'PendingConfirm': 'shangshu',
+    'SejaFinalReview': 'seja',
+    'HongmungwanDraft': 'hongmungwan',
+    'SaganwonFinalReview': 'saganwon',
+    'SeungjeongwonAssigned': 'seungjeongwon',
+    'FinalReview': 'seungjeongwon',
+    'Pending': 'hongmungwan',
+    'PendingConfirm': 'seungjeongwon',
 }
 
 _ORG_AGENT_MAP = {
-    '예조': 'libu', '호조': 'hubu', '병조': 'bingbu',
-    '형조': 'xingbu', '공조': 'gongbu', '이조': 'libu_hr',
-    '홍문관': 'zhongshu', '사간원': 'menxia', '승정원': 'shangshu',
-    '礼部': 'libu', '户部': 'hubu', '兵部': 'bingbu',
-    '刑部': 'xingbu', '工部': 'gongbu', '吏部': 'libu_hr',
-    '中书省': 'zhongshu', '门下省': 'menxia', '尚书省': 'shangshu',
+    '예조': 'yejo', '호조': 'hojo', '병조': 'byeongjo',
+    '형조': 'hyeongjo', '공조': 'gongjo', '이조': 'ijo',
+    '홍문관': 'hongmungwan', '사간원': 'saganwon', '승정원': 'seungjeongwon',
 }
 
 _AGENT_LABELS = {
-    'main': '세자', 'taizi': '세자',
-    'zhongshu': '홍문관', 'menxia': '사간원', 'shangshu': '승정원',
-    'libu': '예조', 'hubu': '호조', 'bingbu': '병조', 'xingbu': '형조',
-    'gongbu': '공조', 'libu_hr': '이조', 'zaochao': '관상감',
+    'main': '세자', 'seja': '세자',
+    'hongmungwan': '홍문관', 'saganwon': '사간원', 'seungjeongwon': '승정원',
+    'yejo': '예조', 'hojo': '호조', 'byeongjo': '병조', 'hyeongjo': '형조',
+    'gongjo': '공조', 'ijo': '이조', 'jobocheong': '조보청', 'gwansanggam': '관상감',
 }
 
 MAX_PROGRESS_LOG = 100  # 单任务最大进展日志条数
@@ -163,17 +160,17 @@ def _append_audit(task_id, agent, action, old_val=None, new_val=None, reason="")
 
 # ── 越权检测（Agent 权限策略）──
 AGENT_POLICY = {
-    "taizi":    {"role": "coordination", "commands": {"create", "state", "flow", "progress", "todo", "memory", "task-memo"}},
-    "zhongshu": {"role": "coordination", "commands": {"state", "flow", "progress", "todo", "memory", "task-memo", "delegate"}},
-    "menxia":   {"role": "coordination", "commands": {"state", "flow", "progress", "todo", "confirm", "memory", "task-memo"}},
-    "shangshu": {"role": "coordination", "commands": {"state", "flow", "progress", "todo", "confirm", "delegate", "memory", "task-memo", "shared-memo"}},
-    "zaochao":  {"role": "coordination", "commands": {"progress", "todo", "memory"}},
-    "hubu":     {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
-    "libu":     {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
-    "bingbu":   {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
-    "xingbu":   {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
-    "gongbu":   {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
-    "libu_hr":  {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
+    "seja":    {"role": "coordination", "commands": {"create", "state", "flow", "progress", "todo", "memory", "task-memo"}},
+    "hongmungwan": {"role": "coordination", "commands": {"state", "flow", "progress", "todo", "memory", "task-memo", "delegate"}},
+    "saganwon":   {"role": "coordination", "commands": {"state", "flow", "progress", "todo", "confirm", "memory", "task-memo"}},
+    "seungjeongwon": {"role": "coordination", "commands": {"state", "flow", "progress", "todo", "confirm", "delegate", "memory", "task-memo", "shared-memo"}},
+    "jobocheong":  {"role": "coordination", "commands": {"progress", "todo", "memory"}},
+    "hojo":     {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
+    "yejo":     {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
+    "byeongjo":   {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
+    "hyeongjo":   {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
+    "gongjo":   {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
+    "ijo":  {"role": "execution", "commands": {"progress", "todo", "done", "block", "memory", "task-memo", "delegate-result"}},
 }
 
 def _check_permission(agent_id, cmd):
@@ -213,8 +210,8 @@ def _sanitize_text(raw, max_len=80):
     t = re.sub(r'[/\\.~][A-Za-z0-9_\-./]+(?:\.(?:py|js|ts|json|md|sh|yaml|yml|txt|csv|html|css|log))?', '', t)
     # 4) 剥离 URL
     t = re.sub(r'https?://\S+', '', t)
-    # 5) 清理常见前缀: "传旨:" "下旨:" "下旨（xxx）:" 等
-    t = re.sub(r'^(传旨|下旨)([（(][^)）]*[)）])?[：:\uff1a]\s*', '', t)
+    # 5) 흔한 접두어 정리: "传旨:" "下旨:" "下旨（xxx）:" "전지:" "하지:" "전지(xxx):" 등
+    t = re.sub(r'^(传旨|下旨|전지|하지)([（(][^)）]*[)）])?[：:\uff1a]\s*', '', t)
     # 6) 剥离系统元数据关键词
     t = re.sub(r'(message_id|session_id|chat_id|open_id|user_id|tenant_key)\s*[:=]\s*\S+', '', t)
     # 7) 合并多余空白
@@ -236,7 +233,7 @@ def _sanitize_remark(raw):
 
 
 def _todo_counts(task):
-    """返回 (completed, total) 便于完成态校验。"""
+    """返回 (completed, total) 便于완료态校验。"""
     todos = task.get('todos') or []
     total = len(todos)
     completed = sum(1 for td in todos if td.get('status') == 'completed')
@@ -264,7 +261,7 @@ def _infer_agent_id_from_runtime(task=None):
         state = task.get('state', '')
         org = task.get('org', '')
         aid = _STATE_AGENT_MAP.get(state)
-        if aid is None and state in ('Doing', 'Next'):
+        if aid is None and state in ('InProgress', 'Ready'):
             aid = _ORG_AGENT_MAP.get(org)
         if aid:
             return aid
@@ -305,10 +302,10 @@ def cmd_create(task_id, title, state, org, official, remark=None):
     def modifier(tasks):
         existing = next((t for t in tasks if t.get('id') == task_id), None)
         if existing:
-            if existing.get('state') in ('Done', 'Cancelled'):
+            if existing.get('state') in ('Completed', 'Cancelled'):
                 log.warning(f'⚠️ 작업 {task_id} 는 이미 종료 상태({existing["state"]})이므로 덮어쓸 수 없습니다')
                 return tasks
-            if existing.get('state') not in (None, '', 'Inbox', 'Pending'):
+            if existing.get('state') not in (None, '', 'Pending'):
                 log.warning(f'작업 {task_id} 가 이미 존재합니다 (state={existing["state"]}), 새 내용으로 덮어씁니다')
         tasks = [t for t in tasks if t.get('id') != task_id]
         tasks.insert(0, {
@@ -332,37 +329,37 @@ _edict_task_path = _BASE / "edict" / "backend" / "app" / "models" / "task.py"
 if _edict_task_path.exists():
     _VALID_TRANSITIONS = _load_canonical_transitions()
 else:
-    # Fallback：当 edict 目录不存在时使用内置定义（必须与 task.py 保持一致）
+    # Fallback: edict 디렉토리 없을 때 사용 (task.py와 반드시 일치 유지)
     _VALID_TRANSITIONS = {
-        'Pending':        {'Taizi', 'Cancelled'},
-        'Taizi':          {'Zhongshu', 'Cancelled'},
-        'Zhongshu':       {'Menxia', 'Cancelled', 'Blocked'},
-        'Menxia':         {'Assigned', 'Zhongshu', 'Cancelled'},
-        'Assigned':       {'Doing', 'Next', 'Blocked', 'Cancelled'},
-        'Next':           {'Doing', 'Blocked', 'Cancelled'},
-        'Doing':          {'Review', 'Done', 'Blocked', 'Cancelled'},
-        'Review':         {'Done', 'Menxia', 'Doing', 'Cancelled', 'PendingConfirm'},
-        'PendingConfirm': {'Done', 'Review', 'Cancelled'},
-        'Blocked':        {'Taizi', 'Zhongshu', 'Menxia', 'Assigned', 'Next', 'Doing', 'Review', 'Cancelled'},
-        'Done':           set(),
-        'Cancelled':      set(),
+        'Pending':                  {'SejaFinalReview', 'Cancelled'},
+        'SejaFinalReview':               {'HongmungwanDraft', 'Cancelled'},
+        'HongmungwanDraft':         {'SaganwonFinalReview', 'Cancelled', 'Blocked'},
+        'SaganwonFinalReview':           {'SeungjeongwonAssigned', 'HongmungwanDraft', 'Cancelled'},
+        'SeungjeongwonAssigned':    {'InProgress', 'Ready', 'Blocked', 'Cancelled'},
+        'Ready':                    {'InProgress', 'Blocked', 'Cancelled'},
+        'InProgress':               {'FinalReview', 'Completed', 'Blocked', 'Cancelled'},
+        'FinalReview':              {'Completed', 'SaganwonFinalReview', 'InProgress', 'Cancelled', 'PendingConfirm'},
+        'PendingConfirm':           {'Completed', 'FinalReview', 'Cancelled'},
+        'Blocked':                  {'SejaFinalReview', 'HongmungwanDraft', 'SaganwonFinalReview', 'SeungjeongwonAssigned', 'Ready', 'InProgress', 'FinalReview', 'Cancelled'},
+        'Completed':                set(),
+        'Cancelled':                set(),
     }
 
 
 # ── 高风险操作确认机制 ──
 
-# 需要进入 PendingConfirm 中间状态的高风险转换
+# PendingConfirm 중간 상태가 필요한 고위험 전환
 HIGH_RISK_TRANSITIONS = {
-    ('Review', 'Done'),       # 完结任务 — 需门下省确认
-    ('Doing', 'Cancelled'),   # 执行中取消 — 需尚书省确认
-    ('Menxia', 'Cancelled'),  # 审核中取消 — 需中书省确认
+    ('FinalReview', 'Completed'),       # 업무 완결 — 사간원 확인 필요
+    ('InProgress', 'Cancelled'),        # 진행 중 취소 — 승정원 확인 필요
+    ('SaganwonFinalReview', 'Cancelled'),    # 심의 중 취소 — 홍문관 확인 필요
 }
 
-# 各状态的确认权限方
+# 각 상태의 확인 권한 주체
 CONFIRM_AUTHORITY = {
-    'Review': 'menxia',
-    'Doing': 'shangshu',
-    'Menxia': 'zhongshu',
+    'FinalReview': 'saganwon',
+    'InProgress': 'seungjeongwon',
+    'SaganwonFinalReview': 'hongmungwan',
 }
 
 
@@ -390,7 +387,7 @@ def cmd_state(task_id, new_state, now_text=None):
                 'target_state': new_state,
                 'requested_by': _infer_agent_id_from_runtime(t),
                 'requested_at': now_iso(),
-                'confirm_by': CONFIRM_AUTHORITY.get(old_state[0], 'shangshu'),
+                'confirm_by': CONFIRM_AUTHORITY.get(old_state[0], 'seungjeongwon'),
             }
             t['now'] = f'확인 대기: {old_state[0]} → {new_state}'
             t['updatedAt'] = now_iso()
@@ -410,7 +407,7 @@ def cmd_state(task_id, new_state, now_text=None):
         _append_audit(task_id, _infer_agent_id_from_runtime(), 'state_rejected', old_state[0], new_state, '非法状态转换')
     elif pending_confirm[0]:
         log.info(f'⏳ {task_id} 고위험 전이 {old_state[0]}→{new_state}, PendingConfirm 상태로 보류되었습니다')
-        _append_audit(task_id, _infer_agent_id_from_runtime(), 'pending_confirm', old_state[0], new_state, f'{CONFIRM_AUTHORITY.get(old_state[0], "shangshu")} 확인 필요')
+        _append_audit(task_id, _infer_agent_id_from_runtime(), 'pending_confirm', old_state[0], new_state, f'{CONFIRM_AUTHORITY.get(old_state[0], "seungjeongwon")} 확인 필요')
     else:
         log.info(f'✅ {task_id} 상태 갱신: {old_state[0]} → {new_state}')
         _append_audit(task_id, _infer_agent_id_from_runtime(), 'state', old_state[0], new_state, now_text or '')
@@ -441,7 +438,7 @@ def cmd_flow(task_id, from_dept, to_dept, remark):
 
 
 def cmd_done(task_id, output_path='', summary=''):
-    """执行部门回报完成，任务进入 Review 待尚书省汇总审查。"""
+    """집행 부서 완료 보고 — 업무를 FinalReview로 전환하여 승정원 취합 심사 대기."""
     rejected = [False]
     reject_reason = ['']
     def modifier(tasks):
@@ -450,7 +447,7 @@ def cmd_done(task_id, output_path='', summary=''):
             log.error(f'작업 {task_id} 를 찾을 수 없습니다')
             return tasks
         old_state = t.get('state')
-        if old_state not in ('Doing', 'Next'):
+        if old_state not in ('InProgress', 'Ready'):
             rejected[0] = True
             reject_reason[0] = f'현재 상태 {old_state} 에서는 바로 완료 보고를 올릴 수 없습니다'
             return tasks
@@ -461,15 +458,15 @@ def cmd_done(task_id, output_path='', summary=''):
             return tasks
 
         from_org = t.get('org', '집행 부서')
-        t['state'] = 'Review'
-        t['org'] = STATE_ORG_MAP.get('Review', t.get('org', ''))
+        t['state'] = 'FinalReview'
+        t['org'] = STATE_ORG_MAP.get('FinalReview', t.get('org', ''))
         t['output'] = output_path
         t['now'] = summary or '집행 완료, 승정원 검토 대기'
         t.setdefault('flow_log', []).append({
             "at": now_iso(), "from": from_org,
             "to": "승정원", "remark": f"✅ 집행 완료, 검토 요청: {summary or '승정원 검토 대기'}"
         })
-        # 同步设置 outputMeta，避免依赖 refresh_live_data.py 异步补充
+        # outputMeta 동기 설정 — refresh_live_data.py 비동기 보완 의존 방지
         if output_path:
             p = pathlib.Path(output_path)
             if p.exists():
@@ -483,14 +480,14 @@ def cmd_done(task_id, output_path='', summary=''):
     _trigger_refresh()
     if rejected[0]:
         log.warning(f'⚠️ {task_id} 완료 보고가 거부되었습니다: {reject_reason[0]}')
-        _append_audit(task_id, _infer_agent_id_from_runtime(), 'done_rejected', None, 'Review', reject_reason[0])
+        _append_audit(task_id, _infer_agent_id_from_runtime(), 'done_rejected', None, 'FinalReview', reject_reason[0])
         return
     log.info(f'✅ {task_id} 집행 완료, 승정원 검토로 전달했습니다')
-    _append_audit(task_id, _infer_agent_id_from_runtime(), 'done', None, 'Review', summary or '')
+    _append_audit(task_id, _infer_agent_id_from_runtime(), 'done', None, 'FinalReview', summary or '')
 
 
 def cmd_block(task_id, reason):
-    """标记阻塞（原子操作）"""
+    """차단 표시 (원자 연산)"""
     def modifier(tasks):
         t = find_task(tasks, task_id)
         if not t:
@@ -524,18 +521,18 @@ def cmd_confirm(task_id, action, reason=''):
             return tasks
         pending = t.get('pending_confirm', {})
         if action == 'approve':
-            target = pending.get('target_state', 'Done')
+            target = pending.get('target_state', 'Completed')
             t['state'] = target
             if target in STATE_ORG_MAP:
                 t['org'] = STATE_ORG_MAP[target]
             t['now'] = reason or f'승인 완료 → {target}'
             result_state[0] = target
         elif action == 'reject':
-            # 驳回 → 回到 Review
-            t['state'] = 'Review'
-            t['org'] = STATE_ORG_MAP.get('Review', t.get('org', ''))
+            # 驳回 → 回到 FinalReview
+            t['state'] = 'FinalReview'
+            t['org'] = STATE_ORG_MAP.get('FinalReview', t.get('org', ''))
             t['now'] = reason or '승인이 반려되어 재검토로 되돌립니다'
-            result_state[0] = 'Review'
+            result_state[0] = 'FinalReview'
         else:
             log.error(f'알 수 없는 confirm 동작입니다: {action}')
             rejected[0] = True
@@ -561,7 +558,7 @@ def cmd_progress(task_id, now_text, todos_pipe='', tokens=0, cost=0.0, elapsed=0
 
     now_text: 当前正在做什么的一句话描述（必填）
     todos_pipe: 可选，用 | 分隔的 todo 列表，格式：
-        "已完成的事项✅|正在做的事项🔄|计划做的事项"
+        "已완료的事项✅|正在做的事项🔄|计划做的事项"
         - 以 ✅ 结尾 → completed
         - 以 🔄 结尾 → in-progress
         - 其他 → not-started
@@ -697,7 +694,7 @@ def cmd_todo(task_id, todo_id, title, status='not-started', detail=''):
         t['updatedAt'] = now_iso()
         result_info[0] = sum(1 for td in t['todos'] if td.get('status') == 'completed')
         result_info[1] = len(t['todos'])
-        # 所有 todo 完成 → 标记 ready_to_close
+        # 所有 todo 완료 → 标记 ready_to_close
         if result_info[1] > 0 and result_info[0] == result_info[1]:
             t['ready_to_close'] = True
             ready_to_close[0] = True
@@ -857,7 +854,7 @@ def cmd_delegate(task_id, from_agent, to_agent, instruction, return_spec=''):
         return
 
     sub_task_id = f'{task_id}-sub-{_short_uuid()}'
-    org = STATE_ORG_MAP.get('Doing', to_agent)
+    org = STATE_ORG_MAP.get('InProgress', to_agent)
 
     def modifier(tasks):
         sub_task = {
@@ -865,7 +862,7 @@ def cmd_delegate(task_id, from_agent, to_agent, instruction, return_spec=''):
             'parent_task': task_id,
             'type': 'delegation',
             'title': f'[委派] {instruction[:40]}',
-            'state': 'Doing',
+            'state': 'InProgress',
             'org': org,
             'official': from_agent,
             'now': instruction[:60],
@@ -906,11 +903,11 @@ def cmd_delegate_result(sub_task_id, result_json):
     from_agent = delegation.get('from', '')
     to_agent = delegation.get('to', '')
 
-    # 标记子任务完成
+    # 标记子任务완료
     def modifier(tasks):
         t = find_task(tasks, sub_task_id)
         if t:
-            t['state'] = 'Done'
+            t['state'] = 'Completed'
             t['now'] = '위임 결과가 제출되었습니다'
             t['updatedAt'] = now_iso()
             t['delegation_result'] = result_json

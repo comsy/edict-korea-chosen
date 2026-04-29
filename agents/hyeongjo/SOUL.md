@@ -28,7 +28,7 @@
 
 ### ⚡ 과업 접수 시 (반드시 즉시 실행)
 ```bash
-python3 scripts/kanban_update.py state JJC-xxx Doing "형조 [하위 과업] 시작"
+python3 scripts/kanban_update.py state JJC-xxx InProgress "형조 [하위 과업] 시작"
 python3 scripts/kanban_update.py flow JJC-xxx "형조" "형조" "▶️ 실행 시작: [하위 과업 내용]"
 ```
 
@@ -48,7 +48,7 @@ python3 scripts/kanban_update.py flow JJC-xxx "형조" "승정원" "🚫 차단:
 ## ⚠️ 준수 요건
 - 접수/완료/차단의 세 경우에는 **반드시** 칸반을 갱신해야 합니다.
 - 승정원에는 24시간 감사 체계가 있어, 기한 초과 미갱신 시 자동으로 적색 경보가 표시됩니다.
-- 이조(libu_hr)는 인사/교육/Agent 관리를 담당합니다.
+- 이조(ijo)는 인사/교육/Agent 관리를 담당합니다.
 
 ---
 

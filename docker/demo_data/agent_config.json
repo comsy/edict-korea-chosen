@@ -75,7 +75,7 @@
   ],
   "agents": [
     {
-      "id": "shangshu",
+      "id": "seungjeongwon",
       "label": "승정원",
       "role": "승정원 도승지",
       "duty": "배분 및 승급 재결",
@@ -83,85 +83,85 @@
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-shangshu",
+      "workspace": "/Users/bingsen/.openclaw/workspace-seungjeongwon",
       "skills": [
         {
           "name": "dispatch",
-          "path": "/Users/bingsen/.openclaw/workspace-shangshu/skills/dispatch/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-seungjeongwon/skills/dispatch/SKILL.md",
           "exists": true,
           "description": "---"
         },
         {
           "name": "kanban-local",
-          "path": "/Users/bingsen/.openclaw/workspace-shangshu/skills/kanban-local/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-seungjeongwon/skills/kanban-local/SKILL.md",
           "exists": true,
           "description": "---"
         },
         {
           "name": "organization-governance",
-          "path": "/Users/bingsen/.openclaw/workspace-shangshu/skills/organization-governance/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-seungjeongwon/skills/organization-governance/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "zhongshu",
-        "menxia",
-        "hubu",
-        "libu",
-        "bingbu",
-        "xingbu",
-        "gongbu"
+        "hongmungwan",
+        "saganwon",
+        "hojo",
+        "yejo",
+        "byeongjo",
+        "hyeongjo",
+        "gongjo"
       ]
     },
     {
-      "id": "zhongshu",
+      "id": "hongmungwan",
       "label": "홍문관",
-      "role": "홍문관 대제학",
+      "role": "홍문관 대제학사",
       "duty": "임무서 기초 및 우선순위 정리",
       "emoji": "📜",
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-zhongshu",
+      "workspace": "/Users/bingsen/.openclaw/workspace-hongmungwan",
       "skills": [
         {
           "name": "planning",
-          "path": "/Users/bingsen/.openclaw/workspace-zhongshu/skills/planning/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-hongmungwan/skills/planning/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "menxia",
-        "shangshu"
+        "saganwon",
+        "seungjeongwon"
       ]
     },
     {
-      "id": "menxia",
+      "id": "saganwon",
       "label": "사간원",
-      "role": "사간원 대사간",
+      "role": "사간원 대사성",
       "duty": "심의 및 반려 절차",
       "emoji": "🔍",
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-menxia",
+      "workspace": "/Users/bingsen/.openclaw/workspace-saganwon",
       "skills": [
         {
           "name": "review",
-          "path": "/Users/bingsen/.openclaw/workspace-menxia/skills/review/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-saganwon/skills/review/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "shangshu",
-        "zhongshu"
+        "seungjeongwon",
+        "hongmungwan"
       ]
     },
     {
-      "id": "hubu",
+      "id": "hojo",
       "label": "호조",
       "role": "호조판서",
       "duty": "자원/예산/비용",
@@ -169,21 +169,21 @@
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-hubu",
+      "workspace": "/Users/bingsen/.openclaw/workspace-hojo",
       "skills": [
         {
           "name": "data-analysis",
-          "path": "/Users/bingsen/.openclaw/workspace-hubu/skills/data-analysis/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-hojo/skills/data-analysis/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "shangshu"
+        "seungjeongwon"
       ]
     },
     {
-      "id": "libu",
+      "id": "yejo",
       "label": "예조",
       "role": "예조판서",
       "duty": "문서/보고/규범",
@@ -191,21 +191,21 @@
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-libu",
+      "workspace": "/Users/bingsen/.openclaw/workspace-yejo",
       "skills": [
         {
           "name": "doc-writer",
-          "path": "/Users/bingsen/.openclaw/workspace-libu/skills/doc-writer/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-yejo/skills/doc-writer/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "shangshu"
+        "seungjeongwon"
       ]
     },
     {
-      "id": "bingbu",
+      "id": "byeongjo",
       "label": "병조",
       "role": "병조판서",
       "duty": "긴급 대응 및 순찰",
@@ -213,43 +213,43 @@
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-bingbu",
+      "workspace": "/Users/bingsen/.openclaw/workspace-byeongjo",
       "skills": [
         {
           "name": "coding",
-          "path": "/Users/bingsen/.openclaw/workspace-bingbu/skills/coding/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-byeongjo/skills/coding/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "shangshu"
+        "seungjeongwon"
       ]
     },
     {
-      "id": "xingbu",
+      "id": "hyeongjo",
       "label": "형조",
       "role": "형조판서",
-      "duty": "준법/감사/한계선",
+      "duty": "준법/감사/홍계선",
       "emoji": "⚖️",
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-xingbu",
+      "workspace": "/Users/bingsen/.openclaw/workspace-hyeongjo",
       "skills": [
         {
           "name": "security-review",
-          "path": "/Users/bingsen/.openclaw/workspace-xingbu/skills/security-review/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-hyeongjo/skills/security-review/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "shangshu"
+        "seungjeongwon"
       ]
     },
     {
-      "id": "gongbu",
+      "id": "gongjo",
       "label": "공조",
       "role": "공조판서",
       "duty": "엔지니어링 납품 및 자동화",
@@ -257,18 +257,102 @@
       "model": "anthropic/claude-sonnet-4-6",
       "defaultModel": "anthropic/claude-sonnet-4-6",
       "isDefaultModel": true,
-      "workspace": "/Users/bingsen/.openclaw/workspace-gongbu",
+      "workspace": "/Users/bingsen/.openclaw/workspace-gongjo",
       "skills": [
         {
           "name": "ops",
-          "path": "/Users/bingsen/.openclaw/workspace-gongbu/skills/ops/SKILL.md",
+          "path": "/Users/bingsen/.openclaw/workspace-gongjo/skills/ops/SKILL.md",
           "exists": true,
           "description": "---"
         }
       ],
       "allowAgents": [
-        "shangshu"
+        "seungjeongwon"
       ]
+    },
+    {
+      "id": "ijo",
+      "label": "이조",
+      "role": "이조판서",
+      "duty": "인사/교육/Agent 관리",
+      "emoji": "👔",
+      "model": "anthropic/claude-sonnet-4-6",
+      "defaultModel": "anthropic/claude-sonnet-4-6",
+      "isDefaultModel": true,
+      "workspace": "/Users/bingsen/.openclaw/workspace-ijo",
+      "skills": [
+        {
+          "name": "hr",
+          "path": "/Users/bingsen/.openclaw/workspace-ijo/skills/hr/SKILL.md",
+          "exists": true,
+          "description": "---"
+        }
+      ],
+      "allowAgents": [
+        "seungjeongwon"
+      ]
+    },
+    {
+      "id": "seja",
+      "label": "세자",
+      "role": "세자",
+      "duty": "비서/요약/보고",
+      "emoji": "👤",
+      "model": "anthropic/claude-sonnet-4-6",
+      "defaultModel": "anthropic/claude-sonnet-4-6",
+      "isDefaultModel": true,
+      "workspace": "/Users/bingsen/.openclaw/workspace-seja",
+      "skills": [
+        {
+          "name": "briefing",
+          "path": "/Users/bingsen/.openclaw/workspace-seja/skills/briefing/SKILL.md",
+          "exists": true,
+          "description": "---"
+        }
+      ],
+      "allowAgents": [
+        "hongmungwan"
+      ]
+    },
+    {
+      "id": "jobocheong",
+      "label": "조보청",
+      "role": "조보청 주관",
+      "duty": "매일 뉴스 브리핑",
+      "emoji": "📰",
+      "model": "anthropic/claude-sonnet-4-6",
+      "defaultModel": "anthropic/claude-sonnet-4-6",
+      "isDefaultModel": true,
+      "workspace": "/Users/bingsen/.openclaw/workspace-jobocheong",
+      "skills": [
+        {
+          "name": "news-briefing",
+          "path": "/Users/bingsen/.openclaw/workspace-jobocheong/skills/news-briefing/SKILL.md",
+          "exists": true,
+          "description": "---"
+        }
+      ],
+      "allowAgents": []
+    },
+    {
+      "id": "gwansanggam",
+      "label": "관상감",
+      "role": "관상감",
+      "duty": "천문/역법/달력",
+      "emoji": "🔭",
+      "model": "anthropic/claude-sonnet-4-6",
+      "defaultModel": "anthropic/claude-sonnet-4-6",
+      "isDefaultModel": true,
+      "workspace": "/Users/bingsen/.openclaw/workspace-gwansanggam",
+      "skills": [
+        {
+          "name": "calendar",
+          "path": "/Users/bingsen/.openclaw/workspace-gwansanggam/skills/calendar/SKILL.md",
+          "exists": true,
+          "description": "---"
+        }
+      ],
+      "allowAgents": []
     }
   ]
 }

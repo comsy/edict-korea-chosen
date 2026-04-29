@@ -15,15 +15,15 @@ python3 dashboard/server.py
 ```bash
 # 홍문관에 코드 리뷰 스킬 추가
 python3 scripts/skill_manager.py add-remote \
-  --agent zhongshu \
+  --agent hongmungwan \
   --name code_review \
   --source https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md \
   --description "코드 리뷰 능력"
 
 # 출력:
 # ⏳ https://raw.githubusercontent.com/... 에서 다운로드 중...
-# ✅ 스킬 code_review 가 zhongshu 에 추가되었습니다
-#    경로: /Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md
+# ✅ 스킬 code_review 가 hongmungwan 에 추가되었습니다
+#    경로: /Users/xxx/.openclaw/workspace-hongmungwan/skills/code_review/SKILL.md
 #    크기: 2048 바이트
 ```
 
@@ -37,7 +37,7 @@ python3 scripts/skill_manager.py list-remote
 # 
 # Agent       | 스킬 이름            | 설명                           | 추가 시각
 # ------------|----------------------|--------------------------------|----------
-# zhongshu    | code_review          | 코드 리뷰 능력                 | 2026-03-02
+# hongmungwan    | code_review          | 코드 리뷰 능력                 | 2026-03-02
 ```
 
 ### 4. API 응답 조회
@@ -51,10 +51,10 @@ curl http://localhost:7891/api/remote-skills-list | jq .
 #   "remoteSkills": [
 #     {
 #       "skillName": "code_review",
-#       "agentId": "zhongshu",
+#       "agentId": "hongmungwan",
 #       "sourceUrl": "https://raw.githubusercontent.com/...",
 #       "description": "코드 리뷰 능력",
-#       "localPath": "/Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md",
+#       "localPath": "/Users/xxx/.openclaw/workspace-hongmungwan/skills/code_review/SKILL.md",
 #       "addedAt": "2026-03-02T14:30:00Z",
 #       "lastUpdated": "2026-03-02T14:30:00Z",
 #       "status": "valid"
@@ -73,28 +73,28 @@ curl http://localhost:7891/api/remote-skills-list | jq .
 
 ```bash
 python3 scripts/skill_manager.py import-official-hub \
-  --agents zhongshu,menxia,shangshu,bingbu,xingbu
+  --agents hongmungwan,saganwon,seungjeongwon,byeongjo,hyeongjo
 ```
 
 이렇게 하면 각 agent 에 다음이 자동 추가됩니다:
-- **zhongshu**: code_review, api_design, doc_generation
-- **menxia**: code_review, api_design, security_audit, data_analysis, doc_generation, test_framework
-- **shangshu**: menxia 와 동일 (조정자)
-- **bingbu**: code_review, api_design, test_framework
-- **xingbu**: code_review, security_audit, test_framework
+- **hongmungwan**: code_review, api_design, doc_generation
+- **saganwon**: code_review, api_design, security_audit, data_analysis, doc_generation, test_framework
+- **seungjeongwon**: saganwon 와 동일 (조정자)
+- **byeongjo**: code_review, api_design, test_framework
+- **hyeongjo**: code_review, security_audit, test_framework
 
 ### 특정 스킬을 최신 버전으로 갱신
 
 ```bash
 python3 scripts/skill_manager.py update-remote \
-  --agent zhongshu \
+  --agent hongmungwan \
   --name code_review
 
 # 출력:
 # ⏳ https://raw.githubusercontent.com/... 에서 다운로드 중...
-# ✅ 스킬 code_review 가 zhongshu 에 추가되었습니다
+# ✅ 스킬 code_review 가 hongmungwan 에 추가되었습니다
 # ✅ 스킬이 갱신되었습니다
-#    경로: /Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md
+#    경로: /Users/xxx/.openclaw/workspace-hongmungwan/skills/code_review/SKILL.md
 #    크기: 2156 바이트
 ```
 
@@ -102,11 +102,11 @@ python3 scripts/skill_manager.py update-remote \
 
 ```bash
 python3 scripts/skill_manager.py remove-remote \
-  --agent zhongshu \
+  --agent hongmungwan \
   --name code_review
 
 # 출력:
-# ✅ 스킬 code_review 가 zhongshu 에서 제거되었습니다
+# ✅ 스킬 code_review 가 hongmungwan 에서 제거되었습니다
 ```
 
 ---
@@ -119,7 +119,7 @@ python3 scripts/skill_manager.py remove-remote \
 2. 🔧 **스킬 설정** 패널로 진입
 3. **➕ 원격 스킬 추가** 버튼 클릭
 4. 양식 작성:
-   - **Agent**: 드롭다운 목록에서 선택 (예: zhongshu)
+   - **Agent**: 드롭다운 목록에서 선택 (예: hongmungwan)
    - **스킬 이름**: 내부 ID 입력, 예: `code_review`
    - **원격 URL**: GitHub URL 붙여넣기, 예: `https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md`
    - **한국어 설명**: 선택, 예: `코드 리뷰 능력`
@@ -193,7 +193,7 @@ git push -u origin main
 
 ```bash
 python3 scripts/skill_manager.py add-remote \
-  --agent zhongshu \
+  --agent hongmungwan \
   --name my_skill \
   --source https://raw.githubusercontent.com/yourname/my-skills-hub/main/my_skill/SKILL.md \
   --description "내 맞춤 스킬"
@@ -212,7 +212,7 @@ python3 scripts/skill_manager.py add-remote \
 curl -X POST http://localhost:7891/api/add-remote-skill \
   -H "Content-Type: application/json" \
   -d '{
-    "agentId": "zhongshu",
+    "agentId": "hongmungwan",
     "skillName": "code_review",
     "sourceUrl": "https://raw.githubusercontent.com/...",
     "description": "코드 리뷰"
@@ -223,11 +223,11 @@ curl -X POST http://localhost:7891/api/add-remote-skill \
 ```json
 {
   "ok": true,
-  "message": "스킬 code_review 가 원격 출처에서 zhongshu 에 추가되었습니다",
+  "message": "스킬 code_review 가 원격 출처에서 hongmungwan 에 추가되었습니다",
   "skillName": "code_review",
-  "agentId": "zhongshu",
+  "agentId": "hongmungwan",
   "source": "https://raw.githubusercontent.com/...",
-  "localPath": "/Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md",
+  "localPath": "/Users/xxx/.openclaw/workspace-hongmungwan/skills/code_review/SKILL.md",
   "size": 2048,
   "addedAt": "2026-03-02T14:30:00Z"
 }
@@ -248,10 +248,10 @@ curl http://localhost:7891/api/remote-skills-list
   "remoteSkills": [
     {
       "skillName": "code_review",
-      "agentId": "zhongshu",
+      "agentId": "hongmungwan",
       "sourceUrl": "https://raw.githubusercontent.com/...",
       "description": "코드 리뷰 능력",
-      "localPath": "/Users/xxx/.openclaw/workspace-zhongshu/skills/code_review/SKILL.md",
+      "localPath": "/Users/xxx/.openclaw/workspace-hongmungwan/skills/code_review/SKILL.md",
       "addedAt": "2026-03-02T14:30:00Z",
       "lastUpdated": "2026-03-02T14:30:00Z",
       "status": "valid"
@@ -270,7 +270,7 @@ curl http://localhost:7891/api/remote-skills-list
 curl -X POST http://localhost:7891/api/update-remote-skill \
   -H "Content-Type: application/json" \
   -d '{
-    "agentId": "zhongshu",
+    "agentId": "hongmungwan",
     "skillName": "code_review"
   }'
 ```
@@ -283,7 +283,7 @@ curl -X POST http://localhost:7891/api/update-remote-skill \
 curl -X POST http://localhost:7891/api/remove-remote-skill \
   -H "Content-Type: application/json" \
   -d '{
-    "agentId": "zhongshu",
+    "agentId": "hongmungwan",
     "skillName": "code_review"
   }'
 ```
@@ -323,7 +323,7 @@ description: 설명
 python3 scripts/skill_manager.py list-remote
 
 # 로컬 파일 확인
-ls -la ~/.openclaw/workspace-zhongshu/skills/
+ls -la ~/.openclaw/workspace-hongmungwan/skills/
 ```
 
 ---

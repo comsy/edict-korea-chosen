@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""端到端测试 kanban_update.py 的清洗+创建+流转全流程
+"""kanban_update.py 전체 흐름 E2E 테스트 (정제+생성+전이)
 
-既可以 pytest 运行，也可以 python3 直接运行。
+pytest 또는 python3로 직접 실행 가능.
 """
 import sys, os, json, pathlib, pytest
 
-# 切换到 scripts 目录（file_lock 依赖）
+# scripts 디렉토리로 이동 (file_lock 의존성)
 _SCRIPTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'scripts')
 os.chdir(_SCRIPTS_DIR)
 sys.path.insert(0, '.')
@@ -15,7 +15,7 @@ from kanban_update import (
     cmd_create, cmd_flow, cmd_state, cmd_done, load, TASKS_FILE
 )
 
-# ── 确保 data 目录和 tasks_source.json 存在（CI 环境可能没有）
+# data 디렉토리와 tasks_source.json 존재 확인 (CI 환경 대비)
 data_dir = TASKS_FILE.parent
 if data_dir.exists() and not data_dir.is_dir():
     data_dir.unlink()
@@ -30,7 +30,7 @@ def _get_task(tid):
 
 @pytest.fixture(autouse=True)
 def _backup_and_restore():
-    """每个测试前备份数据，测试后恢复并清理测试任务。"""
+    """각 테스트 전 데이터 백업, 테스트 후 복원 및 테스트 작업 정리."""
     backup = TASKS_FILE.read_text()
     yield
     TASKS_FILE.write_text(backup)
@@ -39,88 +39,94 @@ def _backup_and_restore():
     TASKS_FILE.write_text(json.dumps(tasks, ensure_ascii=False, indent=2))
 
 
-# ── TEST 1: 脏标题(含文件路径+Conversation)应被清洗后创建
+# ── TEST 1: 더러운 제목(파일 경로+Conversation 포함)은 정제 후 생성
 def test_dirty_title_cleaned():
     cmd_create('JJC-TEST-E2E-01',
-        '全面审查/Users/bingsen/clawd/openclaw-sansheng-liubu/这个项目\nConversation info (xxx)',
-        'Zhongshu', '中书省', '中书令',
-        '下旨（自动预建）：全面审查/Users/bingsen/clawd/项目')
+        '전면 점검/Users/bingsen/clawd/openclaw-sansheng-liubu/이 프로젝트\nConversation info (xxx)',
+        'HongmungwanDraft', '홍문관', '홍문관제학',
+        '하지(자동 사전 생성): 전면 점검/Users/bingsen/clawd/프로젝트')
     t = _get_task('JJC-TEST-E2E-01')
-    assert t is not None, "任务应被创建"
-    assert '/Users' not in t['title'], f"标题不应含路径: {t['title']}"
-    assert 'Conversation' not in t['title'], f"标题不应含Conversation: {t['title']}"
-    assert '自动预建' not in t['flow_log'][0]['remark'], f"remark不应含自动预建: {t['flow_log'][0]['remark']}"
-    assert '/Users' not in t['flow_log'][0]['remark'], f"remark不应含路径: {t['flow_log'][0]['remark']}"
+    assert t is not None, "작업이 생성되어야 함"
+    assert '/Users' not in t['title'], f"제목에 경로가 없어야 함: {t['title']}"
+    assert 'Conversation' not in t['title'], f"제목에 Conversation이 없어야 함: {t['title']}"
+    assert '자동 사전 생성' not in t['flow_log'][0]['remark'], f"remark에 자동 사전 생성이 없어야 함: {t['flow_log'][0]['remark']}"
+    assert '/Users' not in t['flow_log'][0]['remark'], f"remark에 경로가 없어야 함: {t['flow_log'][0]['remark']}"
 
 
-# ── TEST 2: 纯文件路径标题被拒绝
+# ── TEST 2: 순수 파일 경로 제목은 거부
 def test_pure_path_rejected():
-    cmd_create('JJC-TEST-E2E-02', '/Users/bingsen/clawd/openclaw-sansheng-liubu/', 'Zhongshu', '中书省', '中书令')
-    assert _get_task('JJC-TEST-E2E-02') is None, "纯路径标题应被拒绝"
+    cmd_create('JJC-TEST-E2E-02', '/Users/bingsen/clawd/openclaw-sansheng-liubu/', 'HongmungwanDraft', '홍문관', '홍문관제학')
+    assert _get_task('JJC-TEST-E2E-02') is None, "순수 경로 제목은 거부되어야 함"
 
 
-# ── TEST 3: 正常标题正常创建
+# ── TEST 3: 정상 제목은 정상 생성
 def test_normal_title():
-    cmd_create('JJC-TEST-E2E-03', '调研工业数据分析大模型应用方案', 'Zhongshu', '中书省', '中书令', '太子整理旨意')
+    cmd_create('JJC-TEST-E2E-03', '산업 데이터 분석 대형 모델 응용 조사', 'HongmungwanDraft', '홍문관', '홍문관제학', '세자 지시 정리')
     t = _get_task('JJC-TEST-E2E-03')
-    assert t is not None, "正常任务应被创建"
-    assert t['title'] == '调研工业数据分析大模型应用方案', f"标题应完整保留: {t['title']}"
+    assert t is not None, "정상 작업은 생성되어야 함"
+    assert t['title'] == '산업 데이터 분석 대형 모델 응용 조사', f"제목이 완전히 보존되어야 함: {t['title']}"
 
 
-# ── TEST 4: flow remark 清洗
+# ── TEST 4: flow remark 정제
 def test_flow_remark_cleaned():
-    cmd_create('JJC-TEST-E2E-04', '调研工业数据分析大模型应用方案', 'Zhongshu', '中书省', '中书令')
-    cmd_flow('JJC-TEST-E2E-04', '太子', '中书省', '旨意传达：审查/Users/bingsen/clawd/xxx项目 Conversation blah')
+    cmd_create('JJC-TEST-E2E-04', '산업 데이터 분석 대형 모델 응용 조사', 'HongmungwanDraft', '홍문관', '홍문관제학')
+    cmd_flow('JJC-TEST-E2E-04', '세자', '홍문관', '지시 전달: /Users/bingsen/clawd/xxx 프로젝트 검토 Conversation blah')
     t = _get_task('JJC-TEST-E2E-04')
     assert t is not None
     last_flow = t['flow_log'][-1]
-    assert '/Users' not in last_flow['remark'], f"remark不应含路径: {last_flow['remark']}"
-    assert 'Conversation' not in last_flow['remark'], f"remark不应含Conversation: {last_flow['remark']}"
+    assert '/Users' not in last_flow['remark'], f"remark에 경로가 없어야 함: {last_flow['remark']}"
+    assert 'Conversation' not in last_flow['remark'], f"remark에 Conversation이 없어야 함: {last_flow['remark']}"
 
 
-# ── TEST 5: 太短标题拒绝
+# ── TEST 5: 너무 짧은 제목 거부
 def test_short_title_rejected():
-    cmd_create('JJC-TEST-E2E-05', '好的', 'Zhongshu', '中书省', '中书令')
-    assert _get_task('JJC-TEST-E2E-05') is None, "短标题应被拒绝"
+    cmd_create('JJC-TEST-E2E-05', '알겠어', 'HongmungwanDraft', '홍문관', '홍문관제학')
+    assert _get_task('JJC-TEST-E2E-05') is None, "짧은 제목은 거부되어야 함"
 
 
-# ── TEST 6: 传旨前缀剥离
+# ── TEST 6: 전지/하지 등 접두어 제거
 def test_prefix_stripped():
-    cmd_create('JJC-TEST-E2E-06', '传旨：帮我写技术博客文章关于智能体架构', 'Zhongshu', '中书省', '中书令')
+    cmd_create('JJC-TEST-E2E-06', '전지: 지능형 에이전트 아키텍처 기술 블로그 작성', 'HongmungwanDraft', '홍문관', '홍문관제학')
     t = _get_task('JJC-TEST-E2E-06')
-    assert t is not None, "任务应被创建"
-    assert not t['title'].startswith('传旨'), f"前缀应被剥离: {t['title']}"
+    assert t is not None, "작업이 생성되어야 함"
+    assert not t['title'].startswith('전지'), f"접두어가 제거되어야 함: {t['title']}"
 
 
-# ── TEST 7: state 更新 + org 自动联动
+# ── TEST 7: state 갱신 + org 자동 연동
 def test_state_update():
-    cmd_create('JJC-TEST-E2E-07', '测试状态更新与组织联动功能', 'Zhongshu', '中书省', '中书令')
-    cmd_state('JJC-TEST-E2E-07', 'Menxia', '方案提交门下省审议')
+    cmd_create('JJC-TEST-E2E-07', '상태 갱신 및 부서 연동 기능 테스트', 'HongmungwanDraft', '홍문관', '홍문관제학')
+    cmd_state('JJC-TEST-E2E-07', 'SaganwonFinalReview', '방안을 사간원 심의에 제출')
     t = _get_task('JJC-TEST-E2E-07')
     assert t is not None
-    assert t['state'] == 'Menxia', f"state应为Menxia: {t['state']}"
-    assert t['org'] == '门下省', f"org应为门下省: {t['org']}"
+    assert t['state'] == 'SaganwonFinalReview', f"state가 SaganwonFinalReview여야 함: {t['state']}"
+    assert t['org'] == '사간원', f"org가 사간원이어야 함: {t['org']}"
 
 
-# ── TEST 8: done 完成
+# ── TEST 8: done 호출 시 InProgress → FinalReview 전이 (승정원 취합 심사 대기)
 def test_done():
-    cmd_create('JJC-TEST-E2E-08', '测试任务完成状态标记功能', 'Zhongshu', '中书省', '中书令')
-    cmd_done('JJC-TEST-E2E-08', '/tmp/output.md', '任务已完成')
+    cmd_create('JJC-TEST-E2E-08', '작업 완료 상태 표시 기능 테스트', 'HongmungwanDraft', '홍문관', '홍문관제학')
+    # 집행 단계까지 진행: HongmungwanDraft → SaganwonFinalReview → SeungjeongwonAssigned → InProgress
+    cmd_state('JJC-TEST-E2E-08', 'SaganwonFinalReview', '사간원 심의')
+    cmd_state('JJC-TEST-E2E-08', 'SeungjeongwonAssigned', '승정원 배분')
+    cmd_state('JJC-TEST-E2E-08', 'InProgress', '집행 시작')
+    cmd_done('JJC-TEST-E2E-08', '/tmp/output.md', '작업 완료')
     t = _get_task('JJC-TEST-E2E-08')
     assert t is not None
-    assert t['state'] == 'Done', f"state应为Done: {t['state']}"
+    assert t['state'] == 'FinalReview', f"state가 FinalReview여야 함: {t['state']}"
 
 
-# ── TEST 9: 已完成任务不可覆盖
+# ── TEST 9: 터미널 상태(Cancelled) 작업은 덮어쓸 수 없음
 def test_done_not_overwritable():
-    cmd_create('JJC-TEST-E2E-09', '测试已完成任务不可覆盖保护', 'Zhongshu', '中书省', '中书令')
-    cmd_done('JJC-TEST-E2E-09', '/tmp/output.md', '任务已完成')
-    cmd_create('JJC-TEST-E2E-09', '试图覆盖已完成的任务标题', 'Zhongshu', '中书省', '中书令')
+    cmd_create('JJC-TEST-E2E-09', '완료된 작업 덮어쓰기 방지 기능 테스트', 'HongmungwanDraft', '홍문관', '홍문관제학')
+    # Cancelled 는 터미널 상태이며 HongmungwanDraft → Cancelled 직접 전이가 허용됨
+    cmd_state('JJC-TEST-E2E-09', 'Cancelled', '작업 취소')
+    cmd_create('JJC-TEST-E2E-09', '취소된 작업 제목 덮어쓰기 시도', 'HongmungwanDraft', '홍문관', '홍문관제학')
     t = _get_task('JJC-TEST-E2E-09')
     assert t is not None
-    assert t['state'] == 'Done', f"仍应为Done: {t['state']}"
+    assert t['state'] == 'Cancelled', f"여전히 Cancelled여야 함 (덮어쓰기 차단): {t['state']}"
+    assert '덮어쓰기 시도' not in t['title'], f"제목이 덮어써지지 않아야 함: {t['title']}"
 
 
-# ── 支持直接运行 python3 tests/test_e2e_kanban.py
+# ── python3 tests/test_e2e_kanban.py 직접 실행 지원
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, '-v']))

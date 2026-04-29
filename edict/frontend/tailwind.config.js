@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 三省六部主题色
+        // 3사6조主题色
         imperial: {
           50: '#fef7ed',
           100: '#fdecd4',

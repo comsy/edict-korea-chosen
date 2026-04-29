@@ -17,18 +17,19 @@ OPENCLAW_HOME = get_openclaw_home()
 OPENCLAW_CFG = OPENCLAW_HOME / 'openclaw.json'
 
 ID_LABEL = {
-    'taizi':    {'label': '太子',   'role': '太子',     'duty': '飞书消息分拣与回奏',  'emoji': '🤴'},
-    'main':     {'label': '太子',   'role': '太子',     'duty': '飞书消息分拣与回奏',  'emoji': '🤴'},  # 兼容旧配置
-    'zhongshu': {'label': '中书省', 'role': '中书令',   'duty': '起草任务令与优先级',  'emoji': '📜'},
-    'menxia':   {'label': '门下省', 'role': '侍中',     'duty': '审议与退回机制',      'emoji': '🔍'},
-    'shangshu': {'label': '尚书省', 'role': '尚书令',   'duty': '派单与升级裁决',      'emoji': '📮'},
-    'libu':     {'label': '礼部',   'role': '礼部尚书', 'duty': '文档/汇报/规范',      'emoji': '📝'},
-    'hubu':     {'label': '户部',   'role': '户部尚书', 'duty': '资源/预算/成本',      'emoji': '💰'},
-    'bingbu':   {'label': '兵部',   'role': '兵部尚书', 'duty': '工程实现与架构设计',  'emoji': '⚔️'},
-    'xingbu':   {'label': '刑部',   'role': '刑部尚书', 'duty': '合规/审计/红线',      'emoji': '⚖️'},
-    'gongbu':   {'label': '工部',   'role': '工部尚书', 'duty': '基础设施与部署运维',  'emoji': '🔧'},
-    'libu_hr':  {'label': '吏部',   'role': '吏部尚书', 'duty': '人事/培训/Agent管理',  'emoji': '👔'},
-    'zaochao':  {'label': '钦天监', 'role': '朝报官',   'duty': '每日新闻采集与简报',  'emoji': '📰'},
+    'seja':        {'label': '세자',   'role': '세자',     'duty': '메시지 분류 및 회신',      'emoji': '🤴'},
+    'main':        {'label': '세자',   'role': '세자',     'duty': '메시지 분류 및 회신',      'emoji': '🤴'},  # 구버전 호환
+    'hongmungwan': {'label': '홍문관', 'role': '대제학',   'duty': '임무서 기초 및 우선순위',  'emoji': '📜'},
+    'saganwon':    {'label': '사간원', 'role': '대사간',   'duty': '심의 및 반려 절차',        'emoji': '🔍'},
+    'seungjeongwon': {'label': '승정원', 'role': '도승지', 'duty': '배분 및 승급 재결',        'emoji': '📮'},
+    'yejo':        {'label': '예조',   'role': '예조판서', 'duty': '문서/보고/규범',           'emoji': '📝'},
+    'hojo':        {'label': '호조',   'role': '호조판서', 'duty': '자원/예산/비용',           'emoji': '💰'},
+    'byeongjo':    {'label': '병조',   'role': '병조판서', 'duty': '구현/아키텍처 설계',       'emoji': '⚔️'},
+    'hyeongjo':    {'label': '형조',   'role': '형조판서', 'duty': '감사/컴플라이언스/레드라인','emoji': '⚖️'},
+    'gongjo':      {'label': '공조',   'role': '공조판서', 'duty': '인프라/배포/운영',         'emoji': '🔧'},
+    'ijo':         {'label': '이조',   'role': '이조판서', 'duty': '인사/교육/Agent 관리',     'emoji': '👔'},
+    'jobocheong':  {'label': '조보청', 'role': '조보관',   'duty': '일일 뉴스 수집 및 보고',   'emoji': '📰'},
+    'gwansanggam': {'label': '관상감', 'role': '관상감정', 'duty': '천문/역법/데이터 관측',    'emoji': '🔭'},
 }
 
 KNOWN_MODELS = [
@@ -155,19 +156,22 @@ def main():
         })
         seen_ids.add(ag_id)
 
-    # 补充不在 openclaw.json agents list 中的 agent（兼容旧版 main）
+    # 补充不在 openclaw.json agents list 中的 agent（仅保留已有 workspace）
     EXTRA_AGENTS = {
-        'taizi':   {'model': default_model, 'workspace': str(OPENCLAW_HOME / 'workspace-taizi'),
-                    'allowAgents': ['zhongshu']},
+        'seja':   {'model': default_model, 'workspace': str(OPENCLAW_HOME / 'workspace-seja'),
+                    'allowAgents': ['hongmungwan']},
         'main':    {'model': default_model, 'workspace': str(OPENCLAW_HOME / 'workspace-main'),
-                    'allowAgents': ['zhongshu','menxia','shangshu','hubu','libu','bingbu','xingbu','gongbu','libu_hr']},
-        'zaochao': {'model': default_model, 'workspace': str(OPENCLAW_HOME / 'workspace-zaochao'),
+                    'allowAgents': ['hongmungwan','saganwon','seungjeongwon','hojo','yejo','byeongjo','hyeongjo','gongjo','ijo']},
+        'jobocheong': {'model': default_model, 'workspace': str(OPENCLAW_HOME / 'workspace-jobocheong'),
                     'allowAgents': []},
-        'libu_hr': {'model': default_model, 'workspace': str(OPENCLAW_HOME / 'workspace-libu_hr'),
-                    'allowAgents': ['shangshu']},
+        'ijo': {'model': default_model, 'workspace': str(OPENCLAW_HOME / 'workspace-ijo'),
+                    'allowAgents': ['seungjeongwon']},
     }
     for ag_id, extra in EXTRA_AGENTS.items():
         if ag_id in seen_ids or ag_id not in ID_LABEL:
+            continue
+        extra_workspace = pathlib.Path(extra['workspace'])
+        if not extra_workspace.exists():
             continue
         meta = ID_LABEL[ag_id]
         result.append({
@@ -175,8 +179,8 @@ def main():
             'label': meta['label'], 'role': meta['role'], 'duty': meta['duty'], 'emoji': meta['emoji'],
             'model': extra['model'],
             'defaultModel': default_model,
-            'workspace': extra['workspace'],
-            'skills': get_skills(extra['workspace']),
+            'workspace': str(extra_workspace),
+            'skills': get_skills(str(extra_workspace)),
             'allowAgents': extra['allowAgents'],
             'isDefaultModel': True,
         })
@@ -202,24 +206,24 @@ def main():
     log.info(f'{len(result)} agents synced')
 
     # 自动部署 SOUL.md 到 workspace（如果项目里有更新）
-    deploy_soul_files()
+    deploy_soul_files(result)
     # 同步 scripts/ 到各 workspace（保持 kanban_update.py 等最新）
-    sync_scripts_to_workspaces()
+    sync_scripts_to_workspaces(result)
 
 
 # 项目 agents/ 目录名 → 运行时 agent_id 映射
 _SOUL_DEPLOY_MAP = {
-    'taizi': 'taizi',
-    'zhongshu': 'zhongshu',
-    'menxia': 'menxia',
-    'shangshu': 'shangshu',
-    'libu': 'libu',
-    'hubu': 'hubu',
-    'bingbu': 'bingbu',
-    'xingbu': 'xingbu',
-    'gongbu': 'gongbu',
-    'libu_hr': 'libu_hr',
-    'zaochao': 'zaochao',
+    'seja': 'seja',
+    'hongmungwan': 'hongmungwan',
+    'saganwon': 'saganwon',
+    'seungjeongwon': 'seungjeongwon',
+    'yejo': 'yejo',
+    'hojo': 'hojo',
+    'byeongjo': 'byeongjo',
+    'hyeongjo': 'hyeongjo',
+    'gongjo': 'gongjo',
+    'ijo': 'ijo',
+    'jobocheong': 'jobocheong',
 }
 
 def _sync_script_symlink(src_file: pathlib.Path, dst_file: pathlib.Path) -> bool:
@@ -255,7 +259,24 @@ def _sync_script_symlink(src_file: pathlib.Path, dst_file: pathlib.Path) -> bool
     return True
 
 
-def sync_scripts_to_workspaces():
+def _iter_runtime_targets(agent_rows: list[dict]) -> list[tuple[str, pathlib.Path]]:
+    targets: list[tuple[str, pathlib.Path]] = []
+    seen: set[tuple[str, pathlib.Path]] = set()
+    for row in agent_rows:
+        runtime_id = row.get('id')
+        workspace = row.get('workspace')
+        if not runtime_id or not workspace:
+            continue
+        ws_path = pathlib.Path(workspace)
+        key = (runtime_id, ws_path)
+        if key in seen:
+            continue
+        seen.add(key)
+        targets.append(key)
+    return targets
+
+
+def sync_scripts_to_workspaces(agent_rows: list[dict]):
     """将项目 scripts/ 目录同步到各 agent workspace（保持 kanban_update.py 等最新）
 
     Uses symlinks so that ``__file__`` in workspace copies resolves to the
@@ -266,8 +287,8 @@ def sync_scripts_to_workspaces():
     if not scripts_src.is_dir():
         return
     synced = 0
-    for proj_name, runtime_id in _SOUL_DEPLOY_MAP.items():
-        ws_scripts = OPENCLAW_HOME / f'workspace-{runtime_id}' / 'scripts'
+    for runtime_id, workspace in _iter_runtime_targets(agent_rows):
+        ws_scripts = workspace / 'scripts'
         ws_scripts.mkdir(parents=True, exist_ok=True)
         for src_file in scripts_src.iterdir():
             if src_file.suffix not in ('.py', '.sh') or src_file.stem.startswith('__'):
@@ -278,31 +299,23 @@ def sync_scripts_to_workspaces():
                     synced += 1
             except Exception:
                 continue
-    # also sync to workspace-main for legacy compatibility
-    ws_main_scripts = OPENCLAW_HOME / 'workspace-main' / 'scripts'
-    ws_main_scripts.mkdir(parents=True, exist_ok=True)
-    for src_file in scripts_src.iterdir():
-        if src_file.suffix not in ('.py', '.sh') or src_file.stem.startswith('__'):
-            continue
-        dst_file = ws_main_scripts / src_file.name
-        try:
-            if _sync_script_symlink(src_file, dst_file):
-                synced += 1
-        except Exception:
-            pass
     if synced:
         log.info(f'{synced} script symlinks synced to workspaces')
 
 
-def deploy_soul_files():
-    """将项目 agents/xxx/SOUL.md 部署到 ~/.openclaw/workspace-xxx/SOUL.md"""
+def deploy_soul_files(agent_rows: list[dict]):
+    """将项目 agents/xxx/SOUL.md 部署到 openclaw.json 에 정의된 workspace."""
     agents_dir = BASE / 'agents'
+    runtime_to_project = {runtime_id: proj_name for proj_name, runtime_id in _SOUL_DEPLOY_MAP.items()}
     deployed = 0
-    for proj_name, runtime_id in _SOUL_DEPLOY_MAP.items():
+    for runtime_id, workspace in _iter_runtime_targets(agent_rows):
+        proj_name = runtime_to_project.get(runtime_id, 'seja' if runtime_id == 'main' else None)
+        if proj_name is None:
+            continue
         src = agents_dir / proj_name / 'SOUL.md'
         if not src.exists():
             continue
-        ws_dst = OPENCLAW_HOME / f'workspace-{runtime_id}' / 'SOUL.md'
+        ws_dst = workspace / 'SOUL.md'
         ws_dst.parent.mkdir(parents=True, exist_ok=True)
         # 只在内容不同时更新（避免不必要的写入）
         src_text = src.read_text(encoding='utf-8', errors='ignore')
@@ -313,18 +326,20 @@ def deploy_soul_files():
         if src_text != dst_text:
             ws_dst.write_text(src_text, encoding='utf-8')
             deployed += 1
-        # 太子兼容：同步一份到 legacy main agent 目录
-        if runtime_id == 'taizi':
-            ag_dst = OPENCLAW_HOME / 'agents' / 'main' / 'SOUL.md'
-            ag_dst.parent.mkdir(parents=True, exist_ok=True)
-            try:
-                ag_text = ag_dst.read_text(encoding='utf-8', errors='ignore')
-            except FileNotFoundError:
-                ag_text = ''
-            if src_text != ag_text:
-                ag_dst.write_text(src_text, encoding='utf-8')
-        # 确保 sessions 目录存在
-        sess_dir = OPENCLAW_HOME / 'agents' / runtime_id / 'sessions'
+        runtime_root = workspace.parent
+        # 세자兼容：같은 runtime root 아래 legacy main 디렉터리가 있으면 함께 동기화
+        if runtime_id == 'seja':
+            ag_dst = runtime_root / 'agents' / 'main' / 'SOUL.md'
+            if ag_dst.parent.exists():
+                ag_dst.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    ag_text = ag_dst.read_text(encoding='utf-8', errors='ignore')
+                except FileNotFoundError:
+                    ag_text = ''
+                if src_text != ag_text:
+                    ag_dst.write_text(src_text, encoding='utf-8')
+        # workspace 와 같은 runtime root 아래 sessions 디렉터리 보장
+        sess_dir = runtime_root / 'agents' / runtime_id / 'sessions'
         sess_dir.mkdir(parents=True, exist_ok=True)
     if deployed:
         log.info(f'{deployed} SOUL.md files deployed')

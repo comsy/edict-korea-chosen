@@ -17,9 +17,9 @@ def test_dispatch_records_missing_openclaw_cli(monkeypatch, tmp_path):
     task_id = 'JJC-20260415-004'
     task = {
         'id': task_id,
-        'title': '小任务',
-        'state': 'Taizi',
-        'org': '太子',
+        'title': '소규모 업무',
+        'state': 'SejaFinalReview',
+        'org': '세자',
         'updatedAt': '2026-04-15T15:34:16Z',
     }
     tasks_path = data_dir / 'tasks_source.json'
@@ -49,11 +49,11 @@ def test_dispatch_records_missing_openclaw_cli(monkeypatch, tmp_path):
 
     monkeypatch.setattr(srv.threading, 'Thread', ImmediateThread)
 
-    srv.dispatch_for_state(task_id, task, 'Taizi', trigger='test')
+    srv.dispatch_for_state(task_id, task, 'SejaFinalReview', trigger='test')
 
     updated = json.loads(tasks_path.read_text(encoding='utf-8'))[0]
     sched = updated['_scheduler']
     assert sched['lastDispatchStatus'] == 'openclaw-missing'
-    assert 'OpenClaw CLI 未找到' in sched['lastDispatchError']
+    assert 'OpenClaw CLI' in sched['lastDispatchError']
     assert '[WinError 2]' not in sched['lastDispatchError']
-    assert any('OpenClaw CLI 未找到' in item['remark'] for item in updated['flow_log'])
+    assert any('OpenClaw CLI' in item['remark'] for item in updated['flow_log'])

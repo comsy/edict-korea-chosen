@@ -4,17 +4,17 @@
 로컬 또는 원격 URL에서 skill 을 추가, 갱신, 조회, 제거할 수 있습니다.
 
 Usage:
-  python3 scripts/skill_manager.py add-remote --agent zhongshu --name code_review \\
+  python3 scripts/skill_manager.py add-remote --agent hongmungwan --name code_review \\
     --source https://raw.githubusercontent.com/org/skills/main/code_review/SKILL.md \\
     --description "코드 리뷰"
 
   python3 scripts/skill_manager.py list-remote
 
-  python3 scripts/skill_manager.py update-remote --agent zhongshu --name code_review
+  python3 scripts/skill_manager.py update-remote --agent hongmungwan --name code_review
 
-  python3 scripts/skill_manager.py remove-remote --agent zhongshu --name code_review
+  python3 scripts/skill_manager.py remove-remote --agent hongmungwan --name code_review
 
-  python3 scripts/skill_manager.py import-official-hub --agents zhongshu,menxia,shangshu
+  python3 scripts/skill_manager.py import-official-hub --agents hongmungwan,saganwon,seungjeongwon
 """
 import sys
 import json
@@ -247,13 +247,13 @@ OFFICIAL_SKILLS_HUB = {
 }
 
 SKILL_AGENT_MAPPING = {
-    'code_review': ('bingbu', 'xingbu', 'menxia'),
-    'api_design': ('bingbu', 'gongbu', 'menxia'),
-    'security_audit': ('xingbu', 'menxia'),
-    'data_analysis': ('hubu', 'menxia'),
-    'doc_generation': ('libu', 'menxia'),
-    'test_framework': ('gongbu', 'xingbu', 'menxia'),
-    'mmx_cli': ('menxia', 'shangshu'),
+    'code_review': ('byeongjo', 'hyeongjo', 'saganwon'),
+    'api_design': ('byeongjo', 'gongjo', 'saganwon'),
+    'security_audit': ('hyeongjo', 'saganwon'),
+    'data_analysis': ('hojo', 'saganwon'),
+    'doc_generation': ('yejo', 'saganwon'),
+    'test_framework': ('gongjo', 'hyeongjo', 'saganwon'),
+    'mmx_cli': ('saganwon', 'seungjeongwon'),
 }
 
 
@@ -275,7 +275,7 @@ def import_official_hub(agent_ids: list) -> bool:
         # 确定目标 agents
         target_agents = agent_ids
         if not agent_ids:
-            target_agents = SKILL_AGENT_MAPPING.get(skill_name, ['menxia'])
+            target_agents = SKILL_AGENT_MAPPING.get(skill_name, ['saganwon'])
         
         print(f'\n📥 skill 가져오는 중: {skill_name}')
         print(f'   대상 agent: {", ".join(target_agents)}')

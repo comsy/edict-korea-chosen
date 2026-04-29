@@ -175,8 +175,8 @@ def handle_task_action(task_id, action, reason):
         task['block'] = reason or '임금 취소 지시'
         task['now'] = f'🚫 취소됨: {reason}'
     elif action == 'resume':
-        # Resume to previous active state or Doing
-        task['state'] = task.get('_prev_state', 'Doing')
+        # Resume to previous active state or InProgress
+        task['state'] = task.get('_prev_state', 'InProgress')
         task['block'] = '없음'
         task['now'] = f'▶️ 집행 재개됨'
 
@@ -191,7 +191,7 @@ def handle_task_action(task_id, action, reason):
     })
 
     if action == 'resume':
-        _scheduler_mark_progress(task, f'복구: {task.get("state", "Doing")}')
+        _scheduler_mark_progress(task, f'복구: {task.get("state", "InProgress")}')
     else:
         _scheduler_add_flow(task, f'임금{action}：{reason or "없음"}')
 
@@ -210,7 +210,7 @@ def handle_archive_task(task_id, archived, archive_all_done=False):
     if archive_all_done:
         count = 0
         for t in tasks:
-            if t.get('state') in ('Done', 'Cancelled') and not t.get('archived'):
+            if t.get('state') in ('Completed', 'Cancelled') and not t.get('archived'):
                 t['archived'] = True
                 t['archivedAt'] = now_iso()
                 count += 1
@@ -654,8 +654,8 @@ def handle_create_task(title, org='홍문관', official='홍문관', priority='n
         'title': title,
         'official': official,
         'org': initial_org,
-        'state': 'Taizi',
-        'now': '세자 분류 대기',
+        'state': 'SejaFinalReview',
+        'now': '세자 검토 대기',
         'eta': '-',
         'block': '없음',
         'output': '',
@@ -682,7 +682,7 @@ def handle_create_task(title, org='홍문관', official='홍문관', priority='n
     save_tasks(tasks)
     log.info(f'작업 생성: {task_id} | {title[:40]}')
 
-    dispatch_for_state(task_id, new_task, 'Taizi', trigger='imperial-edict')
+    dispatch_for_state(task_id, new_task, 'SejaFinalReview', trigger='imperial-edict')
 
     return {'ok': True, 'taskId': task_id, 'message': f'지시 {task_id} 등록 완료, 세자에게 전달 중'}
 
@@ -700,30 +700,30 @@ def handle_review_action(task_id, action, comment=''):
     task = next((t for t in tasks if t.get('id') == task_id), None)
     if not task:
         return {'ok': False, 'error': f'작업 {task_id}이(가) 존재하지 않습니다'}
-    if task.get('state') not in ('Review', 'Menxia'):
+    if task.get('state') not in ('FinalReview', 'SaganwonFinalReview'):
         return {'ok': False, 'error': f'작업 {task_id} 현재 상태가 {task.get("state")} 이라 심의를 진행할 수 없습니다'}
 
     _ensure_scheduler(task)
     _scheduler_snapshot(task, f'review-before-{action}')
 
     if action == 'approve':
-        if task['state'] == 'Menxia':
-            task['state'] = 'Assigned'
+        if task['state'] == 'SaganwonFinalReview':
+            task['state'] = 'SeungjeongwonAssigned'
             task['now'] = '사간원 승인, 승정원 배분 단계로 이동'
             remark = f'✅ 승인: {comment or "사간원 심의 통과"}'
             to_dept = '승정원'
-        else:  # Review
+        else:  # FinalReview
             completed, total = _todo_progress(task)
             if total > 0 and completed < total:
-                return {'ok': False, 'error': f'하위 작업이 아직 모두 완료되지 않았습니다 ({completed}/{total}), 즉시 완료 승인할 수 없습니다'}
-            task['state'] = 'Done'
+                return {'ok': False, 'error': f'하위 작업이 아직 모두 완료되지 않았습니다 ({completed}/{total}), 지금은 완료할 수 없습니다'}
+            task['state'] = 'Completed'
             task['now'] = '검토 승인, 작업 완료'
             remark = f'✅ 최종 승인: {comment or "검토 통과"}'
             to_dept = '임금'
     elif action == 'reject':
         round_num = (task.get('review_round') or 0) + 1
         task['review_round'] = round_num
-        task['state'] = 'Zhongshu'
+        task['state'] = 'HongmungwanDraft'
         task['now'] = f'반려 후 홍문관 수정 요청 ({round_num}차)'
         remark = f'🚫 반려: {comment or "수정 필요"}'
         to_dept = '홍문관'
@@ -732,7 +732,7 @@ def handle_review_action(task_id, action, comment=''):
 
     task.setdefault('flow_log', []).append({
         'at': now_iso(),
-        'from': '사간원' if task.get('state') != 'Done' else '임금',
+        'from': '사간원' if task.get('state') != 'Completed' else '임금',
         'to': to_dept,
         'remark': remark
     })
@@ -742,29 +742,29 @@ def handle_review_action(task_id, action, comment=''):
 
     # 🚀 심의 이후 해당 Agent 자동 배분
     new_state = task['state']
-    if new_state not in ('Done',):
+    if new_state not in ('Completed',):
         dispatch_for_state(task_id, task, new_state)
 
     label = '승인 완료' if action == 'approve' else '반려 완료'
-    dispatched = ' (Agent 자동 배분 완료)' if new_state != 'Done' else ''
+    dispatched = ' (Agent 자동 배분 완료)' if new_state != 'Completed' else ''
     return {'ok': True, 'message': f'{task_id} {label}{dispatched}'}
 
 
 # ══ Agent 온라인 상태 감지 ══
 
 _AGENT_DEPTS = [
-    {'id':'taizi',   'label':'세자',  'emoji':'🤴', 'role':'중앙 허브', 'rank':'중앙'},
-    {'id':'zhongshu','label':'홍문관','emoji':'📜', 'role':'기획',      'rank':'중앙'},
-    {'id':'menxia',  'label':'사간원','emoji':'🔍', 'role':'심의',      'rank':'중앙'},
-    {'id':'shangshu','label':'승정원','emoji':'📮', 'role':'배분',      'rank':'중앙'},
-    {'id':'hubu',    'label':'호조',  'emoji':'💰', 'role':'데이터',    'rank':'집행'},
-    {'id':'libu',    'label':'예조',  'emoji':'📝', 'role':'문서',      'rank':'집행'},
-    {'id':'bingbu',  'label':'병조',  'emoji':'⚔️', 'role':'구현',      'rank':'집행'},
-    {'id':'xingbu',  'label':'형조',  'emoji':'⚖️', 'role':'검토',      'rank':'집행'},
-    {'id':'gongbu',  'label':'공조',  'emoji':'🔧', 'role':'인프라',    'rank':'집행'},
-    {'id':'libu_hr',     'label':'이조',  'emoji':'👔', 'role':'운영',      'rank':'집행'},
-    {'id':'zaochao',     'label':'조보청','emoji':'📰', 'role':'브리핑',    'rank':'보조'},
-    {'id':'qintianjian', 'label':'관상감','emoji':'🔭', 'role':'관측/분석', 'rank':'보조'},
+    {'id':'seja',   'label':'세자',  'emoji':'🤴', 'role':'중앙 허브', 'rank':'중앙'},
+    {'id':'hongmungwan','label':'홍문관','emoji':'📜', 'role':'기획',      'rank':'중앙'},
+    {'id':'saganwon',  'label':'사간원','emoji':'🔍', 'role':'심의',      'rank':'중앙'},
+    {'id':'seungjeongwon','label':'승정원','emoji':'📮', 'role':'배분',      'rank':'중앙'},
+    {'id':'hojo',    'label':'호조',  'emoji':'💰', 'role':'데이터',    'rank':'집행'},
+    {'id':'yejo',    'label':'예조',  'emoji':'📝', 'role':'문서',      'rank':'집행'},
+    {'id':'byeongjo',  'label':'병조',  'emoji':'⚔️', 'role':'구현',      'rank':'집행'},
+    {'id':'hyeongjo',  'label':'형조',  'emoji':'⚖️', 'role':'검토',      'rank':'집행'},
+    {'id':'gongjo',  'label':'공조',  'emoji':'🔧', 'role':'인프라',    'rank':'집행'},
+    {'id':'ijo',     'label':'이조',  'emoji':'👔', 'role':'인사/교육', 'rank':'집행'},
+    {'id':'jobocheong',     'label':'조보청','emoji':'📰', 'role':'브리핑',    'rank':'보조'},
+    {'id':'gwansanggam', 'label':'관상감','emoji':'🔭', 'role':'관측/분석', 'rank':'보조'},
 ]
 
 
@@ -971,23 +971,23 @@ def wake_agent(agent_id, message=''):
 
 # 상태 → agent_id 매핑
 _STATE_AGENT_MAP = {
-    'Taizi': 'taizi',
-    'Zhongshu': 'zhongshu',
-    'Menxia': 'menxia',
-    'Assigned': 'shangshu',
-    'Doing': None,         # 6조, org 에서 추론 필요
-    'Review': 'shangshu',
-    'Next': None,          # 실행 대기, org 에서 추론
-    'Pending': 'zhongshu', # 처리 대기, 기본 홍문관
+    'SejaFinalReview': 'seja',
+    'HongmungwanDraft': 'hongmungwan',
+    'SaganwonFinalReview': 'saganwon',
+    'SeungjeongwonAssigned': 'seungjeongwon',
+    'InProgress': None,     # 6조, org 에서 추론 필요
+    'FinalReview': 'seungjeongwon',
+    'Ready': None,          # 실행 대기, org 에서 추론
+    'Pending': 'hongmungwan',
 }
 _ORG_AGENT_MAP = {
-    '예조': 'libu', '호조': 'hubu', '병조': 'bingbu',
-    '형조': 'xingbu', '공조': 'gongbu', '이조': 'libu_hr',
-    '홍문관': 'zhongshu', '사간원': 'menxia', '승정원': 'shangshu',
-    '조보청': 'zaochao', '관상감': 'qintianjian',
+    '예조': 'yejo', '호조': 'hojo', '병조': 'byeongjo',
+    '형조': 'hyeongjo', '공조': 'gongjo', '이조': 'ijo',
+    '홍문관': 'hongmungwan', '사간원': 'saganwon', '승정원': 'seungjeongwon',
+    '조보청': 'jobocheong', '관상감': 'gwansanggam',
 }
 
-_TERMINAL_STATES = {'Done', 'Cancelled'}
+_TERMINAL_STATES = {'Completed', 'Cancelled'}
 
 
 def _parse_iso(ts):
@@ -1117,12 +1117,12 @@ def handle_scheduler_retry(task_id, reason=''):
     sched = _ensure_scheduler(task)
     sched['retryCount'] = int(sched.get('retryCount') or 0) + 1
     sched['lastRetryAt'] = now_iso()
-    sched['lastDispatchTrigger'] = 'taizi-retry'
+    sched['lastDispatchTrigger'] = 'seja-retry'
     _scheduler_add_flow(task, f'재시도 {sched["retryCount"]}회: {reason or "시간 초과로 미진행"}')
     task['updatedAt'] = now_iso()
     save_tasks(tasks)
 
-    dispatch_for_state(task_id, task, state, trigger='taizi-retry')
+    dispatch_for_state(task_id, task, state, trigger='seja-retry')
     return {'ok': True, 'message': f'{task_id} 재시도 배분을 시작했습니다', 'retryCount': sched['retryCount']}
 
 
@@ -1138,7 +1138,7 @@ def handle_scheduler_escalate(task_id, reason=''):
     sched = _ensure_scheduler(task)
     current_level = int(sched.get('escalationLevel') or 0)
     next_level = min(current_level + 1, 2)
-    target = 'menxia' if next_level == 1 else 'shangshu'
+    target = 'saganwon' if next_level == 1 else 'seungjeongwon'
     target_label = '사간원' if next_level == 1 else '승정원'
 
     sched['escalationLevel'] = next_level
@@ -1185,7 +1185,7 @@ def handle_scheduler_rollback(task_id, reason=''):
     save_tasks(tasks)
 
     if snap_state not in _TERMINAL_STATES:
-        dispatch_for_state(task_id, task, snap_state, trigger='taizi-rollback')
+        dispatch_for_state(task_id, task, snap_state, trigger='seja-rollback')
 
     return {'ok': True, 'message': f'{task_id} 롤백 완료: {snap_state}'}
 
@@ -1228,7 +1228,7 @@ def handle_scheduler_scan(threshold_sec=600):
         if retry_count < max_retry:
             sched['retryCount'] = retry_count + 1
             sched['lastRetryAt'] = now_iso()
-            sched['lastDispatchTrigger'] = 'taizi-scan-retry'
+            sched['lastDispatchTrigger'] = 'seja-scan-retry'
             _scheduler_add_flow(task, f'정체 {stalled_sec}초, 자동 재시도 {sched["retryCount"]}회')
             pending_retries.append((task_id, state))
             actions.append({'taskId': task_id, 'action': 'retry', 'stalledSec': stalled_sec})
@@ -1237,7 +1237,7 @@ def handle_scheduler_scan(threshold_sec=600):
 
         if level < 2:
             next_level = level + 1
-            target = 'menxia' if next_level == 1 else 'shangshu'
+            target = 'saganwon' if next_level == 1 else 'seungjeongwon'
             target_label = '사간원' if next_level == 1 else '승정원'
             sched['escalationLevel'] = next_level
             sched['lastEscalatedAt'] = now_iso()
@@ -1284,7 +1284,7 @@ def handle_scheduler_scan(threshold_sec=600):
     for task_id, state in pending_retries:
         retry_task = next((t for t in tasks if t.get('id') == task_id), None)
         if retry_task:
-            dispatch_for_state(task_id, retry_task, state, trigger='taizi-scan-retry')
+            dispatch_for_state(task_id, retry_task, state, trigger='seja-scan-retry')
 
     for task_id, state, target, target_label, stalled_sec in pending_escalates:
         msg = (
@@ -1300,7 +1300,7 @@ def handle_scheduler_scan(threshold_sec=600):
     for task_id, state in pending_rollbacks:
         rollback_task = next((t for t in tasks if t.get('id') == task_id), None)
         if rollback_task and state not in _TERMINAL_STATES:
-            dispatch_for_state(task_id, rollback_task, state, trigger='taizi-auto-rollback')
+            dispatch_for_state(task_id, rollback_task, state, trigger='seja-auto-rollback')
 
     return {
         'ok': True,
@@ -1356,8 +1356,8 @@ def handle_repair_flow_order():
         if isinstance(remark, str) and (remark.startswith('지시:') or remark.startswith('下旨：')):
             first['remark'] = remark
 
-        if task.get('state') == 'Zhongshu' and task.get('org') == '홍문관' and len(flow_log) == 1:
-            task['state'] = 'Taizi'
+        if task.get('state') == 'HongmungwanDraft' and task.get('org') == '홍문관' and len(flow_log) == 1:
+            task['state'] = 'SejaFinalReview'
             task['org'] = '세자'
             task['now'] = '세자 접수 분류 대기'
 
@@ -1799,7 +1799,7 @@ def get_task_activity(task_id):
 
     # 현재 담당 Agent (기존 로직 호환)
     agent_id = _STATE_AGENT_MAP.get(state)
-    if agent_id is None and state in ('Doing', 'Next'):
+    if agent_id is None and state in ('InProgress', 'Ready'):
         agent_id = _ORG_AGENT_MAP.get(org)
 
     # ── 활동 항목 목록 구성 (flow_log + progress_log) ──
@@ -1921,7 +1921,7 @@ def get_task_activity(task_id):
     try:
         session_entries = []
         # 활성 작업: task_id 정확 매칭 시도
-        if state not in ('Done', 'Cancelled'):
+        if state not in ('Completed', 'Cancelled'):
             if agent_id:
                 entries = get_agent_activity(agent_id, limit=30, task_id=task_id)
                 session_entries.extend(entries)
@@ -1962,7 +1962,7 @@ def get_task_activity(task_id):
     if flow_log:
         try:
             first_at = datetime.datetime.fromisoformat(flow_log[0].get('at', '').replace('Z', '+00:00'))
-            if state in ('Done', 'Cancelled') and len(flow_log) >= 2:
+            if state in ('Completed', 'Cancelled') and len(flow_log) >= 2:
                 last_at = datetime.datetime.fromisoformat(flow_log[-1].get('at', '').replace('Z', '+00:00'))
             else:
                 last_at = datetime.datetime.now(datetime.timezone.utc)
@@ -2028,32 +2028,35 @@ def get_healthz_payload():
 
 # 상태 진행 순서 (수동 진행용)
 _STATE_FLOW = {
-    'Pending':  ('Taizi', '임금', '세자', '접수 대기 지시를 세자 분류 단계로 전달'),
-    'Taizi':    ('Zhongshu', '세자', '홍문관', '세자 분류 완료, 홍문관 기안으로 이동'),
-    'Zhongshu': ('Menxia', '홍문관', '사간원', '홍문관 기안안을 사간원 심의로 전달'),
-    'Menxia':   ('Assigned', '사간원', '승정원', '사간원 승인 후 승정원 배분으로 이동'),
-    'Assigned': ('Doing', '승정원', '육조', '승정원 배분 완료, 육조 집행 시작'),
-    'Next':     ('Doing', '승정원', '육조', '집행 대기 상태에서 집행 시작'),
-    'Doing':    ('Review', '육조', '승정원', '육조 집행 완료, 승정원 취합 검토로 이동'),
-    'Review':   ('Done', '승정원', '세자', '취합 검토 완료, 세자 결과 보고 후 종료'),
+    'Pending':              ('SejaFinalReview', '임금', '세자', '접수 대기 지시를 세자 검토 단계로 전달'),
+    'SejaFinalReview':           ('HongmungwanDraft', '세자', '홍문관', '세자 검토 완료, 홍문관 기안으로 이동'),
+    'HongmungwanDraft':     ('SaganwonFinalReview', '홍문관', '사간원', '홍문관 기안안을 사간원 심의로 전달'),
+    'SaganwonFinalReview':       ('SeungjeongwonAssigned', '사간원', '승정원', '사간원 승인 후 승정원 배분으로 이동'),
+    'SeungjeongwonAssigned':('InProgress', '승정원', '육조', '승정원 배분 완료, 육조 집행 시작'),
+    'Ready':                ('InProgress', '승정원', '육조', '집행 대기 상태에서 집행 시작'),
+    'InProgress':           ('FinalReview', '육조', '승정원', '육조 집행 완료, 승정원 취합 검토로 이동'),
+    'FinalReview':          ('Completed', '승정원', '세자', '취합 검토 완료, 세자 결과 보고 후 종료'),
 }
 _STATE_LABELS = {
     'Pending': '접수 대기',
-    'Taizi': '세자 분류',
-    'Zhongshu': '홍문관 기안',
-    'Menxia': '사간원 심의',
-    'Assigned': '승정원 배분 완료',
-    'Next': '집행 대기',
-    'Doing': '집행 중',
-    'Review': '취합 검토',
-    'Done': '완료',
+    'SejaFinalReview': '세자 검토',
+    'HongmungwanDraft': '홍문관 기안',
+    'SaganwonFinalReview': '사간원 심의',
+    'SeungjeongwonAssigned': '승정원 배분 완료',
+    'Ready': '집행 대기',
+    'InProgress': '집행 중',
+    'FinalReview': '취합 검토',
+    'Completed': '완료',
+    'Blocked': '중단',
+    'Cancelled': '취소',
+    'PendingConfirm': '확인 대기',
 }
 
 
 def dispatch_for_state(task_id, task, new_state, trigger='state-transition'):
     """진행/심의 이후 해당 Agent 자동 배분 (백그라운드 비동기, 응답 블로킹 없음)."""
     agent_id = _STATE_AGENT_MAP.get(new_state)
-    if agent_id is None and new_state in ('Doing', 'Next'):
+    if agent_id is None and new_state in ('InProgress', 'Next'):
         org = task.get('org', '')
         agent_id = _ORG_AGENT_MAP.get(org)
     if not agent_id:
@@ -2075,28 +2078,28 @@ def dispatch_for_state(task_id, task, new_state, trigger='state-transition'):
 
     # agent_id 에 따라 맞춤 메시지 구성
     _msgs = {
-        'taizi': (
+        'seja': (
             f'📜 임금 지시 처리 요청\n'
             f'작업 ID: {task_id}\n'
             f'지시: {title}\n'
             f'⚠️ 대시보드에 이미 같은 작업이 있습니다. 새 작업 생성 대신 kanban_update.py 로 상태를 갱신하세요.\n'
             f'홍문관 기안 단계로 즉시 전달하세요.'
         ),
-        'zhongshu': (
+        'hongmungwan': (
             f'📜 홍문관 기안 요청\n'
             f'작업 ID: {task_id}\n'
             f'지시: {title}\n'
             f'⚠️ 대시보드에 이미 같은 작업이 있습니다. 새 작업 생성 대신 kanban_update.py 로 상태를 갱신하세요.\n'
             f'홍문관 기안 -> 사간원 심의 -> 승정원 배분 -> 육조 집행 흐름으로 진행하세요.'
         ),
-        'menxia': (
+        'saganwon': (
             f'📋 사간원 심의 요청\n'
             f'작업 ID: {task_id}\n'
             f'지시: {title}\n'
             f'⚠️ 대시보드에 이미 같은 작업이 있습니다. 새 작업 생성 대신 상태를 갱신하세요.\n'
             f'홍문관 기안안을 검토하고 승인 또는 반려 의견을 남기세요.'
         ),
-        'shangshu': (
+        'seungjeongwon': (
             f'📮 승정원 배분 요청\n'
             f'작업 ID: {task_id}\n'
             f'지시: {title}\n'
@@ -2256,13 +2259,13 @@ def handle_advance_state(task_id, comment=''):
     task['updatedAt'] = now_iso()
     save_tasks(tasks)
 
-    # 🚀 진행 후 해당 Agent 자동 배분 (Done 상태는 배분 불필요)
-    if next_state != 'Done':
+    # 🚀 진행 후 해당 Agent 자동 배분 (Completed 상태는 배분 불필요)
+    if next_state != 'Completed':
         dispatch_for_state(task_id, task, next_state)
 
     from_label = _STATE_LABELS.get(cur, cur)
     to_label = _STATE_LABELS.get(next_state, next_state)
-    dispatched = ' (Agent 자동 배분 완료)' if next_state != 'Done' else ''
+    dispatched = ' (Agent 자동 배분 완료)' if next_state != 'Completed' else ''
     return {'ok': True, 'message': f'{task_id} {from_label} → {to_label}{dispatched}'}
 
 

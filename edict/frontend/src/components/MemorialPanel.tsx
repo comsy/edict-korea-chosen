@@ -9,7 +9,7 @@ export default function MemorialPanel() {
   const toast = useStore((s) => s.toast);
 
   const tasks = liveStatus?.tasks || [];
-  let mems = tasks.filter((t) => isEdict(t) && ['Done', 'Cancelled'].includes(t.state));
+  let mems = tasks.filter((t) => isEdict(t) && ['Completed', 'Cancelled'].includes(t.state));
   if (filter !== 'all') mems = mems.filter((t) => t.state === filter);
 
   const exportMemorial = (t: Task) => {
@@ -42,7 +42,7 @@ export default function MemorialPanel() {
         <span style={{ fontSize: 12, color: 'var(--muted)' }}>필터:</span>
         {[
           { key: 'all', label: '전체' },
-          { key: 'Done', label: '✅ 완료' },
+          { key: 'Completed', label: '✅ 완료' },
           { key: 'Cancelled', label: '🚫 취소' },
         ].map((f) => (
           <span
@@ -62,10 +62,10 @@ export default function MemorialPanel() {
         ) : (
           mems.map((t) => {
             const fl = t.flow_log || [];
-            const depts = [...new Set(fl.map((f) => f.from).concat(fl.map((f) => f.to)).filter((x) => x && x !== '皇上' && x !== '임금'))];
+            const depts = [...new Set(fl.map((f) => f.from).concat(fl.map((f) => f.to)).filter((x) => x && x !== '임금'))];
             const firstAt = fl.length ? (fl[0].at || '').substring(0, 16).replace('T', ' ') : '';
             const lastAt = fl.length ? (fl[fl.length - 1].at || '').substring(0, 16).replace('T', ' ') : '';
-            const stIcon = t.state === 'Done' ? '✅' : '🚫';
+            const stIcon = t.state === 'Completed' ? '✅' : '🚫';
             return (
               <div className="mem-card" key={t.id} onClick={() => setDetailTask(t)}>
                 <div className="mem-icon">📜</div>
@@ -111,8 +111,8 @@ function MemorialDetailModal({
 }) {
   const fl = t.flow_log || [];
   const st = t.state || 'Unknown';
-  const stIcon = st === 'Done' ? '✅' : st === 'Cancelled' ? '🚫' : '🔄';
-  const depts = [...new Set(fl.map((f) => f.from).concat(fl.map((f) => f.to)).filter((x) => x && x !== '皇上' && x !== '임금'))];
+  const stIcon = st === 'Completed' ? '✅' : st === 'Cancelled' ? '🚫' : '🔄';
+  const depts = [...new Set(fl.map((f) => f.from).concat(fl.map((f) => f.to)).filter((x) => x && x !== '임금'))];
 
   // 단계 재구성
   const originLog: FlowEntry[] = [];
@@ -121,9 +121,9 @@ function MemorialDetailModal({
   const execLog: FlowEntry[] = [];
   const resultLog: FlowEntry[] = [];
   for (const f of fl) {
-    if (f.from === '皇上' || f.from === '임금') originLog.push(f);
-    else if (f.to === '中书省' || f.from === '中书省' || f.to === '홍문관' || f.from === '홍문관') planLog.push(f);
-    else if (f.to === '门下省' || f.from === '门下省' || f.to === '사간원' || f.from === '사간원') reviewLog.push(f);
+    if (f.from === '임금') originLog.push(f);
+    else if (f.to === '홍문관' || f.from === '홍문관') planLog.push(f);
+    else if (f.to === '사간원' || f.from === '사간원') reviewLog.push(f);
     else if (f.remark && (f.remark.includes('完成') || f.remark.includes('回奏') || f.remark.includes('완료') || f.remark.includes('회보') || f.remark.includes('상신') || f.remark.includes('결과 보고'))) resultLog.push(f);
     else execLog.push(f);
   }

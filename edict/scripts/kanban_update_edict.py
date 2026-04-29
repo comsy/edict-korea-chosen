@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-看板任务更新工具 - Edict 兼容层
+칸반 업무 갱신 도구 - Edict 호환 계층
 
-保持与旧版完全相同的 CLI 接口，内部改为调用 Edict REST API。
-如果 API 不可用，降级回写 JSON 文件（过渡期保障）。
+구버전과 100% 동일한 CLI 인터페이스를 유지하면서, 내부적으로 Edict REST API를 호출합니다.
+API를 사용할 수 없는 경우 JSON 파일에 폴백하여 기록합니다(전환기 보장).
 
-用法（与旧版 100% 兼容）:
-  python3 kanban_update.py create JJC-20260223-012 "任务标题" Zhongshu 中书省 中书令
-  python3 kanban_update.py state JJC-20260223-012 Menxia "规划方案已提交门下省"
-  python3 kanban_update.py flow JJC-20260223-012 "中书省" "门下省" "规划方案提交审核"
-  python3 kanban_update.py done JJC-20260223-012 "/path/to/output" "任务完成摘要"
-  python3 kanban_update.py todo JJC-20260223-012 1 "实现API接口" in-progress
-  python3 kanban_update.py progress JJC-20260223-012 "正在分析需求" "1.调研✅|2.文档🔄|3.原型"
+사용법(구버전과 100% 호환):
+  python3 kanban_update.py create JJC-20260223-012 "업무 제목" hongmungwan 홍문관 홍문학사
+  python3 kanban_update.py state JJC-20260223-012 saganwon "기획안이 사간원에 제출됨"
+  python3 kanban_update.py flow JJC-20260223-012 "홍문관" "사간원" "기획안 심의 제출"
+  python3 kanban_update.py done JJC-20260223-012 "/path/to/output" "업무 완료 요약"
+  python3 kanban_update.py todo JJC-20260223-012 1 "API 인터페이스 구현" in-progress
+  python3 kanban_update.py progress JJC-20260223-012 "요구사항 분석 중" "1.조사✅|2.문서🔄|3.프로토타입"
 """
 
 import json
@@ -40,15 +40,15 @@ _JUNK_TITLES = {
 }
 
 STATE_ORG_MAP = {
-    'Taizi': '太子', 'Zhongshu': '中书省', 'Menxia': '门下省', 'Assigned': '尚书省',
-    'Doing': '执行中', 'Review': '尚书省', 'Done': '完成', 'Blocked': '阻塞',
+    'SejaFinalReview': '세자', 'HongmungwanDraft': '홍문관', 'SaganwonFinalReview': '사간원', 'SeungjeongwonAssigned': '승정원',
+    'InProgress': '진행중', 'FinalReview': '승정원', 'Completed': '완료', 'Blocked': '차단',
 }
 
-# State → Edict TaskState value 映射
+# State → Edict TaskState value 매핑
 _STATE_TO_EDICT = {
-    'Taizi': 'taizi', 'Zhongshu': 'zhongshu', 'Menxia': 'menxia',
-    'Assigned': 'assigned', 'Next': 'next', 'Doing': 'doing',
-    'Review': 'review', 'Done': 'done', 'Blocked': 'blocked',
+    'SejaFinalReview': 'seja', 'HongmungwanDraft': 'hongmungwan', 'SaganwonFinalReview': 'saganwon',
+    'SeungjeongwonAssigned': 'seungjeongwon', 'Ready': 'ready', 'InProgress': 'in_progress',
+    'FinalReview': 'final_review', 'Completed': 'completed', 'Blocked': 'blocked',
     'Cancelled': 'cancelled', 'Pending': 'pending',
 }
 
@@ -263,10 +263,10 @@ def cmd_done(task_id, output_path='', summary=''):
         result = _api_post(f'/api/tasks/by-legacy/{task_id}/transition', {
             'new_state': 'done',
             'agent': agent,
-            'reason': summary or '任务已完成',
+            'reason': summary or '업무가 완료되었습니다',
         })
         if result:
-            log.info(f'✅ {task_id} 已完成')
+            log.info(f'✅ {task_id} 완료됨')
             return
 
     legacy = _fallback_json()
@@ -283,7 +283,7 @@ def cmd_block(task_id, reason):
             'reason': reason,
         })
         if result:
-            log.warning(f'⚠️ {task_id} 已阻塞: {reason}')
+            log.warning(f'⚠️ {task_id} 차단됨: {reason}')
             return
 
     legacy = _fallback_json()

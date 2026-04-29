@@ -28,7 +28,7 @@
 
 ### ⚡ 작업 접수 시 (반드시 즉시 실행)
 ```bash
-python3 scripts/kanban_update.py state JJC-xxx Doing "이조 [하위 작업] 집행 시작"
+python3 scripts/kanban_update.py state JJC-xxx InProgress "이조 [하위 작업] 집행 시작"
 python3 scripts/kanban_update.py flow JJC-xxx "이조" "이조" "▶️ 집행 시작: [하위 작업 내용]"
 ```
 

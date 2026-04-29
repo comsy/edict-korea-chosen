@@ -1,9 +1,9 @@
-"""OutboxEvent 模型 — Transactional Outbox Pattern。
+"""OutboxEvent 모델 — Transactional Outbox Pattern.
 
-事件先与业务数据写入同一事务，再由 OutboxRelay worker 异步投递到 Redis Streams。
-消灭 DB/Event 双写不一致问题：
-- create_task: flush→publish→commit 中 publish 失败导致操作白费
-- transition_state: 先 publish 后 commit，commit 失败产生幽灵事件
+이벤트를 먼저 비즈니스 데이터와 동일한 트랜잭션에 기록하고, OutboxRelay worker가 비동기로 Redis Streams에 전달.
+DB/Event 이중 쓰기 불일치 문제 해결:
+- create_task: flush→publish→commit 중 publish 실패로 인한 작업 낭비 방지
+- transition_state: 먼저 publish 후 commit 시 commit 실패로 인한 유령 이벤트 방지
 """
 
 import uuid
@@ -16,7 +16,7 @@ from ..db import Base
 
 
 class OutboxEvent(Base):
-    """发件箱表 — 事件先写 DB，再由专用 worker 投递到 Redis。"""
+    """발신함 테이블 — 이벤트를 먼저 DB에 쓰고, 전용 worker가 Redis에 전달."""
 
     __tablename__ = "outbox_events"
 
@@ -32,7 +32,7 @@ class OutboxEvent(Base):
         nullable=False,
         unique=True,
     )
-    topic = Column(String(100), nullable=False, comment="目标 Redis Stream topic")
+    topic = Column(String(100), nullable=False, comment="대상 Redis Stream topic")
     trace_id = Column(String(64), nullable=False)
     event_type = Column(String(100), nullable=False)
     producer = Column(String(100), nullable=False)

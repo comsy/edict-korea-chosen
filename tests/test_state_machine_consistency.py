@@ -74,7 +74,7 @@ def test_state_transitions_consistent():
 
     # 检查 JSON 侧没有 Postgres 侧不存在的非终态
     for state, json_targets in json_t.items():
-        if not json_targets:  # 终态 (Done, Cancelled) 可以只在 JSON 侧有
+        if not json_targets:  # 终态 (Completed, Cancelled) 可以只在 JSON 侧有
             continue
         assert state in pg, (
             f"State '{state}' exists in JSON transitions but not in Postgres"
@@ -97,7 +97,7 @@ def test_pending_has_outgoing_edges():
 
 
 def test_terminal_states_have_no_outgoing():
-    """Done 和 Cancelled 不应有出边。"""
+    """Completed 和 Cancelled 不应有出边。"""
     pg = _load_pg_transitions()
-    assert not pg.get("Done", set()), "Done should have no outgoing edges"
+    assert not pg.get("Completed", set()), "Completed should have no outgoing edges"
     assert not pg.get("Cancelled", set()), "Cancelled should have no outgoing edges"

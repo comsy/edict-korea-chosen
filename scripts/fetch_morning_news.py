@@ -34,7 +34,7 @@ FEEDS = {
     'AI大模型': [
         ('Hacker News', 'https://hnrss.org/newest?q=AI+LLM+model&points=50'),
         ('VentureBeat AI', 'https://venturebeat.com/category/ai/feed/'),
-        ('MIT Tech Review', 'https://www.technologyreview.com/feed/'),
+        ('MIT Tech FinalReview', 'https://www.technologyreview.com/feed/'),
     ],
 }
 
@@ -228,7 +228,7 @@ def main():
     atomic_json_write(latest_file, result)
 
     total = sum(len(v) for v in result['categories'].values())
-    log.info(f'✅ 完成：共 {total} 条新闻 → {today_file.name}')
+    log.info(f'✅ 완료：共 {total} 条新闻 → {today_file.name}')
 
     # 采集成功后才写入幂等锁
     lock_file.touch()

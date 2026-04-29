@@ -300,7 +300,7 @@ chmod +x install.sh && ./install.sh
 - ✅ 데이터 디렉터리 초기화 + 첫 데이터 동기화 (관원 통계 포함)
 - ✅ Gateway 재시작으로 설정 적용
 
-> ⚠️ **첫 설치**: 먼저 API Key 설정 필요: `openclaw agents add taizi`, 이후 `./install.sh` 재실행하여 모든 Agent 에 동기화.
+> ⚠️ **첫 설치**: 먼저 API Key 설정 필요: `openclaw agents add seja`, 이후 `./install.sh` 재실행하여 모든 Agent 에 동기화.
 
 #### 시작
 
@@ -350,22 +350,22 @@ bash edict.sh stop     # 정지
                            └─────────────────┬─────────────────┘
                                              │ 하지
                            ┌─────────────────▼─────────────────┐
-                           │          👶 세자 (taizi)            │
+                           │          👶 세자 (seja)            │
                            │   분류: 잡담은 직접 회신 / 지시는 작업 생성 │
                            └─────────────────┬─────────────────┘
-                                             │ 전지
+                                             │ 어명전달
                            ┌─────────────────▼─────────────────┐
-                           │          📜 홍문관 (zhongshu)       │
+                           │          📜 홍문관 (hongmungwan)       │
                            │       지시 접수 → 기획 → 하위작업 분해      │
                            └─────────────────┬─────────────────┘
                                              │ 심의 제출
                            ┌─────────────────▼─────────────────┐
-                           │          🔍 사간원 (menxia)         │
+                           │          🔍 사간원 (saganwon)         │
                            │       방안 심의 → 승인 / 반려 🚫       │
                            └─────────────────┬─────────────────┘
                                              │ 승인 ✅
                            ┌─────────────────▼─────────────────┐
-                           │          📮 승정원 (shangshu)       │
+                           │          📮 승정원 (seungjeongwon)       │
                            │   작업 배분 → 6조 조율 → 결과 보고 취합   │
                            └───┬──────┬──────┬──────┬──────┬───┘
                                │      │      │      │      │
@@ -383,17 +383,17 @@ bash edict.sh stop     # 정지
 
 | 부서 | Agent ID | 직무 | 전문 영역 |
 |------|----------|------|---------|
-| 👶 **세자** | `taizi` | 메시지 분류, 요건 정리 | 잡담 식별, 지시 정제, 제목 요약 |
-| 📜 **홍문관** | `zhongshu` | 지시 접수, 기획, 분해 | 요건 이해, 작업 분해, 방안 설계 |
-| 🔍 **사간원** | `menxia` | 심의, 관문, 반려 | 품질 심사, 위험 식별, 표준 통제 |
-| 📮 **승정원** | `shangshu` | 배분, 조율, 취합 | 작업 스케줄링, 진척 추적, 결과 통합 |
-| 💰 **호조** | `hubu` | 데이터, 자원, 정산 | 데이터 처리, 보고서 생성, 비용 분석 |
-| 📝 **예조** | `libu` | 문서, 규범, 보고 | 기술 문서, API 문서, 규범 제정 |
-| ⚔️ **병조** | `bingbu` | 코드, 알고리즘, 점검 | 기능 개발, Bug 수정, 코드 리뷰 |
-| ⚖️ **형조** | `xingbu` | 보안, 컴플라이언스, 감사 | 보안 스캔, 컴플라이언스 점검, 레드라인 통제 |
-| 🔧 **공조** | `gongbu` | CI/CD, 배포, 도구 | Docker 설정, 파이프라인, 자동화 |
-| 📋 **이조** | `libu_hr` | 인사, Agent 관리 | Agent 등록, 권한 유지, 교육 |
-| 🌅 **조보관** | `zaochao` | 일일 조회, 뉴스 집계 | 정시 보도, 데이터 취합 |
+| 👶 **세자** | `seja` | 메시지 분류, 요건 정리 | 잡담 식별, 지시 정제, 제목 요약 |
+| 📜 **홍문관** | `hongmungwan` | 지시 접수, 기획, 분해 | 요건 이해, 작업 분해, 방안 설계 |
+| 🔍 **사간원** | `saganwon` | 심의, 관문, 반려 | 품질 심사, 위험 식별, 표준 통제 |
+| 📮 **승정원** | `seungjeongwon` | 배분, 조율, 취합 | 작업 스케줄링, 진척 추적, 결과 통합 |
+| 💰 **호조** | `hojo` | 데이터, 자원, 정산 | 데이터 처리, 보고서 생성, 비용 분석 |
+| 📝 **예조** | `yejo` | 문서, 규범, 보고 | 기술 문서, API 문서, 규범 제정 |
+| ⚔️ **병조** | `byeongjo` | 코드, 알고리즘, 점검 | 기능 개발, Bug 수정, 코드 리뷰 |
+| ⚖️ **형조** | `hyeongjo` | 보안, 컴플라이언스, 감사 | 보안 스캔, 컴플라이언스 점검, 레드라인 통제 |
+| 🔧 **공조** | `gongjo` | CI/CD, 배포, 도구 | Docker 설정, 파이프라인, 자동화 |
+| 📋 **이조** | `ijo` | 인사, Agent 관리 | Agent 등록, 권한 유지, 교육 |
+| 🌅 **조보관** | `jobocheong` | 일일 조회, 뉴스 집계 | 정시 보도, 데이터 취합 |
 
 ### 권한 매트릭스
 
@@ -416,7 +416,7 @@ bash edict.sh stop     # 정지
 ```
 
 > ⚡ **상태 전이 보호**: `kanban_update.py` 내장 `_VALID_TRANSITIONS` 상태 머신 검증,
-> 비정상 점프 (예: Doing→Taizi) 는 거부되고 로그 기록되어 흐름 우회 불가능.
+> 비정상 점프 (예: InProgress→SejaFinalReview) 는 거부되고 로그 기록되어 흐름 우회 불가능.
 >
 > 🔄 **비동기 이벤트 구동**: 서비스 간 Redis Streams EventBus 로 디커플링 통신, Outbox Relay 가 이벤트 신뢰 전달 보장.
 > 모든 상태 변경은 감사 로그 (`audit.py`) 에 자동 기록되어 완전 추적 지원.
@@ -428,17 +428,17 @@ bash edict.sh stop     # 정지
 ```
 edict/
 ├── agents/                     # 12개 Agent 인격 템플릿
-│   ├── taizi/SOUL.md           # 세자 · 메시지 분류 (지시 제목 규범 포함)
-│   ├── zhongshu/SOUL.md        # 홍문관 · 기획 중추
-│   ├── menxia/SOUL.md          # 사간원 · 심의 관문
-│   ├── shangshu/SOUL.md        # 승정원 · 배분 두뇌
-│   ├── hubu/SOUL.md            # 호조 · 데이터 자원
-│   ├── libu/SOUL.md            # 예조 · 문서 규범
-│   ├── bingbu/SOUL.md          # 병조 · 엔지니어 구현
-│   ├── xingbu/SOUL.md          # 형조 · 컴플라이언스 감사
-│   ├── gongbu/SOUL.md          # 공조 · 인프라
-│   ├── libu_hr/                # 이조 · 인사 관리
-│   └── zaochao/SOUL.md         # 조보관 · 정보 허브
+│   ├── seja/SOUL.md           # 세자 · 메시지 분류 (지시 제목 규범 포함)
+│   ├── hongmungwan/SOUL.md        # 홍문관 · 기획 중추
+│   ├── saganwon/SOUL.md          # 사간원 · 심의 관문
+│   ├── seungjeongwon/SOUL.md        # 승정원 · 배분 두뇌
+│   ├── hojo/SOUL.md            # 호조 · 데이터 자원
+│   ├── yejo/SOUL.md            # 예조 · 문서 규범
+│   ├── byeongjo/SOUL.md          # 병조 · 엔지니어 구현
+│   ├── hyeongjo/SOUL.md          # 형조 · 컴플라이언스 감사
+│   ├── gongjo/SOUL.md          # 공조 · 인프라
+│   ├── ijo/                # 이조 · 인사 관리
+│   └── jobocheong/SOUL.md         # 조보관 · 정보 허브
 ├── dashboard/
 │   ├── dashboard.html          # 군기처 칸반 (단일 파일 · 무의존성 · ~2500줄)
 │   ├── dist/                   # React 프론트엔드 빌드 산출물 (Docker 이미지 포함, 로컬 선택)
@@ -545,21 +545,21 @@ Feishu / Telegram / Signal 로 홍문관에 메시지 발송:
 ```bash
 # GitHub 에서 code_review skill 을 홍문관에 추가
 python3 scripts/skill_manager.py add-remote \
-  --agent zhongshu \
+  --agent hongmungwan \
   --name code_review \
   --source https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_review/SKILL.md \
   --description "코드 리뷰 스킬"
 
 # 공식 skills 라이브러리를 지정 agents 에 일괄 임포트
 python3 scripts/skill_manager.py import-official-hub \
-  --agents zhongshu,menxia,shangshu,bingbu,xingbu
+  --agents hongmungwan,saganwon,seungjeongwon,byeongjo,hyeongjo
 
 # 추가된 모든 원격 skills 나열
 python3 scripts/skill_manager.py list-remote
 
 # 특정 skill 을 최신 버전으로 갱신
 python3 scripts/skill_manager.py update-remote \
-  --agent zhongshu \
+  --agent hongmungwan \
   --name code_review
 ```
 
@@ -570,7 +570,7 @@ python3 scripts/skill_manager.py update-remote \
 curl -X POST http://localhost:7891/api/add-remote-skill \
   -H "Content-Type: application/json" \
   -d '{
-    "agentId": "zhongshu",
+    "agentId": "hongmungwan",
     "skillName": "code_review",
     "sourceUrl": "https://raw.githubusercontent.com/...",
     "description": "코드 리뷰"
@@ -656,7 +656,7 @@ curl http://localhost:7891/api/remote-skills-list
 ```bash
 curl -s http://127.0.0.1:7891/api/agents-status | python3 -m json.tool
 ```
-`taizi` agent 의 `statusLabel` 이 `alive` 인지 확인.
+`seja` agent 의 `statusLabel` 이 `alive` 인지 확인.
 
 2. **Gateway 로그 확인**:
 ```bash
@@ -665,7 +665,7 @@ grep -i "error\|fail\|unknown" /tmp/openclaw/openclaw-*.log | tail -20
 ```
 
 3. **흔한 원인**:
-   - Agent ID 불일치 (v1.2 에서 수정됨: `main` → `taizi`)
+   - Agent ID 불일치 (v1.2 에서 수정됨: `main` → `seja`)
    - LLM provider 타임아웃 (자동 재시도 추가됨)
    - 좀비 Agent 프로세스 (`ps aux | grep openclaw` 로 확인)
 
@@ -708,7 +708,7 @@ curl -I https://raw.githubusercontent.com/openclaw-ai/skills-hub/main/code_revie
 
 # 타임아웃 시 프록시 사용
 export https_proxy=http://your-proxy:port
-python3 scripts/skill_manager.py import-official-hub --agents zhongshu
+python3 scripts/skill_manager.py import-official-hub --agents hongmungwan
 ```
 
 **흔한 원인**:

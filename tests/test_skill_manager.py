@@ -21,5 +21,5 @@ def test_skill_manager_help_is_korean():
     output = result.stdout + result.stderr
     assert "Skill 관리 도구" in output
     assert "원격 skill 추가" in output
-    assert "三省六部" not in output
+    assert "3사6조" not in output
     assert "从远程 URL 添加 skill" not in output

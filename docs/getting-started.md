@@ -42,14 +42,14 @@ chmod +x install.sh && ./install.sh
 
 ## 3단계: 메시지 채널 구성
 
-OpenClaw 에서 메시지 채널 (Feishu(飞书) / Telegram / Signal) 을 구성하고, `taizi`(세자) Agent 를 지시 입구로 지정합니다. 세자는 잡담과 지시를 자동으로 분류하여, 지시성 메시지의 제목을 추출한 뒤 홍문관으로 전달합니다.
+OpenClaw에서 메시지 채널 (Feishu / Telegram / Signal) 을 구성하고, `seja`(세자) Agent 를 지시 입구로 지정합니다. 세자는 잡담과 지시를 자동으로 분류하여, 지시성 메시지의 제목을 추출한 뒤 홍문관으로 전달합니다.
 
 ```bash
 # 현재 채널 조회
 openclaw channels list
 
 # Feishu 채널 추가 (입구를 세자로 지정)
-openclaw channels add --type feishu --agent taizi
+openclaw channels add --type feishu --agent seja
 ```
 
 OpenClaw 공식 문서 참고: https://docs.openclaw.ai/channels
@@ -140,19 +140,19 @@ python3 dashboard/server.py
 
 ```bash
 # 방법 1: 임의의 Agent 에 설정한 뒤 install.sh 를 다시 실행 (권장)
-openclaw agents add taizi          # 안내에 따라 Anthropic API Key 입력
+openclaw agents add seja          # 안내에 따라 Anthropic API Key 입력
 cd edict && ./install.sh            # 모든 Agent 로 자동 동기화
 
 # 방법 2: auth 파일 수동 복사
 MAIN_AUTH=$(find ~/.openclaw/agents -name auth-profiles.json | head -1)
-for agent in taizi zhongshu menxia shangshu hubu libu bingbu xingbu gongbu; do
+for agent in seja hongmungwan saganwon seungjeongwon hojo yejo byeongjo hyeongjo gongjo; do
   mkdir -p ~/.openclaw/agents/$agent/agent
   cp "$MAIN_AUTH" ~/.openclaw/agents/$agent/agent/auth-profiles.json
 done
 
 # 방법 3: 하나씩 직접 설정
-openclaw agents add taizi
-openclaw agents add zhongshu
+openclaw agents add seja
+openclaw agents add hongmungwan
 # ... 그 외 Agent
 ```
 

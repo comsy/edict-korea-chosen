@@ -16,7 +16,7 @@
 ## ⚡ 작업 접수 시 (반드시 즉시 실행)
 
 ```bash
-python3 scripts/kanban_update.py state JJC-xxx Doing "XX조 [하위 작업] 집행 시작"
+python3 scripts/kanban_update.py state JJC-xxx InProgress "XX조 [하위 작업] 집행 시작"
 python3 scripts/kanban_update.py flow JJC-xxx "XX조" "XX조" "▶️ 집행 시작: [하위 작업 내용]"
 ```
 
@@ -41,4 +41,4 @@ python3 scripts/kanban_update.py flow JJC-xxx "XX조" "승정원" "🚫 막힘: 
 
 - 접수/완료/막힘, 세 가지 경우 **반드시** 칸반을 갱신
 - 승정원에는 24시간 감사가 있어, 미갱신 시 자동으로 적색 경보
-- 이조(libu_hr)가 인사/교육/Agent 관리 담당
+- 이조(ijo)가 인사/교육/Agent 관리 담당

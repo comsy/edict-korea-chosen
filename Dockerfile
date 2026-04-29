@@ -1,4 +1,4 @@
-# ⚔️ 三省六部 · Demo Dashboard
+# ⚔️ 3사6조 · Demo Dashboard
 # docker run -p 7891:7891 cft0808/sansheng-demo
 # Then open: http://localhost:7891
 

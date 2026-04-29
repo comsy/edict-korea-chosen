@@ -18,9 +18,9 @@ import { api } from '../api';
 // ── 상수 ──
 
 const OFFICIAL_COLORS: Record<string, string> = {
-  taizi: '#e8a040', zhongshu: '#a07aff', menxia: '#6a9eff', shangshu: '#2ecc8a',
-  libu: '#f5c842', hubu: '#ff9a6a', bingbu: '#ff5270', xingbu: '#cc4444',
-  gongbu: '#44aaff', libu_hr: '#9b59b6',
+  seja: '#e8a040', hongmungwan: '#a07aff', saganwon: '#6a9eff', seungjeongwon: '#2ecc8a',
+  yejo: '#f5c842', hojo: '#ff9a6a', byeongjo: '#ff5270', hyeongjo: '#cc4444',
+  gongjo: '#44aaff', ijo: '#9b59b6', jobocheong: '#ffaa00', gwansanggam: '#44ccff',
 };
 
 const EMOTION_EMOJI: Record<string, string> = {
@@ -30,12 +30,12 @@ const EMOTION_EMOJI: Record<string, string> = {
 
 const COURT_POSITIONS: Record<string, { x: number; y: number }> = {
   // 좌측 열
-  zhongshu: { x: 15, y: 25 }, menxia: { x: 15, y: 45 }, shangshu: { x: 15, y: 65 },
+  hongmungwan: { x: 15, y: 25 }, saganwon: { x: 15, y: 45 }, seungjeongwon: { x: 15, y: 65 },
   // 우측 열
-  libu: { x: 85, y: 20 }, hubu: { x: 85, y: 35 }, bingbu: { x: 85, y: 50 },
-  xingbu: { x: 85, y: 65 }, gongbu: { x: 85, y: 80 },
+  yejo: { x: 85, y: 20 }, hojo: { x: 85, y: 35 }, byeongjo: { x: 85, y: 50 },
+  hyeongjo: { x: 85, y: 65 }, gongjo: { x: 85, y: 80 },
   // 중앙
-  taizi: { x: 50, y: 20 }, libu_hr: { x: 50, y: 80 },
+  seja: { x: 50, y: 20 }, ijo: { x: 50, y: 80 },
 };
 
 interface CourtMessage {
@@ -295,7 +295,7 @@ export default function CourtDiscussion() {
 
   // ── 사전 설정 의제 (현재 지시에서 추출) ──
   const activeEdicts = (liveStatus?.tasks || []).filter(
-    (t) => /^JJC-/i.test(t.id) && !['Done', 'Cancelled'].includes(t.state),
+    (t) => /^JJC-/i.test(t.id) && !['Completed', 'Cancelled'].includes(t.state),
   );
 
   const presetTopics = [

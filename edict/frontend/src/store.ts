@@ -1,6 +1,6 @@
 /**
  * Zustand Store - 대시보드 상태 관리
- * HTTP 5s 폴링, WebSocket 없음
+ * HTTP 폴링, WebSocket 없음
  */
 
 import { create } from 'zustand';
@@ -19,19 +19,19 @@ import {
 // ── Pipeline Definition (PIPE) ──
 
 export const PIPE = [
-  { key: 'Inbox',    dept: '임금',   icon: '👑', action: '지시 등록' },
-  { key: 'Taizi',    dept: '세자',   icon: '🤴', action: '분류' },
-  { key: 'Zhongshu', dept: '홍문관', icon: '📜', action: '기안' },
-  { key: 'Menxia',   dept: '사간원', icon: '🔍', action: '심의' },
-  { key: 'Assigned', dept: '승정원', icon: '📮', action: '배분' },
-  { key: 'Doing',    dept: '육조',   icon: '⚙️', action: '집행' },
-  { key: 'Review',   dept: '승정원', icon: '🔎', action: '취합' },
-  { key: 'Done',     dept: '결과 보고',   icon: '✅', action: '완료' },
+  { key: 'Pending',  dept: '임금',   icon: '👑', action: '지시 등록' },
+  { key: 'SejaFinalReview',    dept: '세자',   icon: '👤', action: '분류' },
+  { key: 'HongmungwanDraft', dept: '홍문관', icon: '📜', action: '기안' },
+  { key: 'SaganwonFinalReview',   dept: '사간원', icon: '🔍', action: '심의' },
+  { key: 'SeungjeongwonAssigned', dept: '승정원', icon: '📮', action: '배분' },
+  { key: 'InProgress',    dept: '육조',   icon: '⚙️', action: '집행' },
+  { key: 'FinalReview',   dept: '승정원', icon: '🔎', action: '취합' },
+  { key: 'Completed',     dept: '결과 보고',   icon: '✅', action: '완료' },
 ] as const;
 
 export const PIPE_STATE_IDX: Record<string, number> = {
-  Inbox: 0, Pending: 0, Taizi: 1, Zhongshu: 2, Menxia: 3,
-  Assigned: 4, Doing: 5, Review: 6, Done: 7, Blocked: 5, Cancelled: 5, Next: 4,
+  Pending: 0, SejaFinalReview: 1, HongmungwanDraft: 2, SaganwonFinalReview: 3,
+  SeungjeongwonAssigned: 4, InProgress: 5, FinalReview: 6, Completed: 7, Blocked: 5, Cancelled: 5, Ready: 4,
 };
 
 export const DEPT_COLOR: Record<string, string> = {
@@ -41,18 +41,17 @@ export const DEPT_COLOR: Record<string, string> = {
 };
 
 export const STATE_LABEL: Record<string, string> = {
-  Inbox: '접수',
   Pending: '접수 대기',
-  Taizi: '세자 분류',
-  Zhongshu: '홍문관 기안',
-  Menxia: '사간원 심의',
-  Assigned: '승정원 배분 완료',
-  Doing: '집행 중',
-  Review: '취합 검토',
-  Done: '완료',
+  SejaFinalReview: '세자 분류',
+  HongmungwanDraft: '홍문관 기안',
+  SaganwonFinalReview: '사간원 심의',
+  SeungjeongwonAssigned: '승정원 배분 완료',
+  InProgress: '집행 중',
+  FinalReview: '취합 검토',
+  Completed: '완료',
   Blocked: '중단',
   Cancelled: '취소',
-  Next: '집행 대기',
+  Ready: '집행 대기',
 };
 
 export function deptColor(d: string): string {
@@ -61,8 +60,8 @@ export function deptColor(d: string): string {
 
 export function stateLabel(t: Task): string {
   const r = t.review_round || 0;
-  if (t.state === 'Menxia' && r > 1) return `사간원 심의 (${r}차)`;
-  if (t.state === 'Zhongshu' && r > 0) return `홍문관 수정 (${r}차)`;
+  if (t.state === 'SaganwonFinalReview' && r > 1) return `사간원 심의 (${r}차)`;
+  if (t.state === 'HongmungwanDraft' && r > 0) return `홍문관 수정 (${r}차)`;
   return STATE_LABEL[t.state] || t.state;
 }
 
@@ -110,17 +109,18 @@ export const TAB_DEFS: { key: TabKey; label: string; icon: string }[] = [
 // ── DEPTS for monitor ──
 
 export const DEPTS = [
-  { id: 'taizi',    label: '세자', emoji: '🤴', role: '세자', rank: '중앙 허브' },
-  { id: 'zhongshu', label: '홍문관', emoji: '📜', role: '기획', rank: '중앙 허브' },
-  { id: 'menxia',   label: '사간원', emoji: '🔍', role: '심의', rank: '중앙 허브' },
-  { id: 'shangshu', label: '승정원', emoji: '📮', role: '배분', rank: '중앙 허브' },
-  { id: 'libu',     label: '예조', emoji: '📝', role: '문서', rank: '집행 부서' },
-  { id: 'hubu',     label: '호조', emoji: '💰', role: '데이터', rank: '집행 부서' },
-  { id: 'bingbu',   label: '병조', emoji: '⚔️', role: '구현', rank: '집행 부서' },
-  { id: 'xingbu',   label: '형조', emoji: '⚖️', role: '검토', rank: '집행 부서' },
-  { id: 'gongbu',   label: '공조', emoji: '🔧', role: '인프라', rank: '집행 부서' },
-  { id: 'libu_hr',  label: '이조', emoji: '👔', role: '운영', rank: '집행 부서' },
-  { id: 'zaochao',  label: '조보청', emoji: '📰', role: '브리핑', rank: '보조' },
+  { id: 'seja',    label: '세자', emoji: '👤', role: '세자', rank: '중앙 허브' },
+  { id: 'hongmungwan', label: '홍문관', emoji: '📜', role: '기획', rank: '중앙 허브' },
+  { id: 'saganwon',   label: '사간원', emoji: '🔍', role: '심의', rank: '중앙 허브' },
+  { id: 'seungjeongwon', label: '승정원', emoji: '📮', role: '배분', rank: '중앙 허브' },
+  { id: 'yejo',     label: '예조', emoji: '📝', role: '문서', rank: '집행 부서' },
+  { id: 'hojo',     label: '호조', emoji: '💰', role: '데이터', rank: '집행 부서' },
+  { id: 'byeongjo',   label: '병조', emoji: '⚔️', role: '구현', rank: '집행 부서' },
+  { id: 'hyeongjo',   label: '형조', emoji: '⚖️', role: '검토', rank: '집행 부서' },
+  { id: 'gongjo',   label: '공조', emoji: '🔧', role: '인프라', rank: '집행 부서' },
+  { id: 'ijo',  label: '이조', emoji: '👔', role: '인사/교육', rank: '집행 부서' },
+  { id: 'jobocheong',  label: '조보청', emoji: '📰', role: '브리핑', rank: '보조' },
+  { id: 'gwansanggam',  label: '관상감', emoji: '🔭', role: '천문', rank: '보조' },
 ];
 
 // ── Templates ──
@@ -155,7 +155,7 @@ export const TEMPLATES: Template[] = [
     params: [
       { key: 'date_range', label: '보고 기간', type: 'text', default: '이번 주', required: true },
       { key: 'focus', label: '중점 항목(쉼표 구분)', type: 'text', default: '프로젝트 진행,다음 주 계획' },
-      { key: 'format', label: '출력 형식', type: 'select', options: ['Markdown', '피슈 문서'], default: 'Markdown' },
+      { key: 'format', label: '출력 형식', type: 'select', options: ['Markdown', '워드 문서'], default: 'Markdown' },
     ],
     command: '{date_range} 주간 보고서를 생성하고, {focus}를 중점으로 {format} 형식으로 출력',
   },
@@ -165,7 +165,7 @@ export const TEMPLATES: Template[] = [
     depts: ['병조', '형조'], est: '~20분', cost: '¥2',
     params: [
       { key: 'repo', label: '저장소/파일 경로', type: 'text', required: true },
-      { key: 'scope', label: '검토 범위', type: 'select', options: ['전체', '증분(최근 커밋)', '지정 파일'], default: '증분(최근 커밋)' },
+      { key: 'scope', label: '검토 범위', type: 'select', options: ['전체', '최근 커밋', '지정 파일'], default: '최근 커밋' },
       { key: 'focus', label: '중점 항목(선택)', type: 'text', default: '보안 취약점,오류 처리,성능' },
     ],
     command: '{repo}를 코드 리뷰합니다. 범위: {scope}, 중점: {focus}',

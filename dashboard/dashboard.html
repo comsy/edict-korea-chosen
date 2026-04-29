@@ -1,11 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="ko">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>정무청 · 조선식 운영체계 대시보드</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&display=swap');
     :root{
       --bg:#07090f;--panel:#0f1219;--panel2:#141824;--line:#1c2236;
       --text:#dde4f8;--muted:#5a6b92;--ok:#2ecc8a;--warn:#f5c842;--danger:#ff5270;
@@ -17,7 +16,7 @@
       --acc:#3b82f6;--acc2:#7c3aed;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font-family:"PingFang SC",Inter,-apple-system,"Segoe UI",sans-serif;min-height:100vh;transition:background-color .3s ease,color .2s ease}
+    body{background:var(--bg);color:var(--text);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Inter,-apple-system,"Segoe UI",sans-serif;min-height:100vh;transition:background-color .3s ease,color .2s ease}
     ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1e2538;border-radius:4px}
     html.light ::-webkit-scrollbar-thumb{background:#c4c8d4}
     .theme-toggle{background:var(--panel);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:16px;padding:4px 10px;color:var(--text);transition:all .15s}
@@ -77,12 +76,12 @@
 
     /* state colors */
     .st-Inbox{border-color:#3a4a7a44;color:#7a9aff;background:#0a1028}
-    .st-Zhongshu{border-color:#a07aff44;color:#a07aff;background:#110a28}
-    .st-Taizi{border-color:#e8a04044;color:#e8a040;background:#281a08}
-    .st-Menxia{border-color:#ff9a6a44;color:#ff9a6a;background:#280f0a}
-    .st-Assigned,.st-Doing{border-color:#6a9eff44;color:#6a9eff;background:#0a1428}
-    .st-Review{border-color:#f5c84244;color:#f5c842;background:#201a08}
-    .st-Done{border-color:#2ecc8a44;color:var(--ok);background:#0a2018}
+    .st-HongmungwanDraft{border-color:#a07aff44;color:#a07aff;background:#110a28}
+    .st-SejaFinalReview{border-color:#e8a04044;color:#e8a040;background:#281a08}
+    .st-SaganwonFinalReview{border-color:#ff9a6a44;color:#ff9a6a;background:#280f0a}
+    .st-SeungjeongwonAssigned,.st-InProgress{border-color:#6a9eff44;color:#6a9eff;background:#0a1428}
+    .st-FinalReview{border-color:#f5c84244;color:#f5c842;background:#201a08}
+    .st-Completed{border-color:#2ecc8a44;color:var(--ok);background:#0a2018}
     .st-Blocked{border-color:#ff527044;color:var(--danger);background:#200a10}
     .st-Cancelled{border-color:#88888844;color:#888;background:#1a1a1a}
     .st-Next{border-color:#4a9adf44;color:#4a9adf;background:#0a1424}
@@ -760,16 +759,16 @@
       <span style="font-size:11px;color:var(--muted)">필터:</span>
       <span class="sess-filter active" data-sf="all" onclick="filterSessions('all',this)">전체</span>
       <span class="sess-filter" data-sf="active" onclick="filterSessions('active',this)">진행 중</span>
-      <span class="sess-filter" data-sf="zhongshu" onclick="filterSessions('zhongshu',this)">홍문관</span>
-      <span class="sess-filter" data-sf="shangshu" onclick="filterSessions('shangshu',this)">승정원</span>
-      <span class="sess-filter" data-sf="libu" onclick="filterSessions('libu',this)">예조</span>
-      <span class="sess-filter" data-sf="hubu" onclick="filterSessions('hubu',this)">호조</span>
-      <span class="sess-filter" data-sf="bingbu" onclick="filterSessions('bingbu',this)">병조</span>
-      <span class="sess-filter" data-sf="xingbu" onclick="filterSessions('xingbu',this)">형조</span>
-      <span class="sess-filter" data-sf="gongbu" onclick="filterSessions('gongbu',this)">공조</span>
-      <span class="sess-filter" data-sf="libu_hr" onclick="filterSessions('libu_hr',this)">이조</span>
-      <span class="sess-filter" data-sf="menxia" onclick="filterSessions('menxia',this)">사간원</span>
-      <span class="sess-filter" data-sf="zaochao" onclick="filterSessions('zaochao',this)">조보청</span>
+      <span class="sess-filter" data-sf="hongmungwan" onclick="filterSessions('hongmungwan',this)">홍문관</span>
+      <span class="sess-filter" data-sf="seungjeongwon" onclick="filterSessions('seungjeongwon',this)">승정원</span>
+      <span class="sess-filter" data-sf="yejo" onclick="filterSessions('yejo',this)">예조</span>
+      <span class="sess-filter" data-sf="hojo" onclick="filterSessions('hojo',this)">호조</span>
+      <span class="sess-filter" data-sf="byeongjo" onclick="filterSessions('byeongjo',this)">병조</span>
+      <span class="sess-filter" data-sf="hyeongjo" onclick="filterSessions('hyeongjo',this)">형조</span>
+      <span class="sess-filter" data-sf="gongjo" onclick="filterSessions('gongjo',this)">공조</span>
+      <span class="sess-filter" data-sf="ijo" onclick="filterSessions('ijo',this)">이조</span>
+      <span class="sess-filter" data-sf="saganwon" onclick="filterSessions('saganwon',this)">사간원</span>
+      <span class="sess-filter" data-sf="jobocheong" onclick="filterSessions('jobocheong',this)">조보청</span>
     </div>
     <div id="sess-grid" class="sess-grid"></div>
   </div>
@@ -783,7 +782,7 @@
       </div>
       <select id="mem-filter" onchange="renderMemorials()" style="font-size:11px;padding:4px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--text);outline:none">
         <option value="all">전체</option>
-        <option value="Done">완료</option>
+        <option value="Completed">완료</option>
         <option value="Cancelled">취소</option>
       </select>
     </div>
@@ -954,16 +953,16 @@ function restoreGlobalScanState(){
 
 /* ══ PIPELINE DEFINITION ══ */
 const PIPE = [
-  {key:'Inbox',    dept:'임금',   icon:'👑', action:'지시 등록'},
-  {key:'Taizi',    dept:'세자',   icon:'🤴', action:'분류'},
-  {key:'Zhongshu', dept:'홍문관', icon:'📜', action:'기안'},
-  {key:'Menxia',   dept:'사간원', icon:'🔍', action:'심의'},
-  {key:'Assigned', dept:'승정원', icon:'📮', action:'배분'},
-  {key:'Doing',    dept:'육조',   icon:'⚙️', action:'집행'},
-  {key:'Review',   dept:'승정원', icon:'🔎', action:'취합'},
-  {key:'Done',     dept:'결과 보고',   icon:'✅', action:'완료'},
+  {key:'Pending',              dept:'임금',       icon:'👑', action:'지시 등록'},
+  {key:'SejaFinalReview',           dept:'세자',       icon:'🤴', action:'분류'},
+  {key:'HongmungwanDraft',     dept:'홍문관',     icon:'📜', action:'기안'},
+  {key:'SaganwonFinalReview',       dept:'사간원',     icon:'🔍', action:'심의'},
+  {key:'SeungjeongwonAssigned',dept:'승정원',     icon:'📮', action:'배분'},
+  {key:'InProgress',           dept:'육조',       icon:'⚙️', action:'집행'},
+  {key:'FinalReview',          dept:'승정원',     icon:'🔎', action:'취합'},
+  {key:'Completed',            dept:'결과 보고',  icon:'✅', action:'완료'},
 ];
-const PIPE_STATE_IDX = {Inbox:0,Pending:0,Taizi:1,Zhongshu:2,Menxia:3,Assigned:4,Doing:5,Review:6,Done:7,Blocked:5,Cancelled:5,Next:4};
+const PIPE_STATE_IDX = {Pending:0,SejaFinalReview:1,HongmungwanDraft:2,SaganwonFinalReview:3,SeungjeongwonAssigned:4,InProgress:5,FinalReview:6,Completed:7,Blocked:5,Cancelled:5,Ready:4};
 
 /* ══ DEPT COLORS ══ */
 const DEPT_COLOR = {'세자':'#e8a040','홍문관':'#a07aff','사간원':'#6a9eff','승정원':'#6aef9a','예조':'#f5c842','호조':'#ff9a6a','병조':'#ff5270','형조':'#cc4444','공조':'#44aaff','이조':'#9b59b6','임금':'#ffd700','결과 보고':'#2ecc8a'};
@@ -974,12 +973,12 @@ const esc=s=>s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g
 async function fetchJ(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error(r.status);return r.json()}
 async function postJ(u,d){const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});return r.json()}
 function toast(msg,type='ok',ms=3000){const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;document.getElementById('toaster').appendChild(el);setTimeout(()=>el.remove(),ms)}
-const STATE_LABEL={Inbox:'접수',Pending:'접수 대기',Taizi:'세자 분류',Zhongshu:'홍문관 기안',Menxia:'사간원 심의',Assigned:'승정원 배분 완료',Doing:'집행 중',Review:'취합 검토',Done:'완료',Blocked:'중단',Cancelled:'취소',Next:'집행 대기'};
+const STATE_LABEL={Pending:'접수 대기',SejaFinalReview:'세자 분류',HongmungwanDraft:'홍문관 기안',SaganwonFinalReview:'사간원 심의',SeungjeongwonAssigned:'승정원 배분 완료',InProgress:'집행 중',FinalReview:'취합 검토',Completed:'완료',Blocked:'중단',Cancelled:'취소',Ready:'집행 대기',PendingConfirm:'확인 대기'};
 // 차수에 따라 상태 라벨을 동적으로 생성
 function stateLabel(t){
   const r = t.review_round||0;
-  if(t.state==='Menxia' && r>1) return `사간원 심의 (제 ${r}차)`;
-  if(t.state==='Zhongshu' && r>0) return `홍문관 수정안 (제 ${r}차)`;
+  if(t.state==='SaganwonFinalReview' && r>1) return `사간원 심의 (제 ${r}차)`;
+  if(t.state==='HongmungwanDraft' && r>0) return `홍문관 수정안 (제 ${r}차)`;
   return STATE_LABEL[t.state]||t.state;
 }
 
@@ -1053,7 +1052,7 @@ function renderEdicts(tasks){
   else if(edictFilter==='archived') edicts = archivedEdicts;
   else edicts = allEdicts;
   edicts.sort((a,b) => {
-    const order = {Doing:0,Review:1,Assigned:2,Menxia:3,Zhongshu:4,Taizi:5,Inbox:6,Blocked:7,Next:8,Done:9,Cancelled:10};
+    const order = {InProgress:0,FinalReview:1,SeungjeongwonAssigned:2,SaganwonFinalReview:3,HongmungwanDraft:4,SejaFinalReview:5,Pending:6,Blocked:7,Ready:8,Completed:9,Cancelled:10};
     return (order[a.state]??9) - (order[b.state]??9);
   });
   // Tab badge = active count only
@@ -1062,7 +1061,7 @@ function renderEdicts(tasks){
   // Archive stats
   document.getElementById('archive-count').textContent = `활성 ${activeEdicts.length} · 보관 ${archivedEdicts.length} · 총 ${allEdicts.length}`;
   // Show "일괄 보관" button if there are un-archived Done/Cancelled tasks
-  const unArchivedDone = allEdicts.filter(t=>!t.archived && ['Done','Cancelled'].includes(t.state));
+  const unArchivedDone = allEdicts.filter(t=>!t.archived && ['Completed','Cancelled'].includes(t.state));
   document.getElementById('btn-archive-done').style.display = unArchivedDone.length ? '' : 'none';
   const el = document.getElementById('edict-grid');
   if(!edicts.length){
@@ -1078,7 +1077,7 @@ function renderEdicts(tasks){
     const todos = t.todos||[];
     const todoDone = todos.filter(x=>x.status==='completed').length;
     const todoTotal = todos.length;
-    const canStop = !['Done','Blocked','Cancelled'].includes(t.state);
+    const canStop = !['Completed','Blocked','Cancelled'].includes(t.state);
     const canResume = ['Blocked','Cancelled'].includes(t.state);
     const archCls = isArchived(t) ? ' archived' : '';
     return `
@@ -1139,7 +1138,7 @@ function renderAgentsStatus(data){
   if(!data||!data.ok) return;
   const gw = data.gateway||{};
   const agents = data.agents||[];
-  // main 건너뜀 (taizi 와 중복)
+  // main 건너뜀 (seja 와 중복)
   const filtered = agents.filter(a=>a.id!=='main');
   const running = filtered.filter(a=>a.status==='running').length;
   const idle = filtered.filter(a=>a.status==='idle').length;
@@ -1210,21 +1209,21 @@ async function wakeAllAgents(){
 /* ══ DEPT MONITOR ══ */
 function renderMonitor(tasks){
   const DEPTS = [
-    {id:'taizi',   label:'세자',  emoji:'🤴',role:'세자',    rank:'세자'},
-    {id:'zhongshu',label:'홍문관',emoji:'📜',role:'홍문관 제학',  rank:'정1품'},
-    {id:'menxia',  label:'사간원',emoji:'🔍',role:'사간원 대사간',    rank:'정1품'},
-    {id:'shangshu',label:'승정원',emoji:'📮',role:'승정원 도승지',  rank:'정1품'},
-    {id:'libu',    label:'예조',  emoji:'📝',role:'예조 판서',rank:'정2품'},
-    {id:'hubu',    label:'호조',  emoji:'💰',role:'호조 판서',rank:'정2품'},
-    {id:'bingbu',  label:'병조',  emoji:'⚔️',role:'병조 판서',rank:'정2품'},
-    {id:'xingbu',  label:'형조',  emoji:'⚖️',role:'형조 판서',rank:'정2품'},
-    {id:'gongbu',  label:'공조',  emoji:'🔧',role:'공조 판서',rank:'정2품'},
-    {id:'libu_hr', label:'이조',  emoji:'👔',role:'이조 판서',rank:'정2품'},
-    {id:'zaochao', label:'조보청',emoji:'📰',role:'조보청 사관',  rank:'정3품'},
+    {id:'seja',   label:'세자',  emoji:'🤴',role:'세자',    rank:'세자'},
+    {id:'hongmungwan',label:'홍문관',emoji:'📜',role:'홍문관 제학',  rank:'정1품'},
+    {id:'saganwon',  label:'사간원',emoji:'🔍',role:'사간원 대사간',    rank:'정1품'},
+    {id:'seungjeongwon',label:'승정원',emoji:'📮',role:'승정원 도승지',  rank:'정1품'},
+    {id:'yejo',    label:'예조',  emoji:'📝',role:'예조 판서',rank:'정2품'},
+    {id:'hojo',    label:'호조',  emoji:'💰',role:'호조 판서',rank:'정2품'},
+    {id:'byeongjo',  label:'병조',  emoji:'⚔️',role:'병조 판서',rank:'정2품'},
+    {id:'hyeongjo',  label:'형조',  emoji:'⚖️',role:'형조 판서',rank:'정2품'},
+    {id:'gongjo',  label:'공조',  emoji:'🔧',role:'공조 판서',rank:'정2품'},
+    {id:'ijo', label:'이조',  emoji:'👔',role:'이조 판서',rank:'정2품'},
+    {id:'jobocheong', label:'조보청',emoji:'📰',role:'조보청 사관',  rank:'정3품'},
   ];
 
-  // 각 부서가 현재 맡고 있는 지시: JJC 작업에서 org 가 일치하고 Done 이 아닌 것을 찾음
-  const activeTasks = tasks.filter(t => isEdict(t) && t.state !== 'Done' && t.state !== 'Next');
+  // 각 부서가 현재 맡고 있는 지시: JJC 작업에서 org 가 일치하고 Completed 가 아닌 것을 찾음
+  const activeTasks = tasks.filter(t => isEdict(t) && t.state !== 'Completed' && t.state !== 'Ready');
   // 관원 통계 데이터 (이미 로드된 경우)
   const offMap = {};
   if(officialsData && officialsData.officials){
@@ -1239,7 +1238,7 @@ function renderMonitor(tasks){
     const recentEdict = tasks.filter(t=>isEdict(t))
       .find(t=>(t.flow_log||[]).some(f=>f.from===d.label||f.to===d.label));
 
-    const isActive = myTasks.some(t=>t.state==='Doing');
+    const isActive = myTasks.some(t=>t.state==='InProgress');
     const isBlocked = myTasks.some(t=>t.state==='Blocked');
     const off = offMap[d.id]||{};
     const hb = off.heartbeat||{status:'idle',label:'⚪'};
@@ -1300,7 +1299,7 @@ function openTask(id){
   const todos = t.todos||[];
   const todoDone = todos.filter(x=>x.status==='completed').length;
   const todoTotal = todos.length;
-  const canStop = !['Done','Blocked','Cancelled'].includes(t.state);
+  const canStop = !['Completed','Blocked','Cancelled'].includes(t.state);
   const canResume = ['Blocked','Cancelled'].includes(t.state);
 
   document.getElementById('modal-body').innerHTML = `
@@ -1338,9 +1337,9 @@ function openTask(id){
       ${canStop ? `<button class="btn-action btn-stop" onclick="confirmAction('${esc(t.id)}','stop')">⏸ 작업 중단</button>
       <button class="btn-action btn-cancel" onclick="confirmAction('${esc(t.id)}','cancel')">🚫 작업 취소</button>` : ''}
       ${canResume ? `<button class="btn-action btn-resume" onclick="taskAction('${esc(t.id)}','resume','집행 재개')">▶️ 집행 재개</button>` : ''}
-      ${['Review','Menxia'].includes(t.state) ? `<button class="btn-action" style="background:#2ecc8a22;color:#2ecc8a;border:1px solid #2ecc8a44" onclick="reviewAction('${esc(t.id)}','approve')">✅ 승인</button>
+      ${['FinalReview','SaganwonFinalReview'].includes(t.state) ? `<button class="btn-action" style="background:#2ecc8a22;color:#2ecc8a;border:1px solid #2ecc8a44" onclick="reviewAction('${esc(t.id)}','approve')">✅ 승인</button>
       <button class="btn-action" style="background:#ff527022;color:#ff5270;border:1px solid #ff527044" onclick="reviewAction('${esc(t.id)}','reject')">🚫 반려</button>` : ''}
-      ${['Pending','Taizi','Zhongshu','Menxia','Assigned','Doing','Review','Next'].includes(t.state) ? `<button class="btn-action" style="background:#7c5cfc18;color:#7c5cfc;border:1px solid #7c5cfc44" onclick="advanceState('${esc(t.id)}','${esc(t.state)}')">⏩ 다음 단계로 진행</button>` : ''}
+      ${['Pending','SejaFinalReview','HongmungwanDraft','SaganwonFinalReview','SeungjeongwonAssigned','InProgress','FinalReview','Ready'].includes(t.state) ? `<button class="btn-action" style="background:#7c5cfc18;color:#7c5cfc;border:1px solid #7c5cfc44" onclick="advanceState('${esc(t.id)}','${esc(t.state)}')">⏩ 다음 단계로 진행</button>` : ''}
     </div>
 
     <!-- 세자 조정 -->
@@ -1443,7 +1442,7 @@ function openTask(id){
     <!-- 실시간 동향 / 집행 회고 -->
     <div class="la-section" id="live-activity-section">
       <div class="la-header">
-        <span class="la-title"><span class="la-dot" id="la-dot"></span>${['Done','Cancelled'].includes(t.state)?'집행 회고':'실시간 동향'}</span>
+        <span class="la-title"><span class="la-dot" id="la-dot"></span>${['Completed','Cancelled'].includes(t.state)?'집행 회고':'실시간 동향'}</span>
         <span class="la-agent" id="la-agent-label">불러오는 중...</span>
       </div>
       <div id="la-phase-bar"></div>
@@ -1458,7 +1457,7 @@ function openTask(id){
   document.getElementById('modal-bg').classList.add('open');
 
   // 실시간 동향 시작 (Done 작업은 한 번만 조회하고 폴링하지 않음)
-  if(['Done','Cancelled'].includes(t.state)){
+  if(['Completed','Cancelled'].includes(t.state)){
     startLiveActivity(t.id, true);
   } else {
     startLiveActivity(t.id, false);
@@ -1682,7 +1681,7 @@ function renderLiveActivity(data){
   if(dot){dot.classList.toggle('idle',!isActive);}
 
   // Agent label map
-  const _agentLabels={main:'세자',zhongshu:'홍문관',menxia:'사간원',shangshu:'승정원',libu:'예조',hubu:'호조',bingbu:'병조',xingbu:'형조',gongbu:'공조',libu_hr:'이조',zaochao:'조보청'};
+  const _agentLabels={main:'세자',hongmungwan:'홍문관',saganwon:'사간원',seungjeongwon:'승정원',yejo:'예조',hojo:'호조',byeongjo:'병조',hyeongjo:'형조',gongjo:'공조',ijo:'이조',jobocheong:'조보청'};
 
   const renderEntry=(a)=>{
     const time=a.at?fmtActivityTime(a.at):'';
@@ -2056,9 +2055,9 @@ let sessFilter = 'all';
 function humanTitle(t){
   let title = t.title||'';
   // "저봉천 세션" → ok, keep
-  // "agent:shangshu:main 세션" → "승정원 메인 세션"
-  // "agent:gongbu:subagent:xxx 세션" → "공조 하위 작업"
-  // "agent:shangshu:cron:xxx 세션" → "승정원 예약 작업"
+  // "agent:seungjeongwon:main 세션" → "승정원 메인 세션"
+  // "agent:gongjo:subagent:xxx 세션" → "공조 하위 작업"
+  // "agent:seungjeongwon:cron:xxx 세션" → "승정원 예약 작업"
   // "heartbeat 세션" → "하트비트 점검"
   if(title==='heartbeat 세션') return '💓 하트비트 점검';
   const m = title.match(/^agent:(\w+):(\w+)/);
@@ -2118,7 +2117,7 @@ function renderSessions(tasks){
   animateCounter(document.getElementById('tb-s'), sessions.length);
   // apply filter
   let filtered = sessions;
-  if(sessFilter === 'active') filtered = sessions.filter(t=>!['Done','Cancelled'].includes(t.state));
+  if(sessFilter === 'active') filtered = sessions.filter(t=>!['Completed','Cancelled'].includes(t.state));
   else if(sessFilter !== 'all') filtered = sessions.filter(t=>extractAgent(t) === sessFilter);
 
   const grid = document.getElementById('sess-grid');
@@ -2235,7 +2234,7 @@ function extractAgent(t){
   const sm = t.sourceMeta||{};
   if(sm.agentId){
     // "mc-gateway-xxx" → try to match known agents
-    const known = ['taizi','zhongshu','menxia','shangshu','hubu','libu','bingbu','xingbu','gongbu','zaochao'];
+    const known = ['seja','hongmungwan','saganwon','seungjeongwon','hojo','yejo','byeongjo','hyeongjo','gongjo','jobocheong'];
     for(const k of known){ if(sm.agentId.includes(k)) return k; }
   }
   return (t.org||'').replace(/省|部/g,'').toLowerCase();
@@ -2695,7 +2694,7 @@ async function reviewAction(taskId, action){
 }
 
 /* ══ ADVANCE STATE (수동으로 다음 단계로 진행) ══ */
-const _NEXT_LABELS = {Taizi:'홍문관 기안', Zhongshu:'사간원 심의', Menxia:'승정원 배분', Assigned:'집행 시작', Doing:'검토 진입', Review:'완료'};
+const _NEXT_LABELS = {SejaFinalReview:'홍문관 기안', HongmungwanDraft:'사간원 심의', SaganwonFinalReview:'승정원 배분', SeungjeongwonAssigned:'집행 시작', InProgress:'취합 검토', FinalReview:'완료'};
 async function advanceState(taskId, curState){
   const next = _NEXT_LABELS[curState] || '다음 단계';
   const comment = prompt(`⏩ 수동 단계 진행 ${taskId}\n현재: ${curState} → 다음 단계: ${next}\n\n사유를 입력하세요 (선택):`);
@@ -2896,9 +2895,9 @@ function showCeremony(){
   // Fill data from live status
   const tasks = liveStatus ? (liveStatus.tasks||[]) : [];
   const jjc = tasks.filter(t=>(t.id||'').startsWith('JJC-'));
-  const pending = jjc.filter(t=>!['Done','Cancelled'].includes(t.state)).length;
-  const done = jjc.filter(t=>t.state==='Done').length;
-  const overdue = jjc.filter(t=>t.state!=='Done'&&t.state!=='Cancelled'&&t.eta&&new Date(t.eta.replace(' ','T'))<new Date()).length;
+  const pending = jjc.filter(t=>!['Completed','Cancelled'].includes(t.state)).length;
+  const done = jjc.filter(t=>t.state==='Completed').length;
+  const overdue = jjc.filter(t=>t.state!=='Completed'&&t.state!=='Cancelled'&&t.eta&&new Date(t.eta.replace(' ','T'))<new Date()).length;
   document.getElementById('crm-l3').textContent = `대기 ${pending}건 · 완료 ${done}건` + (overdue?` · ⚠ 지연 ${overdue}건`:'');
   // Date line
   const d = new Date();
@@ -2924,7 +2923,7 @@ function renderMemorials(){
   const tasks = liveStatus ? (liveStatus.tasks||[]) : [];
   const filter = (document.getElementById('mem-filter')||{}).value || 'all';
   // 완료/취소된 JJC 지시만 표시
-  let mems = tasks.filter(t=>(t.id||'').startsWith('JJC-') && ['Done','Cancelled'].includes(t.state));
+  let mems = tasks.filter(t=>(t.id||'').startsWith('JJC-') && ['Completed','Cancelled'].includes(t.state));
   if(filter!=='all') mems = mems.filter(t=>t.state===filter);
   animateCounter(document.getElementById('tb-mem'), mems.length);
 
@@ -2936,7 +2935,7 @@ function renderMemorials(){
     const depts = [...new Set(fl.map(f=>f.from).concat(fl.map(f=>f.to)).filter(x=>x&&x!=='임금'))];
     const firstAt = fl.length ? (fl[0].at||'').substring(0,16).replace('T',' ') : '';
     const lastAt = fl.length ? (fl[fl.length-1].at||'').substring(0,16).replace('T',' ') : '';
-    const stIcon = t.state==='Done'?'✅':'🚫';
+    const stIcon = t.state==='Completed'?'✅':'🚫';
     return `<div class="mem-card" onclick='openMemorial(${JSON.stringify(JSON.stringify(t))})'>
       <div class="mem-icon">📜</div>
       <div class="mem-info">
@@ -2956,7 +2955,7 @@ function openMemorial(jsonStr){
   const t = JSON.parse(jsonStr);
   const fl = t.flow_log||[];
   const st = t.state||'Unknown';
-  const stIcon = st==='Done'?'✅':st==='Cancelled'?'🚫':'🔄';
+  const stIcon = st==='Completed'?'✅':st==='Cancelled'?'🚫':'🔄';
   const depts = [...new Set(fl.map(f=>f.from).concat(fl.map(f=>f.to)).filter(x=>x&&x!=='임금'))];
 
   // Reconstruct phases from flow_log

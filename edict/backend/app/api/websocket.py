@@ -1,9 +1,9 @@
-"""WebSocket 端点 — 实时推送事件到前端。
+"""WebSocket 엔드포인트 — 프론트엔드로 이벤트 실시간 푸시.
 
-取代旧架构的 5 秒 HTTP 轮询，改为：
-- 客户端 WebSocket 连接
-- 服务端订阅 Redis Pub/Sub 频道
-- 实时推送事件（状态变更、Agent 思考流、心跳等）
+기존 아키텍처의 5초 HTTP 폴링을 대체:
+- 클라이언트 WebSocket 연결
+- 서버 측 Redis Pub/Sub 채널 구독
+- 실시간 이벤트 푸시 (상태 변경, Agent 사고 흐름, 하트비트 등)
 """
 
 import asyncio
@@ -19,27 +19,27 @@ from ..services.event_bus import get_event_bus
 log = logging.getLogger("edict.ws")
 router = APIRouter()
 
-# 活跃连接管理
+# 활성 연결 관리
 _connections: set[WebSocket] = set()
 
 
 @router.websocket("/ws")
 async def websocket_endpoint(ws: WebSocket):
-    """主 WebSocket 端点 — 推送所有事件。"""
+    """주 WebSocket 엔드포인트 — 모든 이벤트 푸시."""
     await ws.accept()
     _connections.add(ws)
     log.info(f"WebSocket connected. Total: {len(_connections)}")
 
-    # 创建独立的 Redis Pub/Sub 连接
+    # 독립적인 Redis Pub/Sub 연결 생성
     settings = get_settings()
     pubsub_redis = aioredis.from_url(settings.redis_url, decode_responses=True)
     pubsub = pubsub_redis.pubsub()
 
-    # 订阅所有 edict 频道
+    # 모든 edict 채널 구독
     await pubsub.psubscribe("edict:pubsub:*")
 
     try:
-        # 并发：监听 Redis Pub/Sub + 客户端消息
+        # 병행: Redis Pub/Sub 리스닝 + 클라이언트 메시지 처리
         await asyncio.gather(
             _relay_events(pubsub, ws),
             _handle_client_messages(ws),
@@ -56,13 +56,13 @@ async def websocket_endpoint(ws: WebSocket):
 
 
 async def _relay_events(pubsub, ws: WebSocket):
-    """从 Redis Pub/Sub 接收事件，推送到 WebSocket。"""
+    """Redis Pub/Sub에서 이벤트 수신, WebSocket으로 푸시."""
     async for message in pubsub.listen():
         if message["type"] == "pmessage":
             channel = message["channel"]
             data = message["data"]
 
-            # 提取 topic 名
+            # topic 이름 추출
             topic = channel.replace("edict:pubsub:", "") if channel.startswith("edict:pubsub:") else channel
 
             try:
@@ -78,7 +78,7 @@ async def _relay_events(pubsub, ws: WebSocket):
 
 
 async def _handle_client_messages(ws: WebSocket):
-    """处理客户端发送的消息（心跳、订阅过滤等）。"""
+    """클라이언트가 보낸 메시지 처리 (하트비트, 구독 필터 등)."""
     while True:
         try:
             data = await ws.receive_json()
@@ -87,13 +87,12 @@ async def _handle_client_messages(ws: WebSocket):
             if msg_type == "ping":
                 await ws.send_json({"type": "pong"})
             elif msg_type == "subscribe":
-                # 前端可请求只订阅特定 topic（未来扩展）
+                # 프론트엔드가 특정 topic만 구독 요청 (미래 확장)
                 topics = data.get("topics", [])
                 log.debug(f"Client subscribe request: {topics}")
                 await ws.send_json({"type": "subscribed", "topics": topics})
             else:
                 log.debug(f"Unknown client message: {msg_type}")
-
         except WebSocketDisconnect:
             raise
         except Exception:
@@ -102,7 +101,7 @@ async def _handle_client_messages(ws: WebSocket):
 
 @router.websocket("/ws/task/{task_id}")
 async def task_websocket(ws: WebSocket, task_id: str):
-    """单任务 WebSocket — 只推送与特定任务相关的事件。"""
+    """단일 작업 WebSocket — 특정 작업과 관련된 이벤트만 푸시."""
     await ws.accept()
     _connections.add(ws)
 
@@ -121,7 +120,7 @@ async def task_websocket(ws: WebSocket, task_id: str):
                     if isinstance(payload, str):
                         payload = json.loads(payload)
 
-                    # 只转发与此任务相关的事件
+                    # 이 작업과 관련된 이벤트만 전달
                     if payload.get("task_id") == task_id:
                         topic = message["channel"].replace("edict:pubsub:", "")
                         await ws.send_json({
@@ -140,7 +139,7 @@ async def task_websocket(ws: WebSocket, task_id: str):
 
 
 async def broadcast(event: dict):
-    """向所有连接的 WebSocket 客户端广播事件（服务端内部调用用）。"""
+    """연결된 모든 WebSocket 클라이언트에 이벤트 브로드캐스트 (서버 내부 호출용)."""
     dead = set()
     for ws in _connections:
         try:

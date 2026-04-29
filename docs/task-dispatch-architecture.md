@@ -12,7 +12,7 @@
   └─ 품질 보장: 반려·재작업 가능, 실시간 관측, 긴급 개입 가능
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 기술층: OpenClaw 멀티 Agent 오케스트레이션 (Multi-Agent Orchestration)
-  ├─ 상태 머신: 9개 상태 (Pending → Taizi → Zhongshu → Menxia → Assigned → Doing/Next → Review → Done/Cancelled)
+  ├─ 상태 머신: 9개 상태 (Pending → SejaFinalReview → HongmungwanDraft → SaganwonFinalReview → SeungjeongwonAssigned → InProgress/Ready → FinalReview → Completed/Cancelled)
   ├─ 데이터 융합: flow_log + progress_log + session JSONL → unified activity stream
   ├─ 권한 매트릭스: 엄격한 subagent 호출 권한 제어
   └─ 스케줄링층: 자동 분배, 타임아웃 재시도, 정체 에스컬레이션, 자동 롤백
@@ -45,14 +45,14 @@
               (User)
                │
                ↓
-             세자 (Taizi)
+             세자 (SejaFinalReview)
         [분류관, 메시지 접수 총책임]
       ├─ 식별: 이것이 지시인가 잡담인가?
       ├─ 실행: 잡담은 직접 회신 || 임무 생성 → 홍문관으로 이관
       └─ 권한: 홍문관만 호출 가능
                │
                ↓
-           홍문관 (Zhongshu)
+           홍문관 (HongmungwanDraft)
       [기획관, 방안 기초 총책임]
       ├─ 지시 접수 후 요구사항 분석
       ├─ 하위 임무(todos)로 분해
@@ -60,7 +60,7 @@
       └─ 권한: 사간원 + 승정원만 호출 가능
                │
                ↓
-           사간원 (Menxia)
+           사간원 (SaganwonFinalReview)
         [심의관, 품질 관리자]
       ├─ 홍문관 방안 심사 (실현 가능성, 완전성, 위험)
       ├─ 승인 OR 반려 (수정 의견 포함)
@@ -89,14 +89,14 @@
                ↓
            승정원·종합
       ├─ 6조 결과 수집
-      ├─ 상태를 Review 로 전환
+      ├─ 상태를 FinalReview 로 전환
       ├─ 홍문관 콜백하여 임금에게 전보(轉報)
                │
                ↓
            홍문관·결과 보고
       ├─ 현상, 결론, 건의 종합
-      ├─ 상태를 Done 으로 전환
-      └─ Feishu(飞书) 메시지로 임금에게 회신
+      ├─ 상태를 Completed 으로 전환
+      └─ Feishu 메시지로 임금에게 회신
 ```
 
 #### 제도의 4대 보장
@@ -117,18 +117,18 @@
 ```mermaid
 stateDiagram-v2
 [*] --> Pending: 임금 어명 하달
-Pending --> Taizi: 세자 접수
-Taizi --> Zhongshu: 세자 → 홍문관 이관
-Zhongshu --> Menxia: 홍문관 심의 제출
-Menxia --> Zhongshu: 사간원 반려 (다회 가능)
-Menxia --> Assigned: 사간원 승인
-Assigned --> Doing: 승정원 분배 실행
-Doing --> Review: 각 조 완료
-Review --> Done: 임금 어비(御批) 통과
-Review --> Menxia: 임금 수정 요구
-Done --> [*]
-Doing --> [*]: 수동 취소
-Review --> [*]: 업무 종료
+Pending --> SejaFinalReview: 세자 접수
+SejaFinalReview --> HongmungwanDraft: 세자 → 홍문관 이관
+HongmungwanDraft --> SaganwonFinalReview: 홍문관 심의 제출
+SaganwonFinalReview --> HongmungwanDraft: 사간원 반려 (다회 가능)
+SaganwonFinalReview --> SeungjeongwonAssigned: 사간원 승인
+SeungjeongwonAssigned --> InProgress: 승정원 분배 실행
+InProgress --> FinalReview: 각 조 완료
+FinalReview --> Completed: 임금 어비(御批) 통과
+FinalReview --> SaganwonFinalReview: 임금 수정 요구
+Completed --> [*]
+InProgress --> [*]: 수동 취소
+FinalReview --> [*]: 업무 종료
 ```
 
 #### 구체적 핵심 경로
@@ -137,15 +137,15 @@ Review --> [*]: 업무 종료
 
 ```
 DAY 1:
-  10:00 - 임금 Feishu(飞书): "3사6조용 완전 자동화 테스트 방안 작성"
-          세자 지시 접수. state = Taizi, org = 세자
-          taizi agent 자동 분배 → 이 지시 처리
+  10:00 - 임금 Feishu: "3사6조용 완전 자동화 테스트 방안 작성"
+          세자 지시 접수. state = SejaFinalReview, org = 세자
+          seja agent 자동 분배 → 이 지시 처리
   
   10:30 - 세자 분류 완료. "업무 지시"로 판정 (잡담 아님)
           임무 생성 JJC-20260228-E2E
           flow_log 기록: "임금 → 세자: 어명 하달"
-          state: Taizi → Zhongshu, org: 세자 → 홍문관
-          zhongshu agent 자동 분배
+          state: SejaFinalReview → HongmungwanDraft, org: 세자 → 홍문관
+          hongmungwan agent 자동 분배
 
 DAY 2:
   09:00 - 홍문관 지시 접수. 기획 시작
@@ -155,8 +155,8 @@ DAY 2:
   15:00 - 홍문관 방안 완성
           todos 스냅샷: 요구사항 분석✅, 방안 설계✅, 심의 대기🔄
           flow_log 기록: "홍문관 → 사간원: 방안 심의 제출"
-          state: Zhongshu → Menxia, org: 홍문관 → 사간원
-          menxia agent 자동 분배
+          state: HongmungwanDraft → SaganwonFinalReview, org: 홍문관 → 사간원
+          saganwon agent 자동 분배
 
 DAY 3:
   09:00 - 사간원 심의 시작
@@ -166,22 +166,22 @@ DAY 3:
           판정: "방안 실현 가능, 다만 _infer_agent_id_from_runtime 함수의 테스트 누락"
           행위: ✅ 승인 (수정 의견 포함)
           flow_log 기록: "사간원 → 승정원: ✅ 승인 통과 (5건 건의)"
-          state: Menxia → Assigned, org: 사간원 → 승정원
+          state: SaganwonFinalReview → SeungjeongwonAssigned, org: 사간원 → 승정원
           OPTIONAL: 홍문관이 건의를 받고 능동적으로 방안 최적화
-          shangshu agent 자동 분배
+          seungjeongwon agent 자동 분배
 
 DAY 4:
   10:00 - 승정원 승인 접수
           분석: "이 테스트 방안은 공조+형조+예조가 협력하여 완수해야 함"
           flow_log 기록: "승정원 → 6조: 분배 실행 (병형 협력)"
-          state: Assigned → Doing, org: 승정원 → 병조+형조+예조
-          bingbu/xingbu/libu 3개 agent 자동 분배 (병렬)
+          state: SeungjeongwonAssigned → InProgress, org: 승정원 → 병조+형조+예조
+          byeongjo/hyeongjo/yejo 3개 agent 자동 분배 (병렬)
 
 DAY 4-5:
   (각 조 병렬 실행)
-  - 병조(bingbu): pytest + unittest 테스트 프레임워크 구현
-  - 형조(xingbu): 모든 핵심 함수 커버리지 테스트 작성
-  - 예조(libu): 테스트 문서 및 사용 사례 설명 정리
+  - 병조(byeongjo): pytest + unittest 테스트 프레임워크 구현
+  - 형조(hyeongjo): 모든 핵심 함수 커버리지 테스트 작성
+  - 예조(yejo): 테스트 문서 및 사용 사례 설명 정리
   
   실시간 보고 (hourly progress):
   - 병조: "✅ 단위 테스트 16개 구현 완료"
@@ -190,13 +190,13 @@ DAY 4-5:
 
 DAY 5:
   14:00 - 각 조 완료
-          state: Doing → Review, org: 병조 → 승정원
+          state: InProgress → FinalReview, org: 병조 → 승정원
           승정원 종합: "모든 테스트 완료, 통과율 98.5%"
           홍문관으로 회송
           
   15:00 - 홍문관이 임금에게 결과 보고
-          state: Review → Done
-          Feishu(飞书)로 템플릿 회신, 최종 성과 링크와 요약 포함
+          state: FinalReview → Completed
+          Feishu로 템플릿 회신, 최종 성과 링크와 요약 포함
 ```
 
 **❌ 좌절 경로**(반려 및 재시도 포함, 6-7일)
@@ -210,21 +210,21 @@ DAY 3 [반려 시나리오]:
           행위: 🚫 반려
           review_round += 1
           flow_log 기록: "사간원 → 홍문관: 🚫 반려 (성능 테스트 보강 필요)"
-          state: Menxia → Zhongshu  # 홍문관으로 반환하여 수정
-          zhongshu agent 자동 분배 (재기획)
+          state: SaganwonFinalReview → HongmungwanDraft  # 홍문관으로 반환하여 수정
+          hongmungwan agent 자동 분배 (재기획)
 
 DAY 3-4:
   16:00 - 홍문관 반려 통지 접수 (agent 깨움)
           개선 의견 분석, 성능 테스트 방안 보강
           progress: "성능 테스트 요구사항 통합 완료, 수정 방안은 다음과 같음..."
           flow_log 기록: "홍문관 → 사간원: 수정 방안 (제2차 심의)"
-          state: Zhongshu → Menxia
-          menxia agent 자동 분배
+          state: HongmungwanDraft → SaganwonFinalReview
+          saganwon agent 자동 분배
 
   18:00 - 사간원 재심의
           판정: "✅ 이번에 통과"
           flow_log 기록: "사간원 → 승정원: ✅ 승인 통과 (제2차)"
-          state: Menxia → Assigned → Doing
+          state: SaganwonFinalReview → SeungjeongwonAssigned → InProgress
           이후는 이상적 경로와 동일...
 
 DAY 7: 전체 완료 (이상적 경로보다 1-2일 늦음)
@@ -242,13 +242,13 @@ DAY 7: 전체 완료 (이상적 경로보다 1-2일 늦음)
   "title": "3사6조용 완전 자동화 테스트 방안 작성",
   "official": "홍문관제학",          // 담당 관직
   "org": "홍문관",                   // 현재 담당 부서
-  "state": "Assigned",               // 현재 상태 (_STATE_FLOW 참조)
+  "state": "SeungjeongwonAssigned",               // 현재 상태 (_STATE_FLOW 참조)
   
   // ──── 품질 및 제약 ────
   "priority": "normal",              // 우선순위: critical/high/normal/low
   "block": "없음",                   // 현재 정체 사유 (예: "공조 피드백 대기")
   "reviewRound": 2,                  // 사간원 심의 회차
-  "_prev_state": "Menxia",           // stop 된 경우 resume 용 이전 상태 기록
+  "_prev_state": "SaganwonFinalReview",           // stop 된 경우 resume 용 이전 상태 기록
   
   // ──── 업무 산출물 ────
   "output": "",                      // 최종 임무 성과 (URL/파일 경로/요약)
@@ -299,10 +299,10 @@ DAY 7: 전체 완료 (이상적 경로보다 1-2일 늦음)
   "progress_log": [
     {
       "at": "2026-02-28T10:35:00Z",
-      "agent": "zhongshu",              // 보고 agent
+      "agent": "hongmungwan",              // 보고 agent
       "agentLabel": "홍문관",
       "text": "지시 접수 완료. 테스트 요구사항 분석, 3계층 테스트 방안 입안 중...",
-      "state": "Zhongshu",              // 보고 시점 상태 스냅샷
+      "state": "HongmungwanDraft",              // 보고 시점 상태 스냅샷
       "org": "홍문관",
       "tokens": 4500,                   // 자원 소비
       "cost": 0.0045,
@@ -327,7 +327,7 @@ DAY 7: 전체 완료 (이상적 경로보다 1-2일 늦음)
     "stallSince": null,               // 정체 시작 시각
     "lastDispatchStatus": "success",  // queued|success|failed|timeout|error
     "snapshot": {
-      "state": "Assigned",
+      "state": "SeungjeongwonAssigned",
       "org": "승정원",
       "note": "review-before-approve"
     }
@@ -345,9 +345,9 @@ DAY 7: 전체 완료 (이상적 경로보다 1-2일 늦음)
 | 계약 | 의미 | 위반 결과 |
 |------|------|---------|
 | **월권 불가** | 세자는 홍문관만, 홍문관은 사간원/승정원만, 6조는 외부 호출 불가 | 권한 초과 호출 거부, 시스템 자동 차단 |
-| **상태 단방향 진행** | Pending → Taizi → Zhongshu → ... → Done, 건너뛰기나 역행 불가 | review_action(reject) 를 통해서만 이전 단계로 회귀 |
+| **상태 단방향 진행** | Pending → SejaFinalReview → HongmungwanDraft → ... → Completed, 건너뛰기나 역행 불가 | review_action(reject) 를 통해서만 이전 단계로 회귀 |
 | **사간원 필심의** | 홍문관이 제출한 모든 방안은 사간원 심의 필수, 건너뛰기 불가 | 홍문관이 직접 승정원으로 이관 불가, 사간원을 반드시 거쳐야 함 |
-| **Done 후 변경 불가** | 임무가 Done/Cancelled 진입 후 상태 수정 불가 | 수정 필요 시 새 임무를 생성하거나 취소 후 재생성 |
+| **Completed 후 변경 불가** | 임무가 Completed/Cancelled 진입 후 상태 수정 불가 | 수정 필요 시 새 임무를 생성하거나 취소 후 재생성 |
 | **task_id 고유성** | JJC-날짜-순번이 전역 고유, 같은 날 같은 임무 중복 생성 불가 | 칸반에서 중복 방지, 자동 중복 제거 |
 | **자원 소비 투명** | 각 진행 보고마다 tokens/cost/elapsed 보고 필수 | 비용 정산과 성능 최적화에 유용 |
 
@@ -361,14 +361,14 @@ DAY 7: 전체 완료 (이상적 경로보다 1-2일 늦음)
 
 ```python
 _STATE_FLOW = {
-    'Pending':  ('Taizi',   '임금',    '세자',    '미처리 지시를 세자로 이관하여 분류'),
-    'Taizi':    ('Zhongshu','세자',    '홍문관',  '세자 분류 완료, 홍문관으로 이관하여 기초'),
-    'Zhongshu': ('Menxia',  '홍문관',  '사간원',  '홍문관 방안을 사간원으로 심의 제출'),
-    'Menxia':   ('Assigned','사간원',  '승정원',  '사간원 승인, 승정원으로 이관하여 분배'),
-    'Assigned': ('Doing',   '승정원',  '6조',    '승정원 분배 실행 시작'),
-    'Next':     ('Doing',   '승정원',  '6조',    '실행 대기 임무 실행 시작'),
-    'Doing':    ('Review',  '6조',    '승정원',  '각 조 완료, 종합 단계 진입'),
-    'Review':   ('Done',    '승정원',  '세자',    '전 과정 완료, 세자에게 결과 보고해 임금께 전달'),
+    'Pending':  ('SejaFinalReview',   '임금',    '세자',    '미처리 지시를 세자로 이관하여 분류'),
+    'SejaFinalReview':    ('HongmungwanDraft','세자',    '홍문관',  '세자 분류 완료, 홍문관으로 이관하여 기초'),
+    'HongmungwanDraft': ('SaganwonFinalReview',  '홍문관',  '사간원',  '홍문관 방안을 사간원으로 심의 제출'),
+    'SaganwonFinalReview':   ('SeungjeongwonAssigned','사간원',  '승정원',  '사간원 승인, 승정원으로 이관하여 분배'),
+    'SeungjeongwonAssigned': ('InProgress',   '승정원',  '6조',    '승정원 분배 실행 시작'),
+    'Ready':     ('InProgress',   '승정원',  '6조',    '실행 대기 임무 실행 시작'),
+    'InProgress':    ('FinalReview',  '6조',    '승정원',  '각 조 완료, 종합 단계 진입'),
+    'FinalReview':   ('Completed',    '승정원',  '세자',    '전 과정 완료, 세자에게 결과 보고해 임금께 전달'),
 }
 ```
 
@@ -376,14 +376,14 @@ _STATE_FLOW = {
 
 ```python
 _STATE_AGENT_MAP = {
-    'Taizi':    'taizi',
-    'Zhongshu': 'zhongshu',
-    'Menxia':   'menxia',
-    'Assigned': 'shangshu',
-    'Doing':    None,      # org 에서 추론 (6조 중 하나)
-    'Next':     None,      # org 에서 추론
-    'Review':   'shangshu',
-    'Pending':  'zhongshu',
+    'SejaFinalReview':    'seja',
+    'HongmungwanDraft': 'hongmungwan',
+    'SaganwonFinalReview':   'saganwon',
+    'SeungjeongwonAssigned': 'seungjeongwon',
+    'InProgress':    None,      # org 에서 추론 (6조 중 하나)
+    'Ready':     None,      # org 에서 추론
+    'FinalReview':   'seungjeongwon',
+    'Pending':  'hongmungwan',
 }
 ```
 
@@ -394,14 +394,14 @@ _STATE_AGENT_MAP = {
 ```
 1. 상태 전이가 분배를 트리거
    ├─ _STATE_AGENT_MAP 조회로 대상 agent_id 획득
-   ├─ Doing/Next 인 경우 task.org 에서 _ORG_AGENT_MAP 조회로 구체적 부서 agent 추론
-   └─ 추론 불가 시 분배 건너뜀 (예: Done/Cancelled)
+   ├─ InProgress/Ready 인 경우 task.org 에서 _ORG_AGENT_MAP 조회로 구체적 부서 agent 추론
+   └─ 추론 불가 시 분배 건너뜀 (예: Completed/Cancelled)
 
 2. 분배 메시지 구성 (Agent 의 즉각적 작업 유도용)
-   ├─ taizi: "📜 임금의 지시를 처리해 주십시오..."
-   ├─ zhongshu: "📜 지시가 홍문관에 도달했습니다, 방안을 기초해 주십시오..."
-   ├─ menxia: "📋 홍문관 방안 심의 제출..."
-   ├─ shangshu: "📮 사간원 승인, 분배 실행해 주십시오..."
+   ├─ seja: "📜 임금의 지시를 처리해 주십시오..."
+   ├─ hongmungwan: "📜 지시가 홍문관에 도달했습니다, 방안을 기초해 주십시오..."
+   ├─ saganwon: "📋 홍문관 방안 심의 제출..."
+   ├─ seungjeongwon: "📮 사간원 승인, 분배 실행해 주십시오..."
    └─ 6조: "📌 임무를 처리해 주십시오..."
 
 3. 백그라운드 비동기 분배 (논블로킹)
@@ -421,7 +421,7 @@ _STATE_AGENT_MAP = {
    └─ error: 예외 상황, 디버깅용 스택 기록
 
 5. 대상 Agent 도달 시 처리
-   ├─ Agent 가 Feishu(飞书) 메시지로 통지 수신
+   ├─ Agent 가 Feishu 메시지로 통지 수신
    ├─ kanban_update.py 를 통해 칸반과 상호작용 (상태 갱신/진행 기록)
    └─ 작업 완료 후 다음 Agent 분배 재트리거
 ```
@@ -436,27 +436,27 @@ _STATE_AGENT_MAP = {
 {
   "agents": [
     {
-      "id": "taizi",
+      "id": "seja",
       "label": "세자",
-      "allowAgents": ["zhongshu"]
+      "allowAgents": ["hongmungwan"]
     },
     {
-      "id": "zhongshu",
+      "id": "hongmungwan",
       "label": "홍문관",
-      "allowAgents": ["menxia", "shangshu"]
+      "allowAgents": ["saganwon", "seungjeongwon"]
     },
     {
-      "id": "menxia",
+      "id": "saganwon",
       "label": "사간원",
-      "allowAgents": ["shangshu", "zhongshu"]
+      "allowAgents": ["seungjeongwon", "hongmungwan"]
     },
     {
-      "id": "shangshu",
+      "id": "seungjeongwon",
       "label": "승정원",
-      "allowAgents": ["libu", "hubu", "bingbu", "xingbu", "gongbu", "libu_hr"]
+      "allowAgents": ["yejo", "hojo", "byeongjo", "hyeongjo", "gongjo", "ijo"]
     },
     {
-      "id": "libu",
+      "id": "yejo",
       "label": "예조",
       "allowAgents": []
     },
@@ -506,7 +506,7 @@ def can_dispatch_to(from_agent, to_agent):
 
 ```
 1️⃣ flow_log
-   └─ 순수하게 상태 전이만 기록 (Zhongshu → Menxia)
+   └─ 순수하게 상태 전이만 기록 (HongmungwanDraft → SaganwonFinalReview)
    └─ 데이터 소스: 임무 JSON 의 flow_log 필드
    └─ 출처: Agent 가 kanban_update.py flow 명령으로 보고
 
@@ -545,7 +545,7 @@ def get_task_activity(task_id):
     session_entries = []
     
     # 활성 임무: task_id 정확 매칭 시도
-    if state not in ('Done', 'Cancelled'):
+    if state not in ('Completed', 'Cancelled'):
         if agent_id:
             entries = get_agent_activity(
                 agent_id, limit=30, task_id=task_id
@@ -643,7 +643,7 @@ def _parse_activity_entry(item):
 ```
 kind        count  대표 이벤트
 ────────────────────────────────────────────────
-flow         10    상태 전이 체인 (Pending→Taizi→Zhongshu→...)
+flow         10    상태 전이 체인 (Pending→SejaFinalReview→HongmungwanDraft→...)
 progress     11    Agent 작업 보고 ("분석 중", "완료")
 todos        11    할 일 임무 스냅샷 (진행 갱신 시마다)
 user          1    사용자 피드백 (예: "성능 테스트 보강 필요")
@@ -685,13 +685,13 @@ _scheduler = {
     
     # 분배 추적
     'lastDispatchStatus': 'success',  # queued|success|failed|timeout|gateway-offline|error
-    'lastDispatchAgent': 'zhongshu',
+    'lastDispatchAgent': 'hongmungwan',
     'lastDispatchTrigger': 'state-transition',
     'lastDispatchError': '',          # 오류 스택 (있는 경우)
     
     # 스냅샷 (자동 롤백용)
     'snapshot': {
-        'state': 'Assigned',
+        'state': 'SeungjeongwonAssigned',
         'org': '승정원',
         'now': '분배 대기...',
         'savedAt': '2026-03-01T...',
@@ -706,7 +706,7 @@ _scheduler = {
 
 ```
 FOR EACH 임무:
-  IF state in (Done, Cancelled, Blocked):
+  IF state in (Completed, Cancelled, Blocked):
     SKIP  # 종료 상태는 처리 안 함
   
   elapsed_since_progress = NOW - lastProgressAt
@@ -718,14 +718,14 @@ FOR EACH 임무:
   IF retryCount < maxRetry:
     ✅ 【재시도】 실행
     - retryCount 증가
-    - dispatch_for_state(task, new_state, trigger='taizi-scan-retry')
+    - dispatch_for_state(task, new_state, trigger='seja-scan-retry')
     - flow_log: "180초 정체, 자동 재시도 제N회 트리거"
     - NEXT task
   
   IF escalationLevel < 2:
     ✅ 【에스컬레이션】 실행
     - nextLevel = escalationLevel + 1
-    - target_agent = menxia (L=1) else shangshu (L=2)
+    - target_agent = saganwon (L=1) else seungjeongwon (L=2)
     - wake_agent(target_agent, "💬 임무 정체, 개입하여 추진해 주세요")
     - flow_log: "{target_agent} 로 에스컬레이션하여 조정"
     - NEXT task
@@ -741,7 +741,7 @@ FOR EACH 임무:
 
 #### 예시 시나리오
 
-**시나리오: 홍문관 Agent 프로세스 충돌, 임무가 Zhongshu 에서 정체**
+**시나리오: 홍문관 Agent 프로세스 충돌, 임무가 HongmungwanDraft 에서 정체**
 
 ```
 T+0:
@@ -763,7 +763,7 @@ T+180:
   
   ✅ 단계1: 재시도
   - retryCount: 0 → 1
-  - dispatch_for_state('JJC-20260228-E2E', 'Zhongshu', trigger='taizi-scan-retry')
+  - dispatch_for_state('JJC-20260228-E2E', 'HongmungwanDraft', trigger='seja-scan-retry')
   - 분배 메시지를 홍문관으로 발송 (agent 깨우거나 재시작)
   - flow_log: "180초 정체, 자동 재시도 제1회"
 
@@ -781,7 +781,7 @@ T+360 (여전히 미복구 시):
   
   ✅ 단계2: 에스컬레이션
   - escalationLevel: 0 → 1
-  - wake_agent('menxia', "💬 임무 JJC-20260228-E2E 정체, 홍문관 무응답, 개입해 주세요")
+  - wake_agent('saganwon', "💬 임무 JJC-20260228-E2E 정체, 홍문관 무응답, 개입해 주세요")
   - flow_log: "사간원으로 에스컬레이션하여 조정"
   
   사간원 Agent 가 깨워짐, 가능한 동작:
@@ -795,7 +795,7 @@ T+540 (여전히 미해결 시):
   
   ✅ 단계3: 재차 에스컬레이션
   - escalationLevel: 1 → 2
-  - wake_agent('shangshu', "💬 임무 장기 정체, 홍문관+사간원 모두 추진 불가, 승정원이 개입 조정해 주세요")
+  - wake_agent('seungjeongwon', "💬 임무 장기 정체, 홍문관+사간원 모두 추진 불가, 승정원이 개입 조정해 주세요")
   - flow_log: "승정원으로 에스컬레이션하여 조정"
 
 T+720 (여전히 미해결 시):
@@ -803,10 +803,10 @@ T+720 (여전히 미해결 시):
   escalationLevel = 2 (최대), autoRollback = true
   
   ✅ 단계4: 자동 롤백
-  - snapshot.state = 'Assigned' (이전 안정 상태)
-  - task.state: Zhongshu → Assigned
-  - dispatch_for_state('JJC-20260228-E2E', 'Assigned', trigger='taizi-auto-rollback')
-  - flow_log: "연속 정체, Assigned 로 자동 롤백, 승정원이 재분배"
+  - snapshot.state = 'SeungjeongwonAssigned' (이전 안정 상태)
+  - task.state: HongmungwanDraft → SeungjeongwonAssigned
+  - dispatch_for_state('JJC-20260228-E2E', 'SeungjeongwonAssigned', trigger='seja-auto-rollback')
+  - flow_log: "연속 정체, SeungjeongwonAssigned 로 자동 롤백, 승정원이 재분배"
   
   결과:
   - 승정원이 6조에 재분배하여 실행
@@ -854,13 +854,13 @@ GET /api/task-activity/JJC-20260228-E2E
   "taskId": "JJC-20260228-E2E",
   "taskMeta": {
     "title": "3사6조용 완전 자동화 테스트 방안 작성",
-    "state": "Assigned",
+    "state": "SeungjeongwonAssigned",
     "org": "승정원",
     "output": "",
     "block": "없음",
     "priority": "normal"
   },
-  "agentId": "shangshu",
+  "agentId": "seungjeongwon",
   "agentLabel": "승정원",
   
   // ── 완전한 활동 스트림 (59건 예) ──
@@ -878,9 +878,9 @@ GET /api/task-activity/JJC-20260228-E2E
       "at": "2026-02-28T10:35:00Z",
       "kind": "progress",
       "text": "지시 접수 완료. 테스트 요구사항 분석, 3계층 테스트 방안 입안 중...",
-      "agent": "zhongshu",
+      "agent": "hongmungwan",
       "agentLabel": "홍문관",
-      "state": "Zhongshu",
+      "state": "HongmungwanDraft",
       "org": "홍문관",
       "tokens": 4500,
       "cost": 0.0045,
@@ -895,7 +895,7 @@ GET /api/task-activity/JJC-20260228-E2E
         {"id": "2", "title": "방안 설계", "status": "in-progress"},
         {"id": "3", "title": "심의 대기", "status": "not-started"}
       ],
-      "agent": "zhongshu",
+      "agent": "hongmungwan",
       "diff": {
         "changed": [{"id": "2", "from": "not-started", "to": "in-progress"}],
         "added": [],
@@ -926,7 +926,7 @@ GET /api/task-activity/JJC-20260228-E2E
   ],
   
   "activitySource": "progress+session",
-  "relatedAgents": ["taizi", "zhongshu", "menxia"],
+  "relatedAgents": ["seja", "hongmungwan", "saganwon"],
   "phaseDurations": [
     {
       "phase": "세자",
@@ -977,9 +977,9 @@ GET /api/task-activity/JJC-20260228-E2E
 {
   "ok": true,
   "message": "JJC-20260228-E2E 가 다음 단계로 진행됨 (Agent 자동 분배 완료)",
-  "oldState": "Zhongshu",
-  "newState": "Menxia",
-  "targetAgent": "menxia"
+  "oldState": "HongmungwanDraft",
+  "newState": "SaganwonFinalReview",
+  "targetAgent": "saganwon"
 }
 ```
 
@@ -1002,7 +1002,7 @@ OR 요청 (반려):
 {
   "ok": true,
   "message": "JJC-20260228-E2E 승인됨 (Agent 자동 분배 완료)",
-  "state": "Assigned",
+  "state": "SeungjeongwonAssigned",
   "reviewRound": 1
 }
 ```
@@ -1019,7 +1019,7 @@ Agent 가 이 도구를 통해 칸반과 상호작용하며, 총 7개 명령이 
 python3 scripts/kanban_update.py create \
   JJC-20260228-E2E \
   "3사6조용 완전 자동화 테스트 방안 작성" \
-  Zhongshu \
+  HongmungwanDraft \
   홍문관 \
   홍문관제학
 
@@ -1031,18 +1031,18 @@ python3 scripts/kanban_update.py create \
 ```bash
 python3 scripts/kanban_update.py state \
   JJC-20260228-E2E \
-  Menxia \
+  SaganwonFinalReview \
   "방안을 사간원에 심의 제출"
 
 # 설명:
 # - 첫 번째 인자: task_id
-# - 두 번째 인자: 새 상태 (Pending/Taizi/Zhongshu/...)
+# - 두 번째 인자: 새 상태 (Pending/SejaFinalReview/HongmungwanDraft/...)
 # - 세 번째 인자: 선택, 설명 정보 (now 필드에 기록)
 # 
 # 효과:
-# - task.state = Menxia
+# - task.state = SaganwonFinalReview
 # - task.org 자동으로 "사간원" 추론
-# - menxia agent 분배 트리거
+# - saganwon agent 분배 트리거
 # - flow_log 에 전이 기록
 ```
 
@@ -1117,7 +1117,7 @@ python3 scripts/kanban_update.py done \
 # - 인자3: 최종 요약
 #
 # 효과:
-# - task.state = Done (Review 에서 진행)
+# - task.state = Completed (FinalReview 에서 진행)
 # - task.output = "https://..."
 # - Feishu 메시지로 임금에게 자동 발송 (세자가 전보)
 # - flow_log 에 완료 전이 기록
@@ -1184,18 +1184,18 @@ if task_seems_done:
 **3사6조의 "엄격한" 방식**
 ```python
 # 임무 상태가 엄격히 제한, 다음 단계는 시스템이 결정
-if task.state == 'Zhongshu' and agent_id == 'zhongshu':
-    # Zhongshu 가 해야 할 일만 가능 (방안 기초)
-    deliver_plan_to_menxia()
+if task.state == 'HongmungwanDraft' and agent_id == 'hongmungwan':
+    # HongmungwanDraft 가 해야 할 일만 가능 (방안 기초)
+    deliver_plan_to_saganwon()
     
     # 상태 전이는 API 만 통해, 우회 불가
     # 홍문관은 직접 승정원으로 이관 불가, 반드시 사간원 심의 거쳐야 함
     
     # 사간원 심의를 우회하려 하면
     try:
-        dispatch_to(shangshu)  # ❌ 권한 검사 차단
+        dispatch_to(seungjeongwon)  # ❌ 권한 검사 차단
     except PermissionError:
-        log.error(f'zhongshu 는 shangshu 를 월권 호출 불가')
+        log.error(f'hongmungwan 는 seungjeongwon 를 월권 호출 불가')
 ```
 
 ---
@@ -1235,7 +1235,7 @@ if task.state == 'Zhongshu' and agent_id == 'zhongshu':
 
 ### 시나리오2: Agent 부정 행위 (데이터 위조)
 
-`zhongshu` agent 가 시스템을 속이려는 가정:
+`hongmungwan` agent 가 시스템을 속이려는 가정:
 
 ```python
 # 사간원의 승인을 위조 시도 (직접 JSON 수정)
@@ -1247,13 +1247,13 @@ task['flow_log'].append({
 
 # 시스템 방어:
 # 1. 권한 검증: API 계층이 HTTP 요청자 신원 확인
-#    ├─ zhongshu agent 의 요청은 직접 flow 불가
+#    ├─ hongmungwan agent 의 요청은 직접 flow 불가
 #    ├─ flow_log 기록을 거쳐야 하며, 서명 검증 필요
 #    └─ 서명 불일치 시 거부
 # 2. 상태 머신 검증: 상태 전이 통제됨
-#    ├─ flow_log 가 변조되어도 state 는 여전히 Zhongshu
+#    ├─ flow_log 가 변조되어도 state 는 여전히 HongmungwanDraft
 #    ├─ 다음 단계는 gate-keeper 시스템만 전이 가능
-#    └─ zhongshu 는 자기 state 변경 권한 없음
+#    └─ hongmungwan 는 자기 state 변경 권한 없음
 
 # 결과: ❌ Agent 위조가 시스템에 차단됨
 ```
@@ -1263,17 +1263,17 @@ task['flow_log'].append({
 ```python
 # 홍문관이 사간원 심의를 우회하고 승정원에 직접 자문 시도
 try:
-    result = dispatch_to_agent('shangshu', '이 방안 심사 부탁')
+    result = dispatch_to_agent('seungjeongwon', '이 방안 심사 부탁')
 except PermissionError:
     # ❌ 권한 매트릭스 차단
-    log.error('zhongshu 는 shangshu 호출 권한 없음 (허용: menxia, shangshu)')
+    log.error('hongmungwan 는 seungjeongwon 호출 권한 없음 (허용: saganwon, seungjeongwon)')
 
 # 사간원이 임금까지 에스컬레이션 시도
 try:
-    result = dispatch_to_agent('taizi', '임금의 지시 필요')
+    result = dispatch_to_agent('seja', '임금의 지시 필요')
 except PermissionError:
     # ❌ 권한 매트릭스 차단
-    log.error('menxia 는 taizi 호출 권한 없음')
+    log.error('saganwon 는 seja 호출 권한 없음')
 ```
 
 ---
@@ -1289,13 +1289,13 @@ except PermissionError:
 
 2. 상태별 분류
    ├─ Pending (미처리)
-   ├─ Taizi (세자 분류 중)
-   ├─ Zhongshu (홍문관 기획 중)
-   ├─ Menxia (사간원 심의 중)
-   ├─ Assigned (승정원 분배 중)
-   ├─ Doing (6조 실행 중)
-   ├─ Review (승정원 종합 중)
-   └─ Done/Cancelled (완료/취소됨)
+   ├─ SejaFinalReview (세자 분류 중)
+   ├─ HongmungwanDraft (홍문관 기획 중)
+   ├─ SaganwonFinalReview (사간원 심의 중)
+   ├─ SeungjeongwonAssigned (승정원 분배 중)
+   ├─ InProgress (6조 실행 중)
+   ├─ FinalReview (승정원 종합 중)
+   └─ Completed/Cancelled (완료/취소됨)
 
 3. 부서별 분류
    ├─ 세자 임무
@@ -1331,7 +1331,7 @@ except PermissionError:
    ├─ 빠른 조작: 재시도/에스컬레이션/롤백
 
 8. 심의 작업 풀
-   ├─ Menxia 에서 심의 대기 중인 임무 모두 나열
+   ├─ SaganwonFinalReview 에서 심의 대기 중인 임무 모두 나열
    ├─ 체류 시간순 정렬
    ├─ 원클릭 승인/반려
 
@@ -1362,7 +1362,7 @@ GET /api/agents-status
   },
   "agents": [
     {
-      "id": "taizi",
+      "id": "seja",
       "label": "세자",
       "status": "running",        // running|idle|offline|unconfigured
       "statusLabel": "🟢 실행 중",
@@ -1406,7 +1406,7 @@ curl -X POST http://127.0.0.1:7891/api/create-task \
 # 자동 실행:
 python3 scripts/kanban_update.py state \
   JJC-20260302-001 \
-  Zhongshu \
+  HongmungwanDraft \
   "분류 완료, 홍문관으로 이관하여 기초"
 
 # 홍문관 Agent 가 분배 통지 수신
@@ -1442,7 +1442,7 @@ python3 scripts/kanban_update.py flow \
 
 python3 scripts/kanban_update.py state \
   JJC-20260302-001 \
-  Menxia \
+  SaganwonFinalReview \
   "방안을 사간원에 심의 제출"
 
 # 사간원 Agent 가 분배 통지 수신, 심의 시작
@@ -1458,7 +1458,7 @@ python3 scripts/kanban_update.py state \
 # 시나리오A: 승인
 python3 scripts/kanban_update.py state \
   JJC-20260302-001 \
-  Assigned \
+  SeungjeongwonAssigned \
   "✅ 승인, 개선 의견 채택"
 
 python3 scripts/kanban_update.py flow \
@@ -1472,7 +1472,7 @@ python3 scripts/kanban_update.py flow \
 # 시나리오B: 반려
 python3 scripts/kanban_update.py state \
   JJC-20260302-001 \
-  Zhongshu \
+  HongmungwanDraft \
   "🚫 반려: 프로토콜 규범 부분 보강 필요"
 
 python3 scripts/kanban_update.py flow \
@@ -1495,7 +1495,7 @@ python3 scripts/kanban_update.py flow \
 
 python3 scripts/kanban_update.py state \
   JJC-20260302-001 \
-  Doing \
+  InProgress \
   "예조+병조+공조 3개 조에 병렬 분배 실행"
 
 python3 scripts/kanban_update.py flow \
@@ -1541,7 +1541,7 @@ python3 scripts/kanban_update.py progress \
 
 python3 scripts/kanban_update.py state \
   JJC-20260302-001 \
-  Review \
+  FinalReview \
   "전 부서 완료, 심사 단계 진입"
 
 # 임금/세자가 통지 수신, 최종 성과 심사
@@ -1556,7 +1556,7 @@ python3 scripts/kanban_update.py done \
   "3사6조 프로토콜 문서 완료, 89페이지, 5단계 3일 소요, 총 비용 $2.34"
 
 # 칸반 표시:
-# - 상태: Done ✅
+# - 상태: Completed ✅
 # - 총 소요: 3일 2시간 45분
 # - 완전한 활동 스트림: 79건 활동 기록
 # - 자원 통계: 87500 tokens, $2.34, 890분 총 작업 시간
@@ -1570,7 +1570,7 @@ curl http://127.0.0.1:7891/api/task-activity/JJC-20260302-001
 # 응답:
 # {
 #   "taskMeta": {
-#     "state": "Done",
+#     "state": "Completed",
 #     "output": "https://github.com/org/repo/docs/architecture.md"
 #   },
 #   "activity": [79건 완전 흐름 체인],
@@ -1606,13 +1606,13 @@ In Edict workflows, **workflow state** and **execution ownership** are related b
 ### Workflow state
 Workflow state describes the current institutional stage of a task, for example:
 
-- `Taizi`
-- `Zhongshu`
-- `Menxia`
-- `Assigned`
-- `Doing`
-- `Review`
-- `Done`
+- `SejaFinalReview`
+- `HongmungwanDraft`
+- `SaganwonFinalReview`
+- `SeungjeongwonAssigned`
+- `InProgress`
+- `FinalReview`
+- `Completed`
 
 This is the stage shown in the board/UI and reflects where the task is in the intended process.
 
@@ -1622,7 +1622,7 @@ Execution ownership means which actual runtime agent/session currently owns the 
 In simple flows, workflow state and execution ownership may appear to match.
 
 In more complex or multi-stage flows, they can temporarily diverge. For example:
-- the workflow state may already show `Assigned`
+- the workflow state may already show `SeungjeongwonAssigned`
 - while the active runtime execution context is still tied to an earlier stage's dispatch chain
 
 ### Why this distinction matters

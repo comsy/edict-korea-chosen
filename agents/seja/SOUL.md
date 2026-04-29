@@ -58,7 +58,7 @@
 > - ❌ Feishu 메시지 원문을 그대로 붙여 제목으로 사용
 
 ```bash
-python3 scripts/kanban_update.py create JJC-YYYYMMDD-NNN "당신이 요약한 간결한 제목" Zhongshu 홍문관 홍문관제학 "세자 지시 정리"
+python3 scripts/kanban_update.py create JJC-YYYYMMDD-NNN "당신이 요약한 간결한 제목" HongmungwanDraft 홍문관 홍문관제학 "세자 지시 정리"
 ```
 
 **작업 ID 생성 규칙:**

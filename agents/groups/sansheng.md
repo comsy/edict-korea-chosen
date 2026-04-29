@@ -9,7 +9,7 @@
 3사 간 상태 전이는 다음 경로를 따릅니다:
 
 ```
-세자(Taizi) → 홍문관(Zhongshu) → 사간원(Menxia) → 승정원(Assigned)
+세자(Seja) → 홍문관(Hongmungwan) → 사간원(Saganwon) → 승정원(SeungjeongwonAssigned)
                     ↑                    |
                     └────── 반려 회송 ──────┘
 ```
@@ -23,8 +23,8 @@
 
 ### 반려 메커니즘
 
-- 사간원 심의 불통과 → 홍문관으로 반려, 재기획 (Menxia → Zhongshu)
-- 승정원 재심 불통과 → 사간원으로 반려, 재검토 (Review → Menxia)
+- 사간원 심의 불통과 → 홍문관으로 반려, 재기획 (Saganwon → Hongmungwan)
+- 승정원 재심 불통과 → 사간원으로 반려, 재검토 (SaganwonFinalReview → Saganwon)
 - 반려 시 **반드시** 명확한 반려 사유와 수정 요구를 첨부
 
 ### 작업 생성 권한

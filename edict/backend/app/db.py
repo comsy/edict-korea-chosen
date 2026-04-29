@@ -1,4 +1,4 @@
-"""SQLAlchemy async 引擎与 session 管理。"""
+"""SQLAlchemy 비동기 엔진 및 세션 관리."""
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,

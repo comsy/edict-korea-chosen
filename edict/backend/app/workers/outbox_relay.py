@@ -1,10 +1,10 @@
-"""Outbox Relay Worker — 轮询 outbox_events 表，投递未发布事件到 Redis Streams。
+"""Outbox Relay Worker — outbox_events 테이블을 폴링하여 미발행 이벤트를 Redis Streams로 전달.
 
-Transactional Outbox Pattern 的投递端：
-- 事务层把事件写入 outbox 表（与业务数据同一事务）
-- 本 worker 轮询 unpublished 事件，调用 EventBus.publish 投递到 Redis
-- 投递成功标记 published=True；失败累计 attempts，达到上限进入 DLQ
-- 消费者必须用 event_id 做幂等，防止 relay 重启造成重复投递
+트랜잭션 기반 Outbox 패턴의 전달 단계:
+- 트랜잭션 계층이 이벤트를 outbox 테이블에 기록 (비즈니스 데이터와 동일 트랜잭션)
+- 본 worker가 미발행 이벤트를 폴링하여 EventBus.publish로 Redis에 전달
+- 전달 성공 시 published=True 표시; 실패 시 attempts 누적, 상한 도달 시 DLQ로 이동
+- 소비자는 event_id로 멱등성 보장, relay 재시작 시 중복 전달 방지
 """
 
 import asyncio
@@ -22,11 +22,11 @@ log = logging.getLogger("edict.outbox_relay")
 
 MAX_ATTEMPTS = 5
 BATCH_SIZE = 50
-POLL_INTERVAL = 1.0  # 秒
+POLL_INTERVAL = 1.0  # 초
 
 
 class OutboxRelay:
-    """轮询 outbox_events 表，投递到 Redis Streams。"""
+    """outbox_events 테이블을 폴링하여 Redis Streams로 전달."""
 
     def __init__(self):
         self.bus = EventBus()
@@ -52,9 +52,9 @@ class OutboxRelay:
         log.info("Outbox Relay stopped")
 
     async def _relay_cycle(self) -> int:
-        """处理一批未投递事件。返回本轮处理数量。"""
+        """미전달 이벤트 배치 처리. 본 회차 처리 건수 반환."""
         async with async_session() as db:
-            # FOR UPDATE SKIP LOCKED 允许多 relay 实例并行
+            # FOR UPDATE SKIP LOCKED로 다수 relay 인스턴스 병렬 실행 허용
             stmt = (
                 select(OutboxEvent)
                 .where(OutboxEvent.published == False)  # noqa: E712
@@ -90,7 +90,7 @@ class OutboxRelay:
                     )
 
                     if event.attempts >= MAX_ATTEMPTS:
-                        # 投递到 DLQ
+                        # DLQ로 전달
                         try:
                             await self.bus.publish(
                                 topic="dead_letter",
@@ -115,7 +115,7 @@ class OutboxRelay:
 
 
 async def run_outbox_relay():
-    """入口函数 — 用于直接运行 worker。"""
+    """진입 함수 — worker를 직접 실행하기 위함."""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",

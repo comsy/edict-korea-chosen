@@ -1,15 +1,15 @@
-"""Edict Backend — FastAPI 应用入口。
+"""Edict 백엔드 — FastAPI 애플리케이션 진입점.
 
-Lifespan 管理：
-- startup: 连接 Redis Event Bus, 初始化数据库
-- shutdown: 关闭连接
+Lifespan 관리:
+- startup: Redis Event Bus 연결, 데이터베이스 초기화
+- shutdown: 연결 종료
 
-路由：
-- /api/tasks — 任务 CRUD
-- /api/agents — Agent 信息
-- /api/events — 事件查询
-- /api/admin — 管理操作
-- /ws — WebSocket 实时推送
+라우트:
+- /api/tasks — 작업 CRUD
+- /api/agents — Agent 정보
+- /api/events — 이벤트 조회
+- /api/admin — 관리 작업
+- /ws — WebSocket 실시간 푸시
 """
 
 import logging
@@ -32,29 +32,29 @@ log = logging.getLogger("edict")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """应用生命周期管理。"""
+    """애플리케이션 생명주기 관리."""
     settings = get_settings()
     log.info(f"🏛️ Edict Backend starting on port {settings.port}...")
 
-    # 连接 Event Bus
+    # Event Bus 연결
     bus = await get_event_bus()
     log.info("✅ Event Bus connected")
 
     yield
 
-    # 清理
+    # 정리
     await bus.close()
     log.info("Edict Backend shutdown complete")
 
 
 app = FastAPI(
-    title="Edict 三省六部",
-    description="事件驱动的 AI Agent 协作平台",
+    title="Edict 3사6조",
+    description="이벤트 기반 AI Agent 협업 플랫폼",
     version="2.0.0",
     lifespan=lifespan,
 )
 
-# CORS — 开发环境允许所有来源
+# CORS — 개발 환경에서 모든 출처 허용
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -63,7 +63,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 注册路由
+# 라우터 등록
 app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
 app.include_router(agents.router, prefix="/api/agents", tags=["agents"])
 app.include_router(events.router, prefix="/api/events", tags=["events"])
@@ -80,7 +80,7 @@ async def health():
 @app.get("/api")
 async def api_root():
     return {
-        "name": "Edict 三省六部 API",
+        "name": "Edict 3사6조 API",
         "version": "2.0.0",
         "endpoints": {
             "tasks": "/api/tasks",

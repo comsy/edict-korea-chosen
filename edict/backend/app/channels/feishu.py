@@ -32,7 +32,7 @@ class FeishuChannel(NotificationChannel):
                 'tag': 'action',
                 'actions': [{
                     'tag': 'button',
-                    'text': {'tag': 'plain_text', 'content': '查看详情'},
+                    'text': {'tag': 'plain_text', 'content': '상세 보기'},
                     'url': url,
                     'type': 'primary'
                 }]

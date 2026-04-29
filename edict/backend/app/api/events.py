@@ -1,4 +1,4 @@
-"""Events API — 事件查询与审计。"""
+"""Events API — 이벤트조회与审计。"""
 from __future__ import annotations
 
 import logging
@@ -25,7 +25,7 @@ async def list_events(
     limit: int = Query(default=50, le=500),
     db: AsyncSession = Depends(get_db),
 ):
-    """查询持久化事件（从 Postgres event 表）。"""
+    """조회持久化이벤트（从 Postgres event 表）。"""
     stmt = select(Event)
     if trace_id:
         stmt = stmt.where(Event.trace_id == trace_id)
@@ -56,7 +56,7 @@ async def list_events(
 
 @router.get("/stream-info")
 async def stream_info(topic: str = Query(description="Stream topic")):
-    """查询 Redis Stream 实时信息。"""
+    """조회 Redis Stream 实时정보。"""
     bus = await get_event_bus()
     info = await bus.stream_info(topic)
     return {"topic": topic, "info": info}
@@ -64,7 +64,7 @@ async def stream_info(topic: str = Query(description="Stream topic")):
 
 @router.get("/topics")
 async def list_topics():
-    """列出所有可用事件 topic。"""
+    """列出所有可用이벤트 topic。"""
     from ..services.event_bus import (
         TOPIC_TASK_CREATED,
         TOPIC_TASK_STATUS,
@@ -76,12 +76,12 @@ async def list_topics():
     )
     return {
         "topics": [
-            {"name": TOPIC_TASK_CREATED, "description": "任务创建"},
-            {"name": TOPIC_TASK_STATUS, "description": "状态变更"},
-            {"name": TOPIC_TASK_DISPATCH, "description": "Agent 派发"},
-            {"name": TOPIC_TASK_COMPLETED, "description": "任务完成"},
-            {"name": TOPIC_TASK_STALLED, "description": "任务停滞"},
-            {"name": TOPIC_AGENT_THOUGHTS, "description": "Agent 思考流"},
-            {"name": TOPIC_AGENT_HEARTBEAT, "description": "Agent 心跳"},
+            {"name": TOPIC_TASK_CREATED, "description": "작업 생성"},
+            {"name": TOPIC_TASK_STATUS, "description": "상태 변경"},
+            {"name": TOPIC_TASK_DISPATCH, "description": "Agent 발송"},
+            {"name": TOPIC_TASK_COMPLETED, "description": "작업 완료"},
+            {"name": TOPIC_TASK_STALLED, "description": "작업 정체"},
+            {"name": TOPIC_AGENT_THOUGHTS, "description": "Agent 사고 흐름"},
+            {"name": TOPIC_AGENT_HEARTBEAT, "description": "Agent 하트비트"},
         ]
     }

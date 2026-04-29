@@ -1,7 +1,7 @@
-﻿# ══════════════════════════════════════════════════════════════
-# 三省六部 · OpenClaw Multi-Agent System 一键安装脚本 (Windows)
-# PowerShell 版本 — 对应 install.sh
-# ══════════════════════════════════════════════════════════════
+﻿# ═══════════════════════════════════════════════════════════
+# 3사6조 · OpenClaw Multi-Agent System 원클릭 설치 스크립트 (Windows)
+# PowerShell 버전 — install.sh에 대응
+# ═══════════════════════════════════════════════════════════
 #Requires -Version 5.1
 $ErrorActionPreference = "Stop"
 
@@ -11,10 +11,10 @@ $OC_CFG = Join-Path $OC_HOME "openclaw.json"
 
 function Write-Banner {
     Write-Host ""
-    Write-Host "╔══════════════════════════════════════════╗" -ForegroundColor Blue
-    Write-Host "║  🏛️  三省六部 · OpenClaw Multi-Agent     ║" -ForegroundColor Blue
-    Write-Host "║       安装向导 (Windows)                  ║" -ForegroundColor Blue
-    Write-Host "╚══════════════════════════════════════════╝" -ForegroundColor Blue
+    Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Blue
+    Write-Host "║  🏛️  3사6조 · OpenClaw Multi-Agent     ║" -ForegroundColor Blue
+    Write-Host "║       설치 마법사 (Windows)                  ║" -ForegroundColor Blue
+    Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Blue
     Write-Host ""
 }
 
@@ -23,13 +23,13 @@ function Warn  { param($msg) Write-Host "⚠️  $msg" -ForegroundColor Yellow }
 function Error { param($msg) Write-Host "❌ $msg" -ForegroundColor Red }
 function Info  { param($msg) Write-Host "ℹ️  $msg" -ForegroundColor Blue }
 
-# ── Step 0: 依赖检查 ──
+# ── Step 0: 의존성 확인 ──
 function Check-Deps {
-    Info "检查依赖..."
+    Info "의존성 확인 중..."
 
     $oc = Get-Command openclaw -ErrorAction SilentlyContinue
     if (-not $oc) {
-        Error "未找到 openclaw CLI。请先安装 OpenClaw: https://openclaw.ai"
+        Error "openclaw CLI를 찾을 수 없습니다. 먼저 OpenClaw를 설치하세요: https://openclaw.ai"
         exit 1
     }
     Log "OpenClaw CLI: OK"
@@ -39,24 +39,24 @@ function Check-Deps {
         $py = Get-Command python3 -ErrorAction SilentlyContinue
     }
     if (-not $py) {
-        Error "未找到 python3 或 python"
+        Error "python3 또는 python을 찾을 수 없습니다"
         exit 1
     }
     $global:PYTHON = $py.Source
     Log "Python: $($global:PYTHON)"
 
     if (-not (Test-Path $OC_CFG)) {
-        Error "未找到 openclaw.json。请先运行 openclaw 完成初始化。"
+        Error "openclaw.json을 찾을 수 없습니다. 먼저 openclaw를 실행하여 초기화하세요."
         exit 1
     }
     Log "openclaw.json: $OC_CFG"
 }
 
-# ── Step 0.5: 备份已有 Agent 数据 ──
+# ── Step 0.5: 기존 Agent 데이터 백업 ──
 function Backup-Existing {
     $hasExisting = Get-ChildItem -Path $OC_HOME -Directory -Filter "workspace-*" -ErrorAction SilentlyContinue
     if ($hasExisting) {
-        Info "检测到已有 Agent Workspace，自动备份中..."
+        Info "기존 Agent 워크스페이스 감지, 자동 백업 중..."
         $ts = Get-Date -Format "yyyyMMdd-HHmmss"
         $backupDir = Join-Path $OC_HOME "backups\pre-install-$ts"
         New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
@@ -68,15 +68,15 @@ function Backup-Existing {
         if (Test-Path $OC_CFG) {
             Copy-Item $OC_CFG (Join-Path $backupDir "openclaw.json")
         }
-        Log "已备份到: $backupDir"
+        Log "백업 완료: $backupDir"
     }
 }
 
-# ── Step 1: 创建 Workspace ──
+# ── Step 1: 워크스페이스 생성 ──
 function Create-Workspaces {
-    Info "创建 Agent Workspace..."
+    Info "Agent 워크스페이스 생성 중..."
 
-    $agents = @("taizi","zhongshu","menxia","shangshu","hubu","libu","bingbu","xingbu","gongbu","libu_hr","zaochao")
+    $agents = @("seja","hongmungwan","saganwon","seungjeongwon","hojo","yejo","byeongjo","hyeongjo","gongjo","ijo","jobocheong")
     foreach ($agent in $agents) {
         $ws = Join-Path $OC_HOME "workspace-$agent"
         New-Item -ItemType Directory -Path (Join-Path $ws "skills") -Force | Out-Null
@@ -87,33 +87,33 @@ function Create-Workspaces {
             if (Test-Path $soulDst) {
                 $ts = Get-Date -Format "yyyyMMdd-HHmmss"
                 Copy-Item $soulDst "$soulDst.bak.$ts"
-                Warn "已备份旧 SOUL.md → $soulDst.bak.$ts"
+                Warn "기존 SOUL.md 백업됨 → $soulDst.bak.$ts"
             }
             $content = (Get-Content $soulSrc -Raw) -replace "__REPO_DIR__", $REPO_DIR
             Set-Content -Path $soulDst -Value $content -Encoding UTF8
         }
-        Log "Workspace 已创建: $ws"
+        Log "워크스페이스 생성됨: $ws"
 
         # AGENTS.md
         $agentsMd = @"
-# AGENTS.md · 工作协议
+# AGENTS.md · 작업 프로토콜
 
-1. 接到任务先回复"已接旨"。
-2. 输出必须包含：任务ID、结果、证据/文件路径、阻塞项。
-3. 需要协作时，回复尚书省请求转派，不跨部直连。
-4. 涉及删除/外发动作必须明确标注并等待批准。
+1. 임무를 받으면 "지침을 받았습니다"라고 먼저 회신합니다.
+2. 출력에는 반드시 다음을 포함합니다: 임무 ID, 결과, 증거/파일 경로, 차단 항목.
+3. 협업이 필요한 경우, 상서성을 통해 파견을 요청하며 부서 간 직접 연결하지 않습니다.
+4. 삭제/외부 전송 작업은 명시적으로 표시하고 승인을 기다립니다.
 "@
         Set-Content -Path (Join-Path $ws "AGENTS.md") -Value $agentsMd -Encoding UTF8
     }
 }
 
-# ── Step 2: 注册 Agents ──
+# ── Step 2: Agent 등록 ──
 function Register-Agents {
-    Info "注册三省六部 Agents..."
+    Info "3사6조 Agents 등록 중..."
 
     $ts = Get-Date -Format "yyyyMMdd-HHmmss"
     Copy-Item $OC_CFG "$OC_CFG.bak.sansheng-$ts"
-    Log "已备份配置: $OC_CFG.bak.*"
+    Log "설정 백업됨: $OC_CFG.bak.*"
 
     $pyScript = @"
 import json, pathlib, sys, os
@@ -125,17 +125,17 @@ cfg_path = oc_home / 'openclaw.json'
 cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
 
 AGENTS = [
-    {"id": "taizi",    "subagents": {"allowAgents": ["zhongshu"]}},
-    {"id": "zhongshu", "subagents": {"allowAgents": ["menxia", "shangshu"]}},
-    {"id": "menxia",   "subagents": {"allowAgents": ["shangshu", "zhongshu"]}},
-    {"id": "shangshu", "subagents": {"allowAgents": ["zhongshu", "menxia", "hubu", "libu", "bingbu", "xingbu", "gongbu", "libu_hr"]}},
-    {"id": "hubu",     "subagents": {"allowAgents": ["shangshu"]}},
-    {"id": "libu",     "subagents": {"allowAgents": ["shangshu"]}},
-    {"id": "bingbu",   "subagents": {"allowAgents": ["shangshu"]}},
-    {"id": "xingbu",   "subagents": {"allowAgents": ["shangshu"]}},
-    {"id": "gongbu",   "subagents": {"allowAgents": ["shangshu"]}},
-    {"id": "libu_hr",  "subagents": {"allowAgents": ["shangshu"]}},
-    {"id": "zaochao",  "subagents": {"allowAgents": []}},
+    {"id": "seja",    "subagents": {"allowAgents": ["hongmungwan"]}},
+    {"id": "hongmungwan", "subagents": {"allowAgents": ["saganwon", "seungjeongwon"]}},
+    {"id": "saganwon",   "subagents": {"allowAgents": ["seungjeongwon", "hongmungwan"]}},
+    {"id": "seungjeongwon", "subagents": {"allowAgents": ["hongmungwan", "saganwon", "hojo", "yejo", "byeongjo", "hyeongjo", "gongjo", "ijo"]}},
+    {"id": "hojo",     "subagents": {"allowAgents": ["seungjeongwon"]}},
+    {"id": "yejo",     "subagents": {"allowAgents": ["seungjeongwon"]}},
+    {"id": "byeongjo",   "subagents": {"allowAgents": ["seungjeongwon"]}},
+    {"id": "hyeongjo",   "subagents": {"allowAgents": ["seungjeongwon"]}},
+    {"id": "gongjo",   "subagents": {"allowAgents": ["seungjeongwon"]}},
+    {"id": "ijo",  "subagents": {"allowAgents": ["seungjeongwon"]}},
+    {"id": "jobocheong",  "subagents": {"allowAgents": []}},
 ]
 
 agents_cfg = cfg.setdefault('agents', {})
@@ -150,9 +150,9 @@ for ag in AGENTS:
         entry = {'id': ag_id, 'workspace': ws, **{k:v for k,v in ag.items() if k!='id'}}
         agents_list.append(entry)
         added += 1
-        print(f'  + added: {ag_id}')
+        print(f'  + 추가됨: {ag_id}')
     else:
-        print(f'  ~ exists: {ag_id} (skipped)')
+        print(f'  ~ 존재함: {ag_id} (건너뜀)')
 
 agents_cfg['list'] = agents_list
 
@@ -162,18 +162,18 @@ for b in bindings:
     match = b.get('match', {})
     if isinstance(match, dict) and 'pattern' in match:
         del match['pattern']
-        print(f'  cleaned invalid pattern from binding: {b.get("agentId", "?")}')
+        print(f'  불법 pattern 제거됨: {b.get("agentId", "?")}')
 
 cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding='utf-8')
-print(f'Done: {added} agents added')
+print(f'완료: {added}개 에이전트 추가됨')
 "@
     & $global:PYTHON -c $pyScript
-    Log "Agents 注册完成"
+    Log "Agents 등록 완료"
 }
 
-# ── Step 3: 初始化 Data ──
+# ── Step 3: 데이터 초기화 ──
 function Init-Data {
-    Info "初始化数据目录..."
+    Info "데이터 디렉토리 초기화 중..."
     $dataDir = Join-Path $REPO_DIR "data"
     New-Item -ItemType Directory -Path $dataDir -Force | Out-Null
 
@@ -182,19 +182,19 @@ function Init-Data {
         if (-not (Test-Path $fp)) { Set-Content $fp "{}" -Encoding UTF8 }
     }
     Set-Content (Join-Path $dataDir "pending_model_changes.json") "[]" -Encoding UTF8
-    Log "数据目录初始化完成"
+    Log "데이터 디렉토리 초기화 완료"
 }
 
-# ── Step 3.3: 创建 data/scripts 目录连接 (Junction) ──
+# ── Step 3.3: data/scripts 디렉토리 연결 생성 (Junction) ──
 function Link-Resources {
-    Info "创建 data/scripts 目录连接..."
+    Info "data/scripts 디렉토리 연결 생성 중..."
     $linked = 0
-    $agents = @("taizi","zhongshu","menxia","shangshu","hubu","libu","bingbu","xingbu","gongbu","libu_hr","zaochao")
+    $agents = @("seja","hongmungwan","saganwon","seungjeongwon","hojo","yejo","byeongjo","hyeongjo","gongjo","ijo","jobocheong")
     foreach ($agent in $agents) {
         $ws = Join-Path $OC_HOME "workspace-$agent"
         New-Item -ItemType Directory -Path $ws -Force | Out-Null
 
-        # data 目录
+        # data 디렉토리
         $wsData = Join-Path $ws "data"
         $srcData = Join-Path $REPO_DIR "data"
         if (-not (Test-Path $wsData)) {
@@ -207,7 +207,7 @@ function Link-Resources {
             $linked++
         }
 
-        # scripts 目录
+        # scripts 디렉토리
         $wsScripts = Join-Path $ws "scripts"
         $srcScripts = Join-Path $REPO_DIR "scripts"
         if (-not (Test-Path $wsScripts)) {
@@ -220,27 +220,27 @@ function Link-Resources {
             $linked++
         }
     }
-    Log "已创建 $linked 个目录连接 (data/scripts → 项目目录)"
+    Log "디렉토리 연결 $linked개 생성됨 (data/scripts → 프로젝트 디렉토리)"
 }
 
-# ── Step 3.5: 设置 Agent 间通信可见性 ──
+# ── Step 3.5: Agent 간 통신 가시성 설정 ──
 function Setup-Visibility {
-    Info "配置 Agent 间消息可见性..."
+    Info "Agent 간 메시지 가시성 설정 중..."
     try {
         openclaw config set tools.sessions.visibility all 2>$null
-        Log "已设置 tools.sessions.visibility=all"
+        Log "tools.sessions.visibility=all 설정됨"
     } catch {
-        Warn "设置 visibility 失败，请手动执行: openclaw config set tools.sessions.visibility all"
+        Warn "가시성 설정 실패, 수동으로 실행하세요: openclaw config set tools.sessions.visibility all"
     }
 }
 
-# ── Step 4: 构建前端 ──
+# ── Step 4: 프론트엔드 빌드 ──
 function Build-Frontend {
-    Info "构建 React 前端..."
+    Info "React 프론트엔드 빌드 중..."
     $node = Get-Command node -ErrorAction SilentlyContinue
     if (-not $node) {
-        Warn "未找到 node，跳过前端构建。"
-        Warn "请安装 Node.js 18+ 后运行: cd edict\frontend && npm install && npm run build"
+        Warn "node를 찾을 수 없습니다. 프론트엔드 빌드를 건너뜁니다."
+        Warn "Node.js 18+를 설치한 후 실행하세요: cd edict\frontend && npm install && npm run build"
         return
     }
     $pkgJson = Join-Path $REPO_DIR "edict\frontend\package.json"
@@ -251,33 +251,33 @@ function Build-Frontend {
         Pop-Location
         $indexHtml = Join-Path $REPO_DIR "dashboard\dist\index.html"
         if (Test-Path $indexHtml) {
-            Log "前端构建完成: dashboard\dist\"
+            Log "프론트엔드 빌드 완료: dashboard\dist\"
         } else {
-            Warn "前端构建可能失败，请手动检查"
+            Warn "프론트엔드 빌드에 실패했을 수 있습니다. 수동으로 확인하세요"
         }
     }
 }
 
-# ── Step 5: 首次数据同步 ──
+# ── Step 5: 초기 데이터 동기화 ──
 function First-Sync {
-    Info "执行首次数据同步..."
+    Info "초기 데이터 동기화 실행 중..."
     Push-Location $REPO_DIR
     $env:REPO_DIR = $REPO_DIR
-    try { & $global:PYTHON scripts/sync_agent_config.py } catch { Warn "sync_agent_config 有警告" }
-    try { & $global:PYTHON scripts/sync_officials_stats.py } catch { Warn "sync_officials_stats 有警告" }
-    try { & $global:PYTHON scripts/refresh_live_data.py } catch { Warn "refresh_live_data 有警告" }
+    try { & $global:PYTHON scripts/sync_agent_config.py } catch { Warn "sync_agent_config 경고 있음" }
+    try { & $global:PYTHON scripts/sync_officials_stats.py } catch { Warn "sync_officials_stats 경고 있음" }
+    try { & $global:PYTHON scripts/refresh_live_data.py } catch { Warn "refresh_live_data 경고 있음" }
     Pop-Location
-    Log "首次同步完成"
+    Log "초기 동기화 완료"
 }
 
-# ── Step 6: 重启 Gateway ──
+# ── Step 6: Gateway 재시작 ──
 function Restart-Gateway {
-    Info "重启 OpenClaw Gateway..."
+    Info "OpenClaw Gateway 재시작 중..."
     try {
         openclaw gateway restart 2>$null
-        Log "Gateway 重启成功"
+        Log "Gateway 재시작 성공"
     } catch {
-        Warn "Gateway 重启失败，请手动重启: openclaw gateway restart"
+        Warn "Gateway 재시작 실패, 수동으로 재시작하세요: openclaw gateway restart"
     }
 }
 
@@ -295,17 +295,17 @@ First-Sync
 Restart-Gateway
 
 Write-Host ""
-Write-Host "╔══════════════════════════════════════════════════╗" -ForegroundColor Green
-Write-Host "║  🎉  三省六部安装完成！                          ║" -ForegroundColor Green
-Write-Host "╚══════════════════════════════════════════════════╝" -ForegroundColor Green
+Write-Host "╔══════════════════════════════════════════════╗" -ForegroundColor Green
+Write-Host "║  🎉  3사6조 설치 완료！                          ║" -ForegroundColor Green
+Write-Host "╚══════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
-Write-Host "下一步："
-Write-Host "  1. 配置 API Key（如尚未配置）:"
-Write-Host "     openclaw agents add taizi     # 按提示输入 Anthropic API Key"
-Write-Host "     .\install.ps1                 # 重新运行以同步到所有 Agent"
-Write-Host "  2. 启动数据刷新循环:  bash scripts/run_loop.sh"
-Write-Host "  3. 启动看板服务器:    python dashboard/server.py"
-Write-Host "  4. 打开看板:          http://127.0.0.1:7891"
+Write-Host "다음 단계:"
+Write-Host "  1. API Key 설정 (아직 설정하지 않은 경우):"
+Write-Host "     openclaw agents add seja     # 안내에 따라 Anthropic API Key 입력"
+Write-Host "     .\install.ps1                 # 모든 Agent에 동기화하려면 다시 실행"
+Write-Host "  2. 데이터 새로고침 루프 시작:  bash scripts/run_loop.sh"
+Write-Host "  3. 대시보드 서버 시작:    python dashboard/server.py"
+Write-Host "  4. 대시보드 열기:          http://127.0.0.1:7891"
 Write-Host ""
-Warn "首次安装必须配置 API Key，否则 Agent 会报错"
-Info "文档: docs/getting-started.md"
+Warn "처음 설치 시 반드시 API Key를 설정해야 합니다. 그렇지 않으면 Agent가 오류를 보고합니다"
+Info "문서: docs/getting-started.md"
