@@ -2,8 +2,8 @@
   {
     "id": "seja",
     "name": "seja",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-seja",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\seja\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-seja",
+    "agentDir": "${OPENCLAW_HOME}/agents/seja/agent",
     "subagents": {
       "allowAgents": ["hongmungwan"]
     }
@@ -11,8 +11,8 @@
   {
     "id": "hongmungwan",
     "name": "hongmungwan",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-hongmungwan",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\hongmungwan\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-hongmungwan",
+    "agentDir": "${OPENCLAW_HOME}/agents/hongmungwan/agent",
     "subagents": {
       "allowAgents": ["saganwon", "seungjeongwon"]
     }
@@ -20,8 +20,8 @@
   {
     "id": "saganwon",
     "name": "saganwon",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-saganwon",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\saganwon\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-saganwon",
+    "agentDir": "${OPENCLAW_HOME}/agents/saganwon/agent",
     "subagents": {
       "allowAgents": ["seungjeongwon", "hongmungwan"]
     }
@@ -29,8 +29,8 @@
   {
     "id": "seungjeongwon",
     "name": "seungjeongwon",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-seungjeongwon",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\seungjeongwon\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-seungjeongwon",
+    "agentDir": "${OPENCLAW_HOME}/agents/seungjeongwon/agent",
     "subagents": {
       "allowAgents": ["hongmungwan", "saganwon", "hojo", "yejo", "byeongjo", "hyeongjo", "gongjo", "ijo"]
     }
@@ -38,8 +38,8 @@
   {
     "id": "hojo",
     "name": "hojo",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-hojo",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\hojo\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-hojo",
+    "agentDir": "${OPENCLAW_HOME}/agents/hojo/agent",
     "subagents": {
       "allowAgents": ["seungjeongwon"]
     }
@@ -47,8 +47,8 @@
   {
     "id": "yejo",
     "name": "yejo",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-yejo",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\yejo\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-yejo",
+    "agentDir": "${OPENCLAW_HOME}/agents/yejo/agent",
     "subagents": {
       "allowAgents": ["seungjeongwon"]
     }
@@ -56,8 +56,8 @@
   {
     "id": "byeongjo",
     "name": "byeongjo",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-byeongjo",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\byeongjo\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-byeongjo",
+    "agentDir": "${OPENCLAW_HOME}/agents/byeongjo/agent",
     "subagents": {
       "allowAgents": ["seungjeongwon"]
     }
@@ -65,8 +65,8 @@
   {
     "id": "hyeongjo",
     "name": "hyeongjo",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-hyeongjo",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\hyeongjo\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-hyeongjo",
+    "agentDir": "${OPENCLAW_HOME}/agents/hyeongjo/agent",
     "subagents": {
       "allowAgents": ["seungjeongwon"]
     }
@@ -74,8 +74,8 @@
   {
     "id": "gongjo",
     "name": "gongjo",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-gongjo",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\gongjo\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-gongjo",
+    "agentDir": "${OPENCLAW_HOME}/agents/gongjo/agent",
     "subagents": {
       "allowAgents": ["seungjeongwon"]
     }
@@ -83,8 +83,8 @@
   {
     "id": "ijo",
     "name": "ijo",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-ijo",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\ijo\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-ijo",
+    "agentDir": "${OPENCLAW_HOME}/agents/ijo/agent",
     "subagents": {
       "allowAgents": ["seungjeongwon"]
     }
@@ -92,10 +92,19 @@
   {
     "id": "jobocheong",
     "name": "jobocheong",
-    "workspace": "C:\\Users\\<YOUR_USER>\\.openclaw\\workspace-jobocheong",
-    "agentDir": "C:\\Users\\<YOUR_USER>\\.openclaw\\agents\\jobocheong\\agent",
+    "workspace": "${OPENCLAW_HOME}/workspace-jobocheong",
+    "agentDir": "${OPENCLAW_HOME}/agents/jobocheong/agent",
     "subagents": {
       "allowAgents": []
+    }
+  },
+  {
+    "id": "gwansanggam",
+    "name": "gwansanggam",
+    "workspace": "${OPENCLAW_HOME}/workspace-gwansanggam",
+    "agentDir": "${OPENCLAW_HOME}/agents/gwansanggam/agent",
+    "subagents": {
+      "allowAgents": ["seungjeongwon"]
     }
   }
 ]

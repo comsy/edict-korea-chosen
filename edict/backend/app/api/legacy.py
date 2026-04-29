@@ -17,6 +17,23 @@ from ..services.task_service import TaskService
 log = logging.getLogger("edict.api.legacy")
 router = APIRouter()
 
+# Legacy 상태값 별칭 (소문자/구버전 값 → PascalCase TaskState)
+_LEGACY_STATE_ALIAS = {
+    'seja': 'SejaFinalReview',
+    'hongmungwan': 'HongmungwanDraft',
+    'saganwon': 'SaganwonFinalReview',
+    'seungjeongwon': 'SeungjeongwonAssigned',
+    'ready': 'Ready',
+    'in_progress': 'InProgress',
+    'final_review': 'FinalReview',
+    'completed': 'Completed',
+    'done': 'Completed',
+    'blocked': 'Blocked',
+    'cancelled': 'Cancelled',
+    'pending': 'Pending',
+    'pending_confirm': 'PendingConfirm',
+}
+
 
 async def _find_by_legacy_id(db: AsyncSession, legacy_id: str) -> Task | None:
     """이전 버전 ID로 작업 찾기 (tags 또는 meta.legacy_id에서 검색)."""
@@ -61,7 +78,9 @@ async def legacy_transition(
     bus = await get_event_bus()
     svc = TaskService(db, bus)
     try:
-        new_state = TaskState(body.new_state)
+        # 별칭 정규화 (구버전 호환성)
+        canonical = _LEGACY_STATE_ALIAS.get(body.new_state, body.new_state)
+        new_state = TaskState(canonical)
     except ValueError:
         raise HTTPException(status_code=400, detail=f"Invalid state: {body.new_state}")
 

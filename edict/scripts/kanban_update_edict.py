@@ -44,12 +44,20 @@ STATE_ORG_MAP = {
     'InProgress': '진행중', 'FinalReview': '승정원', 'Completed': '완료', 'Blocked': '차단',
 }
 
-# State → Edict TaskState value 매핑
+# State → Edict TaskState value 매핑 (identity mapping - PascalCase 그대로 전달)
 _STATE_TO_EDICT = {
-    'SejaFinalReview': 'seja', 'HongmungwanDraft': 'hongmungwan', 'SaganwonFinalReview': 'saganwon',
-    'SeungjeongwonAssigned': 'seungjeongwon', 'Ready': 'ready', 'InProgress': 'in_progress',
-    'FinalReview': 'final_review', 'Completed': 'completed', 'Blocked': 'blocked',
-    'Cancelled': 'cancelled', 'Pending': 'pending',
+    'SejaFinalReview': 'SejaFinalReview',
+    'HongmungwanDraft': 'HongmungwanDraft',
+    'SaganwonFinalReview': 'SaganwonFinalReview',
+    'SeungjeongwonAssigned': 'SeungjeongwonAssigned',
+    'Ready': 'Ready',
+    'InProgress': 'InProgress',
+    'FinalReview': 'FinalReview',
+    'Completed': 'Completed',
+    'Blocked': 'Blocked',
+    'Cancelled': 'Cancelled',
+    'Pending': 'Pending',
+    'PendingConfirm': 'PendingConfirm',
 }
 
 
@@ -196,7 +204,7 @@ def cmd_create(task_id, title, state, org, official, remark=None):
         return
 
     if _check_api():
-        edict_state = _STATE_TO_EDICT.get(state, state.lower())
+        edict_state = _STATE_TO_EDICT.get(state, state)
         result = _api_post('/api/tasks', {
             'title': title,
             'description': remark or f'하교: {title}',
@@ -205,6 +213,7 @@ def cmd_create(task_id, title, state, org, official, remark=None):
             'creator': official,
             'tags': [task_id],
             'meta': {'legacy_id': task_id, 'legacy_state': state},
+            'state': edict_state,
         })
         if result:
             log.info(f'✅ {task_id} 생성 → Edict {result.get("task_id", "?")} | {title[:30]}')
@@ -220,13 +229,15 @@ def cmd_create(task_id, title, state, org, official, remark=None):
 
 def cmd_state(task_id, new_state, now_text=None):
     if _check_api():
-        edict_state = _STATE_TO_EDICT.get(new_state, new_state.lower())
+        edict_state = _STATE_TO_EDICT.get(new_state, new_state)
         agent = _infer_agent_id()
+        # 한글 라벨로 변환하여 사용자 친화적 메시지 생성
+        human_label = STATE_ORG_MAP.get(new_state, new_state)
         # legacy_id 태그로 edict task_id 조회 후 전이
         result = _api_post(f'/api/tasks/by-legacy/{task_id}/transition', {
             'new_state': edict_state,
             'agent': agent,
-            'reason': now_text or f'상태 변경: {new_state}',
+            'reason': now_text or f'상태 변경: {human_label}',
         })
         if result:
             log.info(f'✅ {task_id} 상태 변경 → {new_state}')
@@ -260,7 +271,7 @@ def cmd_done(task_id, output_path='', summary=''):
     if _check_api():
         agent = _infer_agent_id()
         result = _api_post(f'/api/tasks/by-legacy/{task_id}/transition', {
-            'new_state': 'done',
+            'new_state': 'Completed',
             'agent': agent,
             'reason': summary or '업무가 완료되었습니다',
         })
@@ -277,7 +288,7 @@ def cmd_block(task_id, reason):
     if _check_api():
         agent = _infer_agent_id()
         result = _api_post(f'/api/tasks/by-legacy/{task_id}/transition', {
-            'new_state': 'blocked',
+            'new_state': 'Blocked',
             'agent': agent,
             'reason': reason,
         })

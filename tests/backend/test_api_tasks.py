@@ -210,3 +210,44 @@ class TestAgentsApi:
         agent = resp.json()["agents"][0]
         for field in ("id", "name", "role"):
             assert field in agent
+
+
+class TestLegacyApiStateValues:
+    """legacy 라우트가 PascalCase TaskState 값을 받아들이는지 보증."""
+
+    @pytest.mark.parametrize("state_value", [
+        "SejaFinalReview", "HongmungwanDraft", "SaganwonFinalReview",
+        "SeungjeongwonAssigned", "Ready", "InProgress", "FinalReview",
+        "Completed", "Blocked", "Cancelled", "Pending", "PendingConfirm",
+    ])
+    async def test_all_state_values_are_recognized(self, client, mock_svc, state_value):
+        """모든 enum 값이 400을 받지 않아야 함 (404는 허용 — task not found)."""
+        mock_svc.transition_state.return_value = _make_mock_task(state=TaskState[state_value])
+        resp = await client.post(
+            f"/api/tasks/by-legacy/JJC-TEST-001/transition",
+            json={"new_state": state_value},
+        )
+        assert resp.status_code != 400, f"{state_value} 거부됨: {resp.json()}"
+
+
+class TestLegacyApiAliases:
+    """legacy 라우트가 별칭(소문자 등)을 정규화하는지 테스트."""
+
+    @pytest.mark.parametrize("alias,canonical", [
+        ("seja", "SejaFinalReview"),
+        ("hongmungwan", "HongmungwanDraft"),
+        ("done", "Completed"),
+        ("in_progress", "InProgress"),
+        ("blocked", "Blocked"),
+    ])
+    async def test_legacy_aliases_resolve(self, client, mock_svc, alias, canonical):
+        """별칭이 올바른 PascalCase 값으로 정규화되어야 함."""
+        mock_svc.transition_state.return_value = _make_mock_task(
+            state=TaskState[canonical]
+        )
+        resp = await client.post(
+            f"/api/tasks/by-legacy/JJC-TEST-001/transition",
+            json={"new_state": alias},
+        )
+        # 400이 아니어야 함 (별칭이 정규화됨)
+        assert resp.status_code != 400, f"별칭 '{alias}' 거부됨: {resp.json()}"
